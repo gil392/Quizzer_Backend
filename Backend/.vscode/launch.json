@@ -1,0 +1,21 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "test current file",
+            "program": "${workspaceFolder}/node_modules/jest/bin/jest.js",
+            "request": "launch",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "console": "integratedTerminal",
+            "args": [
+                "--detectOpenHandles",
+                "--forceExit", 
+                "--runInBand",
+                "${fileBasename}"
+            ],
+            "type": "node"
+        }
+    ]
+}
