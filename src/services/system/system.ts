@@ -1,3 +1,7 @@
+import { QuestionsGenerator } from '../../externalApis/quizGenerator';
+import { VideoSummeraizer } from '../../externalApis/videoSummerizer';
+import { LessonsDal } from '../../lesson/dal';
+import { QuizzesDal } from '../../quiz/dal';
 import { Database } from '../database/database';
 import { Server } from '../server/server';
 import { Service } from '../service';
@@ -12,8 +16,25 @@ export class System extends Service {
         const { databaseConfig, serverConfig } = config;
 
         this.database = new Database(databaseConfig);
-        this.server = new Server(serverConfig);
+        const dals = this.createDals();
+        const questionsGenerator = new QuestionsGenerator();
+        const videoSummeraizer = new VideoSummeraizer();
+        this.server = new Server(
+            { ...dals, questionsGenerator, videoSummeraizer },
+            serverConfig
+        );
     }
+
+    private createDals = () => {
+        const { quizModel, lessonModel } = this.database.getModels();
+        const quizzesDal = new QuizzesDal(quizModel);
+        const lessonsDal = new LessonsDal(lessonModel);
+
+        return {
+            quizzesDal,
+            lessonsDal
+        };
+    };
 
     async start() {
         await this.database.start();

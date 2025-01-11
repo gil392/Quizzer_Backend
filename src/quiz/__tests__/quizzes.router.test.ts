@@ -18,8 +18,29 @@ describe('quizzes routes', () => {
         connectionString: config.DB_CONNECTION_STRING
     };
     const database = new Database(databaseConfig);
+    const { quizModel, lessonModel } = database.getModels();
+    const quizzesDal = new QuizzesDal(quizModel);
+    const lessonsDal = new LessonsDal(lessonModel);
+    const questionsGenerator: Record<keyof QuestionsGenerator, jest.Mock> = {
+        generateQuestionsFromLessonSummary: jest
+            .fn()
+            .mockResolvedValue(generatedQuestionsMock)
+    };
+    const summary = 'summary mock';
+    const videoSummeraizer: Record<keyof VideoSummeraizer, jest.Mock> = {
+        summerizeVideo: jest.fn().mockResolvedValue(summary)
+    };
+
     const app: Express = createBasicApp();
-    app.use('/', createQuizRouter());
+    app.use(
+        '/',
+        createQuizRouter({
+            quizzesDal,
+            lessonsDal,
+            questionsGenerator,
+            videoSummeraizer
+        })
+    );
 
     beforeAll(async () => {
         await database.start();
