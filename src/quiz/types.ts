@@ -5,7 +5,7 @@ export interface Quiz {
     lessonId: string;
     questions: Question[];
     grade?: number;
-    setting: QuizSettings;
+    settings: QuizSettings;
 }
 
 export type QuizSettings = {

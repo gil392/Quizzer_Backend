@@ -1,4 +1,4 @@
-import { model, Schema } from 'mongoose';
+import { Model, model, Schema } from 'mongoose';
 import { Question, Quiz, quizCheckTypes, QuizSettings } from './types';
 
 const questionSchema = new Schema<Question>(
@@ -26,6 +26,8 @@ const quizSchema = new Schema<Quiz>({
     lessonId: { type: String, required: true },
     questions: { type: [questionSchema], required: true },
     grade: Number,
-    setting: { type: quizSettingsSchema, required: true }
+    settings: { type: quizSettingsSchema, required: true }
 });
+
+export type QuizModel = Model<Quiz>;
 export const quizModel = model('quizzes', quizSchema);

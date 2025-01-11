@@ -13,4 +13,6 @@ const lessonSchema = new Schema<Lesson>({
     videoUrl: { type: String, required: true },
     summary: { type: String, required: true }
 });
+
+export type LessonModel = Model<Lesson>;
 export const lessonModel = model('lessons', lessonSchema);
