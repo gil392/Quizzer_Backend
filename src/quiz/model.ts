@@ -1,13 +1,5 @@
-import { model, Schema } from 'mongoose';
-import { Question, quizCheckTypes, QuizSettings } from './types';
-
-export interface Quiz {
-    title: string;
-    lessonId: string;
-    questions: Question[];
-    grade?: number;
-    setting: QuizSettings;
-}
+import { Model, model, Schema } from 'mongoose';
+import { Question, Quiz, quizCheckTypes, QuizSettings } from './types';
 
 const questionSchema = new Schema<Question>(
     {

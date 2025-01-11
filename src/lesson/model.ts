@@ -1,4 +1,4 @@
-import { model, Schema } from 'mongoose';
+import { Model, model, Schema } from 'mongoose';
 
 export interface Lesson {
     owner: string;
@@ -13,4 +13,4 @@ const lessonSchema = new Schema<Lesson>({
     videoUrl: { type: String, required: true },
     summary: { type: String, required: true }
 });
-export const lessonModel = model('lessons', lessonSchema)
+export const lessonModel = model('lessons', lessonSchema);
