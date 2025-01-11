@@ -21,6 +21,5 @@ export type Question = {
     question: string;
     incorrectAnswers: Answer[];
     correctAnswer: Answer;
-    points: number;
     selectedAnswer?: Answer;
 };

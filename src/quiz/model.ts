@@ -1,4 +1,4 @@
-import { Model, model, Schema } from 'mongoose';
+import { model, Schema } from 'mongoose';
 import { Question, Quiz, quizCheckTypes, QuizSettings } from './types';
 
 const questionSchema = new Schema<Question>(
@@ -6,7 +6,6 @@ const questionSchema = new Schema<Question>(
         question: { type: String, required: true },
         correctAnswer: { type: String, required: true },
         incorrectAnswers: { type: [String], required: true },
-        points: { type: Number, required: true },
         selectedAnswer: String
     },
     { _id: false, versionKey: false, minimize: true }
