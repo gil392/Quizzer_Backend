@@ -1,10 +1,10 @@
-import { getProcessEnv, ProcessEnv } from '../config';
+import { ProcessEnv } from '../config';
 
 export type SummarizerConfig  = {
     apiKey: string,
 };
 
-export const createTranscriptSummarizerConfig = (
+export const createSummarizerConfig = (
     env: ProcessEnv
 ): SummarizerConfig  => ({
     apiKey: env.OPENAI_API_KEY

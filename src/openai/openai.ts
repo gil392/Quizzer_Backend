@@ -15,7 +15,7 @@ export class Summarizer {
           const response = await this.openAI.chat.completions.create({
             model: "gpt-3.5-turbo",
             messages: [
-              { role: "system", content: "Summarize the following text using bullet points" },
+              { role: "system", content: "Summarize the following youtube transcript using bullet points" },
               { role: "user", content: transcript },
             ],
             temperature: 0.7,
