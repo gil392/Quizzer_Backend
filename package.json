@@ -34,6 +34,7 @@
     "express": "^4.21.2",
     "http-status-codes": "^2.3.0",
     "mongoose": "^8.9.3",
+    "openai": "^4.90.0",
     "zod": "^3.24.1"
   }
 }

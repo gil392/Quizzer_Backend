@@ -6,6 +6,7 @@ dotenv.config();
 const processEnvZodSchema = z.object({
     PORT: z.coerce.number(),
     DB_CONNECTION_STRING: z.string().url(),
+    OPENAI_API_KEY: z.string(),
 });
 export type ProcessEnv = z.infer<typeof processEnvZodSchema>;
 
