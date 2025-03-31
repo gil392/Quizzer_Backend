@@ -1,6 +1,7 @@
 
 import { OpenAI } from "openai";
 import { SummarizerConfig  } from "./config";
+import { SUMMARIZER_PROMPT } from "./constants";
 
 export class Summarizer {
     private openAI: OpenAI; 
@@ -15,7 +16,7 @@ export class Summarizer {
           const response = await this.openAI.chat.completions.create({
             model: "gpt-3.5-turbo",
             messages: [
-              { role: "system", content: "Summarize the following youtube transcript using bullet points" },
+              { role: "system", content: SUMMARIZER_PROMPT },
               { role: "user", content: transcript },
             ],
             temperature: 0.7,

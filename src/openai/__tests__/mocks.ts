@@ -1,4 +1,4 @@
-export const generatedTranscriptMock = 
+export const generatedTranscriptMock: string = 
 `
 00:00:00.340 We begin in the middle of the 19th century.
 00:00:03.520 In Europe, the rise of nationalism underminesthe dominant powers.

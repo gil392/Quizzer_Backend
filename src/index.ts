@@ -11,7 +11,7 @@ try {
     const processEnv = getProcessEnv();
     const systemConfig = createSystemConfig(processEnv);
     const system = new System(systemConfig);
-
+    
     system.start().catch(handleError);
 } catch (error) {
     handleError(error as Error);
