@@ -1,11 +1,11 @@
 import { getProcessEnv, ProcessEnv } from '../config';
 
-export type ChatGeneratorConfig = {
+export type SummarizerConfig  = {
     apiKey: string,
 };
 
-export const createChatGeneratorConfig = (
+export const createTranscriptSummarizerConfig = (
     env: ProcessEnv
-): ChatGeneratorConfig => ({
+): SummarizerConfig  => ({
     apiKey: env.OPENAI_API_KEY
 });
