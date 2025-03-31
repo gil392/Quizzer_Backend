@@ -4,7 +4,7 @@ import { z } from 'zod';
 dotenv.config();
 
 const processEnvZodSchema = z.object({
-    PORT: z.number(),
+    PORT: z.coerce.number(),
     DB_CONNECTION_STRING: z.string().url(),
 });
 export type ProcessEnv = z.infer<typeof processEnvZodSchema>;
