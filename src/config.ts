@@ -12,9 +12,6 @@ const portZodSchema = z
 const processEnvZodSchema = z.object({
     PORT: portZodSchema,
     DB_CONNECTION_STRING: z.string().url(),
-    YOUTUBE_API_CLIENT_ID: z.string(),
-    YOUTUBE_API_SECRET_ID: z.string(),
-    YOUTUBE_API_REDIRECT_URI: z.string().url(),
 });
 export type ProcessEnv = z.infer<typeof processEnvZodSchema>;
 
