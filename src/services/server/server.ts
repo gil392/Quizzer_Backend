@@ -1,4 +1,4 @@
-import express, { Express } from 'express';
+import express, { Express, Request, Response } from 'express';
 import * as http from 'http';
 import { Service } from '../service';
 import { ServerConfig } from './config';
@@ -14,31 +14,34 @@ export class Server extends Service {
         this.app = express();
         this.server = http.createServer(this.app);
 
-        // Add a route to handle video details and captions
-        this.app.get('/youtube/:videoId', async (req: express.Request, res: express.Response): Promise<void> => {
-            const { videoId } = req.params;
 
-            try {
-                // Fetch video details
-                const videoDetails = await getVideoDetails(videoId);
-                if (!videoDetails) {
-                    res.status(404).json({ error: 'Video not found or details unavailable.' });
-                    return;
-                }
+        this.registerRoutes();
+    }
 
-                // Fetch captions
-                const transcript = await fetchVideoTranscript(videoId);
+    private registerRoutes(): void {
+        this.app.get('/youtube/:videoId', this.handleYouTubeRoute.bind(this));
+    }
 
-                // Respond with video details and captions
-                res.json({
-                    videoDetails,
-                    transcript: transcript || 'No transcript available.',
-                });
-            } catch (error: any) {
-                console.error('Error processing request:', error.message);
-                res.status(500).json({ error: 'Internal server error.' });
+    private async handleYouTubeRoute(req: Request, res: Response): Promise<void> {
+        const { videoId } = req.params;
+
+        try {
+            const videoDetails = await getVideoDetails(videoId);
+            if (!videoDetails) {
+                res.status(404).json({ error: 'Video not found or details unavailable.' });
+                return;
             }
-        });
+
+            const transcript = await fetchVideoTranscript(videoId);
+
+            res.json({
+                videoDetails,
+                transcript: transcript || 'No transcript available.',
+            });
+        } catch (error: any) {
+            console.error('Error processing request:', error.message);
+            res.status(500).json({ error: 'Internal server error.' });
+        }
     }
 
     async start() {
