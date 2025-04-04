@@ -1,8 +1,4 @@
-import OpenAI from "openai";
-
-const openai = new OpenAI({
-  apiKey: "our-api-key-here",
-});
+import { openai } from "../../openAiKey";
 
 interface Question {
   question: string;
