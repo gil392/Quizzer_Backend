@@ -1,5 +1,6 @@
 import { google } from 'googleapis';
 import { authenticate } from './authenticate';
+import { YoutubeTranscript, TranscriptConfig } from 'youtube-transcript';
 
 interface CaptionDetails {
     language: string;
@@ -32,7 +33,6 @@ export const listCaptions = async (videoId: string): Promise<CaptionDetails[] | 
                 trackId: caption.id || '',
             }));
 
-        console.log('Available captions:', captions);
         return captions;
     } catch (error) {
         console.error('Error fetching captions:', error);
@@ -63,12 +63,25 @@ export const fetchVideoTranscript = async (videoId: string): Promise<string | nu
     const captions = await listCaptions(videoId);
 
     if (captions && captions.length > 0) {
-        const captionTrackId = captions[0].trackId;
+        const language = captions[0].language;
 
-        const transcript = await downloadTranscript(captionTrackId);
+        const transcriptConfig: TranscriptConfig = {
+            lang: language,
+        };
 
-        console.log('Complete Transcript:', transcript);
-        return transcript;
+        try {
+            const transcriptList = await YoutubeTranscript.fetchTranscript(videoId, transcriptConfig);
+
+            if (!transcriptList || transcriptList.length === 0) {
+                return null;
+            }
+
+            const transcript = transcriptList.map((item) => item.text).join(' ');
+            return transcript;
+        } catch (error) {
+            console.error('Error fetching transcript:', error);
+            return null;
+        }
     } else {
         console.log('No captions available for this video.');
         return null;
