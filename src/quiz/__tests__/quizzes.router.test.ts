@@ -2,7 +2,7 @@ import { Express } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import request from 'supertest';
 import { QuestionsGenerator } from '../../externalApis/quizGenerator';
-import { VideoSummeraizer } from '../../externalApis/videoSummerizer';
+import {Summarizer} from '../../externalApis/transcriptSummarizer/transcriptSummarizer'
 import { LessonsDal } from '../../lesson/dal';
 import { DatabaseConfig } from '../../services/database/config';
 import { Database } from '../../services/database/database';
@@ -11,6 +11,7 @@ import { createTestEnv } from '../../utils/tests';
 import { QuizzesDal } from '../dal';
 import { createQuizRouter } from '../router';
 import { generatedQuestionsMock, quizSettings } from './mocks';
+import { SummarizerConfig } from '../../externalApis/transcriptSummarizer/config';
 
 describe('quizzes routes', () => {
     const config = createTestEnv();
@@ -27,9 +28,20 @@ describe('quizzes routes', () => {
             .mockResolvedValue(generatedQuestionsMock)
     };
     const summary = 'summary mock';
-    const videoSummeraizer: Record<keyof VideoSummeraizer, jest.Mock> = {
-        summerizeVideo: jest.fn().mockResolvedValue(summary)
-    };
+
+    const summarizerConfig: SummarizerConfig = { apiKey: '' };
+    const transcriptSummarizer = new Summarizer(summarizerConfig);
+
+    jest.spyOn(transcriptSummarizer, 'summarizeTranscript').mockResolvedValue(
+        summary
+    );
+    
+    // const transcriptSummarizer: Record<keyof Summarizer, jest.Mock> = {
+    //     summarizeTranscript: jest.fn().mockResolvedValue(summary)
+    // };
+    // const videoSummeraizer: Record<keyof VideoSummeraizer, jest.Mock> = {
+    //     summerizeVideo: jest.fn().mockResolvedValue(summary)
+    // };
 
     const app: Express = createBasicApp();
     app.use(
@@ -38,7 +50,7 @@ describe('quizzes routes', () => {
             quizzesDal,
             lessonsDal,
             questionsGenerator,
-            videoSummeraizer
+            transcriptSummarizer
         })
     );
 
