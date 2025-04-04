@@ -3,10 +3,16 @@ import { z } from 'zod';
 
 dotenv.config();
 
+const portZodSchema = z
+    .string()
+    .refine((value) => !isNaN(Number(value)), {
+        message: 'Must be a string representing a valid number'
+    })
+    .transform(Number);
+
 const processEnvZodSchema = z.object({
-    PORT: z.coerce.number(),
-    DB_CONNECTION_STRING: z.string().url(),
-    OPENAI_API_KEY: z.string(),
+    PORT: portZodSchema,
+    DB_CONNECTION_STRING: z.string().url()
 });
 export type ProcessEnv = z.infer<typeof processEnvZodSchema>;
 

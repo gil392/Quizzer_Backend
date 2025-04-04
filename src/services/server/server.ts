@@ -1,17 +1,43 @@
 import express, { Express } from 'express';
 import * as http from 'http';
+import { createQuizRouter, QuizRouterDependencies } from '../../quiz/router';
 import { Service } from '../service';
 import { ServerConfig } from './config';
+import { requestErrorHandler } from './utils';
+
+export const createBasicApp = (): Express => {
+    const app = express();
+    app.use(express.json());
+    app.use(express.urlencoded({ extended: true }));
+
+    return app;
+};
+
+export type ServerDependencies = QuizRouterDependencies;
 
 export class Server extends Service {
     app: Express;
     private server: http.Server;
 
-    constructor(private readonly config: ServerConfig) {
+    constructor(
+        private readonly dependencies: ServerDependencies,
+        private readonly config: ServerConfig
+    ) {
         super();
-        this.app = express();
+        this.app = createBasicApp();
+        this.useRouters();
+        this.useErrorHandler();
+
         this.server = http.createServer(this.app);
     }
+
+    private useRouters = () => {
+        this.app.use('/quizzes', createQuizRouter(this.dependencies));
+    };
+
+    private useErrorHandler = () => {
+        this.app.use(requestErrorHandler);
+    };
 
     async start() {
         const { port } = this.config;
