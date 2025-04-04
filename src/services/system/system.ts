@@ -1,5 +1,5 @@
 import { QuestionsGenerator } from '../../externalApis/quizGenerator';
-import { VideoSummeraizer } from '../../externalApis/videoSummerizer';
+import { Summarizer } from '../../externalApis/transcriptSummarizer/transcriptSummarizer';
 import { LessonsDal } from '../../lesson/dal';
 import { QuizzesDal } from '../../quiz/dal';
 import { Database } from '../database/database';
@@ -13,14 +13,14 @@ export class System extends Service {
 
     constructor(config: SystemConfig) {
         super();
-        const { databaseConfig, serverConfig } = config;
+        const { databaseConfig, serverConfig, summarizerConfig } = config;
 
         this.database = new Database(databaseConfig);
         const dals = this.createDals();
         const questionsGenerator = new QuestionsGenerator();
-        const videoSummeraizer = new VideoSummeraizer();
+        const transcriptSummarizer = new Summarizer(summarizerConfig);
         this.server = new Server(
-            { ...dals, questionsGenerator, videoSummeraizer },
+            { ...dals, questionsGenerator, transcriptSummarizer },
             serverConfig
         );
     }

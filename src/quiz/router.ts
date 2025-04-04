@@ -3,26 +3,26 @@ import { LessonsDal } from '../lesson/dal';
 import { QuizzesDal } from './dal';
 import * as handlers from './handlers';
 import { QuestionsGenerator } from '../externalApis/quizGenerator';
-import { VideoSummeraizer } from '../externalApis/videoSummerizer';
+import { Summarizer } from '../externalApis/transcriptSummarizer/transcriptSummarizer';
 
 export type QuizRouterDependencies = {
     quizzesDal: QuizzesDal;
     lessonsDal: LessonsDal;
     questionsGenerator: QuestionsGenerator;
-    videoSummeraizer: VideoSummeraizer;
+    transcriptSummarizer: Summarizer;
 };
 
 const createRouterController = ({
     quizzesDal,
     lessonsDal,
     questionsGenerator,
-    videoSummeraizer
+    transcriptSummarizer
 }: QuizRouterDependencies) => ({
     generateQuiz: handlers.generateQuiz(
         quizzesDal,
         lessonsDal,
         questionsGenerator,
-        videoSummeraizer
+        transcriptSummarizer
     )
 });
 
