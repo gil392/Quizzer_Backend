@@ -9,6 +9,8 @@ import { createTestEnv } from '../../utils/tests';
 import { LessonsDal } from '../dal';
 import { createLessonRouter } from '../router';
 import { CreateLessonRequst } from '../validators';
+import { SummarizerConfig } from '../../externalApis/transcriptSummarizer/config';
+
 
 describe('lessons routes', () => {
     const config = createTestEnv();
@@ -19,9 +21,17 @@ describe('lessons routes', () => {
     const { lessonModel } = database.getModels();
     const lessonsDal = new LessonsDal(lessonModel);
     const summaryMock = 'summary mock';
-    const videoSummeraizerMock: Record<keyof VideoSummeraizer, jest.Mock> = {
-        summerizeVideo: jest.fn().mockResolvedValue(summaryMock)
-    };
+
+    const summarizerConfig: SummarizerConfig = { apiKey: '' };
+    const videoSummeraizerMock = new VideoSummeraizer(summarizerConfig);
+
+    jest.spyOn(videoSummeraizerMock, 'summerizeVideo').mockResolvedValue(
+        summaryMock
+    );
+
+    // const videoSummeraizerMock: Record<keyof VideoSummeraizer, jest.Mock> = {
+    //     summerizeVideo: jest.fn().mockResolvedValue(summaryMock)
+    // };
 
     const app: Express = createBasicApp();
     app.use(
