@@ -11,6 +11,7 @@ import { createTestEnv } from '../../utils/tests';
 import { QuizzesDal } from '../dal';
 import { createQuizRouter } from '../router';
 import { generatedQuestionsMock, lessonMock, quizSettings } from './mocks';
+import { createFrontQuestion } from '../utils';
 
 describe('quizzes routes', () => {
     const config = createTestEnv();
@@ -88,7 +89,7 @@ describe('quizzes routes', () => {
                 expect.objectContaining({
                     lessonId,
                     settings,
-                    questions: generatedQuestionsMock
+                    questions: generatedQuestionsMock.map(createFrontQuestion)
                 })
             );
 

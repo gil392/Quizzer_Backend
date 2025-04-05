@@ -5,6 +5,7 @@ import { LessonsDal } from '../lesson/dal';
 import { BadRequestError } from '../services/server/exceptions';
 import { QuizzesDal } from './dal';
 import { generateQuizRequstValidator } from './validators';
+import { createFrontQuiz } from './utils';
 
 export const generateQuiz = (
     quizzesDal: QuizzesDal,
@@ -31,5 +32,5 @@ export const generateQuiz = (
             questions,
             settings: quizSettings
         });
-        res.status(StatusCodes.CREATED).send(quiz);
+        res.status(StatusCodes.CREATED).send(createFrontQuiz(quiz));
     });

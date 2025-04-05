@@ -21,5 +21,12 @@ export type Question = {
     question: string;
     incorrectAnswers: Answer[];
     correctAnswer: Answer;
-    selectedAnswer?: Answer;
+};
+
+export type FrontQuestion = {
+    text: string;
+    answers: Answer[];
+};
+export type FrontQuiz = Omit<Quiz, 'questions'> & {
+    questions: FrontQuestion[];
 };
