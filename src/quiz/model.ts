@@ -8,7 +8,7 @@ const questionSchema = new Schema<Question>(
         incorrectAnswers: { type: [String], required: true },
         selectedAnswer: String
     },
-    { _id: false, versionKey: false, minimize: true }
+    { versionKey: false, minimize: true }
 );
 
 const quizSettingsSchema = new Schema<QuizSettings>(
