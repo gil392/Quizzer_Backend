@@ -9,9 +9,16 @@ const portZodSchema = z
     })
     .transform(Number);
 
+const portZodSchema = z
+    .string()
+    .refine((value) => !isNaN(Number(value)), {
+        message: 'Must be a string representing a valid number'
+    })
+    .transform(Number);
+
 const processEnvZodSchema = z.object({
     PORT: portZodSchema,
-    DB_CONNECTION_STRING: z.string().url(),
+    DB_CONNECTION_STRING: z.string().url()
 });
 export type ProcessEnv = z.infer<typeof processEnvZodSchema>;
 

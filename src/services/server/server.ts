@@ -1,17 +1,40 @@
 import express, { Express, Request, Response } from 'express';
 import * as http from 'http';
+import {
+    createLessonRouter,
+    LessonRouterDependencies
+} from '../../lesson/router';
+import { createQuizRouter, QuizRouterDependencies } from '../../quiz/router';
 import { Service } from '../service';
 import { ServerConfig } from './config';
 import { getVideoDetails } from './youtube/getVideoDetails';
 import { fetchVideoTranscript } from './youtube/getCaptions';
+import { requestErrorHandler } from './utils';
+
+export const createBasicApp = (): Express => {
+    const app = express();
+    app.use(express.json());
+    app.use(express.urlencoded({ extended: true }));
+
+    return app;
+};
+
+export type ServerDependencies = QuizRouterDependencies &
+    LessonRouterDependencies;
 
 export class Server extends Service {
     app: Express;
     private server: http.Server;
 
-    constructor(private readonly config: ServerConfig) {
+    constructor(
+        private readonly dependencies: ServerDependencies,
+        private readonly config: ServerConfig
+    ) {
         super();
-        this.app = express();
+        this.app = createBasicApp();
+        this.useRouters();
+        this.useErrorHandler();
+
         this.server = http.createServer(this.app);
 
 
@@ -43,6 +66,15 @@ export class Server extends Service {
             res.status(500).json({ error: 'Internal server error.' });
         }
     }
+
+    private useRouters = () => {
+        this.app.use('/lessons', createLessonRouter(this.dependencies));
+        this.app.use('/quizzes', createQuizRouter(this.dependencies));
+    };
+
+    private useErrorHandler = () => {
+        this.app.use(requestErrorHandler);
+    };
 
     async start() {
         const { port } = this.config;
