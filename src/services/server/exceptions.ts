@@ -17,3 +17,9 @@ export class BadRequestError extends RequestHandlingError {
         super(StatusCodes.BAD_REQUEST, message, cause);
     }
 }
+
+export class NotFoundError extends RequestHandlingError {
+    constructor(message?: string, public cause?: Error) {
+        super(StatusCodes.NOT_FOUND, message, cause);
+    }
+}
