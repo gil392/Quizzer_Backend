@@ -1,8 +1,8 @@
 import { Express } from 'express';
 import { StatusCodes } from 'http-status-codes';
+import { Types } from 'mongoose';
 import request from 'supertest';
 import { QuestionsGenerator } from '../../externalApis/quizGenerator';
-import {Summarizer} from '../../externalApis/transcriptSummarizer/transcriptSummarizer'
 import { LessonsDal } from '../../lesson/dal';
 import { DatabaseConfig } from '../../services/database/config';
 import { Database } from '../../services/database/database';
@@ -10,8 +10,7 @@ import { createBasicApp } from '../../services/server/server';
 import { createTestEnv } from '../../utils/tests';
 import { QuizzesDal } from '../dal';
 import { createQuizRouter } from '../router';
-import { generatedQuestionsMock, quizSettings } from './mocks';
-import { SummarizerConfig } from '../../externalApis/transcriptSummarizer/config';
+import { generatedQuestionsMock, lessonMock, quizSettings } from './mocks';
 
 describe('quizzes routes', () => {
     const config = createTestEnv();
@@ -27,21 +26,6 @@ describe('quizzes routes', () => {
             .fn()
             .mockResolvedValue(generatedQuestionsMock)
     };
-    const summary = 'summary mock';
-
-    const summarizerConfig: SummarizerConfig = { apiKey: '' };
-    const transcriptSummarizer = new Summarizer(summarizerConfig);
-
-    jest.spyOn(transcriptSummarizer, 'summarizeTranscript').mockResolvedValue(
-        summary
-    );
-    
-    // const transcriptSummarizer: Record<keyof Summarizer, jest.Mock> = {
-    //     summarizeTranscript: jest.fn().mockResolvedValue(summary)
-    // };
-    // const videoSummeraizer: Record<keyof VideoSummeraizer, jest.Mock> = {
-    //     summerizeVideo: jest.fn().mockResolvedValue(summary)
-    // };
 
     const app: Express = createBasicApp();
     app.use(
@@ -49,8 +33,7 @@ describe('quizzes routes', () => {
         createQuizRouter({
             quizzesDal,
             lessonsDal,
-            questionsGenerator,
-            transcriptSummarizer
+            questionsGenerator
         })
     );
 
@@ -61,32 +44,25 @@ describe('quizzes routes', () => {
         await database.stop();
     });
 
+    beforeEach(async () => {
+        await lessonModel.create(lessonMock);
+    });
     afterEach(async () => {
         await quizModel.deleteMany();
         await lessonModel.deleteMany();
     });
 
     describe('generate quiz', () => {
-        test('missing title should return BAD_REQUEST', async () => {
+        test('missing lessonId should return BAD_REQUEST', async () => {
             const response = await request(app).post('/').send({
-                videoUrl: 'http://domain.com',
                 settings: quizSettings
             });
             expect(response.status).toBe(StatusCodes.BAD_REQUEST);
         });
 
-        test('missing videoUrl should return BAD_REQUEST', async () => {
+        test('generate for not existing lesson should return BAD_REQUEST', async () => {
             const response = await request(app).post('/').send({
-                title: 'title',
-                settings: quizSettings
-            });
-            expect(response.status).toBe(StatusCodes.BAD_REQUEST);
-        });
-
-        test('videoUrl not url title should return BAD_REQUEST', async () => {
-            const response = await request(app).post('/').send({
-                title: 'title',
-                videoUrl: 'some string',
+                lessonId: new Types.ObjectId(),
                 settings: quizSettings
             });
             expect(response.status).toBe(StatusCodes.BAD_REQUEST);
@@ -94,38 +70,31 @@ describe('quizzes routes', () => {
 
         test('missing settings should return BAD_REQUEST', async () => {
             const response = await request(app).post('/').send({
-                title: 'title',
-                videoUrl: 'http://domain.com'
+                lessonId: lessonMock._id
             });
             expect(response.status).toBe(StatusCodes.BAD_REQUEST);
         });
 
-        test('valid quiz should generate quiz and lesson', async () => {
-            const title = 'title';
-            const videoUrl = 'http://domain.com';
+        test('valid quiz should generate quiz', async () => {
             const settings = quizSettings;
+            const lessonId = lessonMock._id.toString();
+
             const response = await request(app)
                 .post('/')
-                .send({ title, videoUrl, settings });
+                .send({ lessonId, settings });
 
             expect(response.status).toBe(StatusCodes.CREATED);
             expect(response.body).toStrictEqual(
                 expect.objectContaining({
-                    title,
+                    lessonId,
                     settings,
                     questions: generatedQuestionsMock
                 })
             );
 
-            const { _id: quizId, lessonId } = response.body;
+            const { _id: quizId } = response.body;
             const quiz = await quizModel.findById(quizId);
             expect(quiz).toBeDefined();
-
-            const lesson = await lessonModel.findById(lessonId);
-            expect(lesson).toBeDefined();
-            expect(lesson).toStrictEqual(
-                expect.objectContaining({ videoUrl, summary })
-            );
         });
     });
 });

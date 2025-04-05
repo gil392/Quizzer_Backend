@@ -23,7 +23,9 @@ export class Summarizer {
             temperature: 0.7,
             max_tokens: 500
           });
-      
+          console.log('summary:')
+          console.log(response.choices[0]?.message?.content);
+
           return response.choices[0]?.message?.content || "No response from AI.";
         } catch (error) {
           throw new InternalServerError('Failed summerizing video trnascript', 

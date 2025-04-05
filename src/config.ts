@@ -2,7 +2,6 @@ import dotenv from 'dotenv';
 import { z } from 'zod';
 
 dotenv.config();
-
 const portZodSchema = z
     .string()
     .refine((value) => !isNaN(Number(value)), {

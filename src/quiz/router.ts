@@ -1,28 +1,24 @@
 import { Router } from 'express';
+import { QuestionsGenerator } from '../externalApis/quizGenerator';
 import { LessonsDal } from '../lesson/dal';
 import { QuizzesDal } from './dal';
 import * as handlers from './handlers';
-import { QuestionsGenerator } from '../externalApis/quizGenerator';
-import { Summarizer } from '../externalApis/transcriptSummarizer/transcriptSummarizer';
 
 export type QuizRouterDependencies = {
     quizzesDal: QuizzesDal;
     lessonsDal: LessonsDal;
     questionsGenerator: QuestionsGenerator;
-    transcriptSummarizer: Summarizer;
 };
 
 const createRouterController = ({
     quizzesDal,
     lessonsDal,
-    questionsGenerator,
-    transcriptSummarizer
+    questionsGenerator
 }: QuizRouterDependencies) => ({
     generateQuiz: handlers.generateQuiz(
         quizzesDal,
         lessonsDal,
-        questionsGenerator,
-        transcriptSummarizer
+        questionsGenerator
     )
 });
 

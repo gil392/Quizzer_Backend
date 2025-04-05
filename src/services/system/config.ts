@@ -6,7 +6,7 @@ import { createServerConfig, ServerConfig } from '../server/config';
 export type SystemConfig = {
     databaseConfig: DatabaseConfig;
     serverConfig: ServerConfig;
-    summarizerConfig: SummarizerConfig;
+    summarizerConfig: SummarizerConfig
 };
 
 export const createSystemConfig = (processEnv: ProcessEnv): SystemConfig => ({

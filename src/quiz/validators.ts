@@ -4,18 +4,17 @@ import { quizCheckTypes, QuizSettings } from './types';
 
 const quizSettingsZodSchema: z.ZodType<QuizSettings> = z.object({
     checkType: z.enum(quizCheckTypes),
-    isRandomOrder: z.boolean(),
-    maxQuestionCount: z.number(),
-    solvingTimeMs: z.number()
+    isRandomOrder: z.coerce.boolean(),
+    maxQuestionCount: z.coerce.number(),
+    solvingTimeMs: z.coerce.number()
 });
 
 export const generateQuizRequstZodSchema = z.object({
     body: z.object({
-        title: z.string(),
-        videoUrl: z.string().url(),
+        lessonId: z.string(),
         settings: quizSettingsZodSchema
     })
 });
-export const generateQuizRequstvalidator = validateHandlerRequest(
+export const generateQuizRequstValidator = validateHandlerRequest(
     generateQuizRequstZodSchema
 );

@@ -1,5 +1,5 @@
 import { QuestionsGenerator } from '../../externalApis/quizGenerator';
-import { Summarizer } from '../../externalApis/transcriptSummarizer/transcriptSummarizer';
+import { VideoSummeraizer } from '../../externalApis/videoSummerizer';
 import { LessonsDal } from '../../lesson/dal';
 import { QuizzesDal } from '../../quiz/dal';
 import { Database } from '../database/database';
@@ -18,9 +18,9 @@ export class System extends Service {
         this.database = new Database(databaseConfig);
         const dals = this.createDals();
         const questionsGenerator = new QuestionsGenerator();
-        const transcriptSummarizer = new Summarizer(summarizerConfig);
+        const videoSummeraizer = new VideoSummeraizer(summarizerConfig);
         this.server = new Server(
-            { ...dals, questionsGenerator, transcriptSummarizer },
+            { ...dals, questionsGenerator, videoSummeraizer },
             serverConfig
         );
     }
