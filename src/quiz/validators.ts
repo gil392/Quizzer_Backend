@@ -16,6 +16,6 @@ export const generateQuizRequstZodSchema = z.object({
         settings: quizSettingsZodSchema
     })
 });
-export const generateQuizRequstvalidator = validateHandlerRequest(
+export const generateQuizRequstValidator = validateHandlerRequest(
     generateQuizRequstZodSchema
 );

@@ -4,7 +4,7 @@ import { VideoSummeraizer } from '../externalApis/videoSummerizer';
 import { LessonsDal } from '../lesson/dal';
 import { pocUser } from '../poc.consts';
 import { QuizzesDal } from './dal';
-import { generateQuizRequstvalidator } from './validators';
+import { generateQuizRequstValidator } from './validators';
 
 export const generateQuiz = (
     quizzesDal: QuizzesDal,
@@ -12,7 +12,7 @@ export const generateQuiz = (
     questionsGenerator: QuestionsGenerator,
     videoSummeraizer: VideoSummeraizer
 ) =>
-    generateQuizRequstvalidator(async (req, res) => {
+    generateQuizRequstValidator(async (req, res) => {
         const {
             body: { videoUrl, title, settings: quizSettings }
         } = req;
