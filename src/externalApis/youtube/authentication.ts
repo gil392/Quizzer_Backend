@@ -3,8 +3,8 @@ import fs from 'fs';
 import path from 'path';
 
 // Paths to the credentials and token files
-const CREDENTIALS_PATH = path.resolve(__dirname, '../../../../youtube-credentials.json');
-const TOKEN_PATH = path.resolve(__dirname, '../../../../youtube-token.json');
+const CREDENTIALS_PATH = path.resolve(__dirname, '../../../youtube-credentials.json');
+const TOKEN_PATH = path.resolve(__dirname, '../../../youtube-token.json');
 
 const loadCredentials = (): { client_id: string; client_secret: string; redirect_uris: string[] } => {
     if (!fs.existsSync(CREDENTIALS_PATH)) {

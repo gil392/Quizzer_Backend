@@ -7,8 +7,6 @@ import {
 import { createQuizRouter, QuizRouterDependencies } from '../../quiz/router';
 import { Service } from '../service';
 import { ServerConfig } from './config';
-import { getVideoDetails } from '../../externalApis/youtube/getVideoDetails';
-import { fetchVideoTranscript } from '../../externalApis/youtube/getCaptions';
 import { requestErrorHandler } from './utils';
 
 export const createBasicApp = (): Express => {
