@@ -49,14 +49,12 @@ async function generateQuestions(
         {
           role: "user",
           content: `
-Generate multiple-choice questions in the following JSON format:
+Generate multiple-choice questions in the following JSON format. Each question should follow this structure:
 {
   "question": "string",
-  "incorrectAnswers": [
-    { "text": "string", "number": number },
-    ...
-  ],
-  "correctAnswer": { "text": "string", "number": number }
+  "incorrectAnswers":
+    ["string", "string", ...],
+  "correctAnswer": "string"
 }
 
 Each question must have exactly ${optionsCount} options (1 correct answer and ${
@@ -64,18 +62,16 @@ Each question must have exactly ${optionsCount} options (1 correct answer and ${
           } incorrect answers). Use the summary below to create ${questionsCount} questions:
 
 ${summary}
-        `,
+`,
         },
       ],
     });
 
-    // Parse the JSON response directly
     const generatedText = response.choices[0].message?.content;
 
     if (!generatedText) {
       throw new Error("Error in creating quiz from summary.");
     }
-
     const questions: Question[] = JSON.parse(generatedText);
     return questions;
   } catch (error) {
