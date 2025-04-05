@@ -24,7 +24,7 @@ export const generateQuiz = (
 
         const questions =
             await questionsGenerator.generateQuestionsFromLessonSummary(
-                lesson.summary
+                lesson.summary, quizSettings.maxQuestionCount
             );
 
         const quiz = await quizzesDal.create({
