@@ -1,10 +1,10 @@
-import { StatusCodes } from "http-status-codes";
-import { QuestionsGenerator } from "../externalApis/quizGenerator";
-import { LessonsDal } from "../lesson/dal";
-import { QuizzesDal } from "./dal";
-import { generateQuizRequstValidator } from "./validators";
-import { isNil } from "ramda";
-import { BadRequestError } from "../services/server/exceptions";
+import { StatusCodes } from 'http-status-codes';
+import { isNil } from 'ramda';
+import { QuestionsGenerator } from '../externalApis/quizGenerator';
+import { LessonsDal } from '../lesson/dal';
+import { BadRequestError } from '../services/server/exceptions';
+import { QuizzesDal } from './dal';
+import { generateQuizRequstValidator } from './validators';
 
 export const generateQuiz = (
   quizzesDal: QuizzesDal,
