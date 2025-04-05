@@ -9,7 +9,9 @@ export const requestErrorHandler = (
     _next: NextFunction
 ) => {
     if (error instanceof RequestHandlingError) {
-        response.status(error.status).send(error.message);
+        response
+            .status(error.status)
+            .json({ message: error.message, error: error.cause });
     } else {
         response.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
     }

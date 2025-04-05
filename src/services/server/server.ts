@@ -1,5 +1,9 @@
 import express, { Express } from 'express';
 import * as http from 'http';
+import {
+    createLessonRouter,
+    LessonRouterDependencies
+} from '../../lesson/router';
 import { createQuizRouter, QuizRouterDependencies } from '../../quiz/router';
 import { Service } from '../service';
 import { ServerConfig } from './config';
@@ -13,7 +17,8 @@ export const createBasicApp = (): Express => {
     return app;
 };
 
-export type ServerDependencies = QuizRouterDependencies;
+export type ServerDependencies = QuizRouterDependencies &
+    LessonRouterDependencies;
 
 export class Server extends Service {
     app: Express;
@@ -32,6 +37,7 @@ export class Server extends Service {
     }
 
     private useRouters = () => {
+        this.app.use('/lessons', createLessonRouter(this.dependencies));
         this.app.use('/quizzes', createQuizRouter(this.dependencies));
     };
 
