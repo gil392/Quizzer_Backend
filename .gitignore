@@ -3,3 +3,5 @@
 package-lock.json
 node_modules/
 dist/
+youtube-token.json
+youtube-credentials.json
