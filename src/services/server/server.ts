@@ -1,4 +1,4 @@
-import express, { Express, Request, Response } from 'express';
+import express, { Express } from 'express';
 import * as http from 'http';
 import {
     createLessonRouter,
