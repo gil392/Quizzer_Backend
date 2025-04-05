@@ -12,8 +12,8 @@ Quizer focuses on helping people learn from videos by making questions to check 
 
 ## Technologies
 Technologies used in backend:
-    - Typescript
-    - Express
-    - Jest
-    - Joi
-    - Mongoose
+- Typescript
+- Express
+- Jest
+- Zod
+- Mongoose
