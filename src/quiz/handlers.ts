@@ -36,7 +36,7 @@ export const generateQuiz = (
             questions,
             settings: quizSettings
         });
-        res.status(StatusCodes.CREATED).send(createFrontQuiz(quiz));
+        res.status(StatusCodes.CREATED).send(createFrontQuiz(quiz.toObject()));
     });
 
 export const submitQuiz = (quizzesDal: QuizzesDal) =>

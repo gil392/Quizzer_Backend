@@ -26,7 +26,7 @@ export const questionAnswerSubmittionZodSchema = z.object({
 const submitQuizRequstZodSchema = z.object({
     body: z.object({
         quizId: z.string(),
-        questions: z.array(questionAnswerSubmittionZodSchema)
+        questions: z.array(questionAnswerSubmittionZodSchema).min(1)
     })
 });
 export const submitQuizRequestValidator = validateHandlerRequest(
