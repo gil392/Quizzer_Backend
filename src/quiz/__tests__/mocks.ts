@@ -1,6 +1,6 @@
 import { Types } from 'mongoose';
 import { Lesson } from '../../lesson/model';
-import { QuizSettings } from '../types';
+import { Question, QuizSettings } from '../types';
 
 export const lessonMock: Lesson & { _id: Types.ObjectId } = {
     _id: new Types.ObjectId(),
@@ -11,7 +11,7 @@ export const lessonMock: Lesson & { _id: Types.ObjectId } = {
     videoUrl: 'https://video.url.com'
 };
 
-export const generatedQuestionsMock = [
+export const generatedQuestionsMock: Question[] = [
     {
         question: 'question 1',
         correctAnswer: 'answer 1',

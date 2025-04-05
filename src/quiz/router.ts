@@ -19,7 +19,8 @@ const createRouterController = ({
         quizzesDal,
         lessonsDal,
         questionsGenerator
-    )
+    ),
+    submitQuiz: handlers.submitQuiz(quizzesDal)
 });
 
 export const createQuizRouter = (
@@ -29,6 +30,7 @@ export const createQuizRouter = (
     const controller = createRouterController(dependecies);
 
     router.post('/', controller.generateQuiz);
+    router.post('/submit', controller.submitQuiz);
 
     return router;
 };
