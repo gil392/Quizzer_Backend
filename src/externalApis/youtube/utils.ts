@@ -1,4 +1,4 @@
-export function extractVideoId(youtube_url: string): string {
+export function extractVideoId(youtubeUrl: string): string {
     const patterns = [
         /(?:v=|\/)([0-9A-Za-z_-]{11}).*/,      // Standard and shared URLs
         /(?:embed\/)([0-9A-Za-z_-]{11})/,       // Embed URLs
@@ -7,7 +7,7 @@ export function extractVideoId(youtube_url: string): string {
         /^([0-9A-Za-z_-]{11})$/                 // Just the video ID
     ];
 
-    const url = youtube_url.trim();
+    const url = youtubeUrl.trim();
 
     for (const pattern of patterns) {
         const match = url.match(pattern);
