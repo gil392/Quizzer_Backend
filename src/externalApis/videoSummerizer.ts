@@ -13,11 +13,6 @@ export class VideoSummeraizer {
     summerizeVideo = async (videoUrl: string): Promise<string> => {
        const videoId = extractVideoId(videoUrl);
         const videoTranscript = await fetchVideoTranscript(videoId);
-        console.log('video transcript');
-        console.log(videoTranscript);
-        const summary = videoTranscript ? this.summarizer.summarizeTranscript(videoTranscript) : '';
-        console.log('summary');
-        console.log(summary);
-        return summary;
+        return videoTranscript ? this.summarizer.summarizeTranscript(videoTranscript) : '';
     }
 }

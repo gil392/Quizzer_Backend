@@ -40,38 +40,10 @@ export const listCaptions = async (videoId: string): Promise<CaptionDetails[] | 
     }
 };
 
-<<<<<<< HEAD
-export const downloadTranscript = async (trackId: string): Promise<string | null> => {
-    const oauth2Client = await authenticate();
-    const youtube = google.youtube({ version: 'v3', auth: oauth2Client });
-
-    try {
-        const response = await youtube.captions.download({
-            id: trackId,
-            tfmt: 'vtt', // Specify the format
-        });
-
-        const transcriptText = response.data as string;
-        console.log('Transcript:', transcriptText);
-        return transcriptText;
-    } catch (error) {
-        console.error('Error downloading transcript:', error);
-        return null;
-    }
-};
-
-=======
->>>>>>> ea3efa1cfe5a90c09421460482e5f76dc5000a01
 export const fetchVideoTranscript = async (videoId: string): Promise<string | null> => {
     const captions = await listCaptions(videoId);
 
     if (captions && captions.length > 0) {
-<<<<<<< HEAD
-        const language = captions[0].language;
-
-        const transcriptConfig: TranscriptConfig = {
-            lang: language,
-=======
         const englishCaption = captions.find((caption) => caption.language === 'en');
 
         if (!englishCaption) {
@@ -81,7 +53,6 @@ export const fetchVideoTranscript = async (videoId: string): Promise<string | nu
 
         const transcriptConfig: TranscriptConfig = {
             lang: englishCaption.language,
->>>>>>> ea3efa1cfe5a90c09421460482e5f76dc5000a01
         };
 
         try {
