@@ -37,23 +37,16 @@ const saveToken = (tokens: Auth.Credentials): void => {
 const refreshAccessToken = async (oauth2Client: Auth.OAuth2Client): Promise<void> => {
     try {
         const token = loadToken();
+        oauth2Client.setCredentials(token);
 
-        // Check if the token is expired
-        if (Date.now() >= (token.expiry_date ?? 0)) {
-            console.log('Access token expired, refreshing...');
+        oauth2Client.on('tokens', (newTokens) => {
+            const updated = { ...token, ...newTokens };
+            saveToken(updated);
+            console.log('Token auto-refreshed and saved.');
+        });
 
-            // Refresh the token using the refresh token
-            const response = await oauth2Client.refreshAccessToken();
-            const tokens = response.credentials;
-            oauth2Client.setCredentials(tokens);
-
-            // Save the new token
-            saveToken(tokens);
-            console.log('Token refreshed.');
-        } else {
-            oauth2Client.setCredentials(token);
-            console.log('Token loaded from file.');
-        }
+        const accessTokenResponse = await oauth2Client.getAccessToken();
+        console.log('Access token:', accessTokenResponse?.token || 'Unknown');
     } catch (error: any) {
         console.error('Error refreshing access token:', error.message);
         throw error;
