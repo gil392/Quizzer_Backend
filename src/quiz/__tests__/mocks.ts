@@ -1,4 +1,15 @@
+import { Types } from 'mongoose';
+import { Lesson } from '../../lesson/model';
 import { QuizSettings } from '../types';
+
+export const lessonMock: Lesson & { _id: Types.ObjectId } = {
+    _id: new Types.ObjectId(),
+    owner: 'owner',
+    sharedUsers: [],
+    summary: 'summary mock',
+    title: 'lesson title',
+    videoUrl: 'https://video.url.com'
+};
 
 export const generatedQuestionsMock = [
     {

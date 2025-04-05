@@ -5,32 +5,31 @@ import { LessonsDal } from '../lesson/dal';
 import { pocUser } from '../poc.consts';
 import { QuizzesDal } from './dal';
 import { generateQuizRequstValidator } from './validators';
+import { isNil } from 'ramda';
+import { BadRequestError } from '../services/server/exceptions';
 
 export const generateQuiz = (
     quizzesDal: QuizzesDal,
     lessonsDal: LessonsDal,
-    questionsGenerator: QuestionsGenerator,
-    videoSummeraizer: VideoSummeraizer
+    questionsGenerator: QuestionsGenerator
 ) =>
     generateQuizRequstValidator(async (req, res) => {
         const {
-            body: { videoUrl, title, settings: quizSettings }
+            body: { lessonId, settings: quizSettings }
         } = req;
-        const videoSummarize = await videoSummeraizer.summerizeVideo(videoUrl);
-        const lesson = await lessonsDal.create({
-            owner: pocUser.id,
-            sharedUsers: [],
-            summary: videoSummarize,
-            videoUrl
-        });
+        const lesson = await lessonsDal.getById(lessonId).lean();
+        if (isNil(lesson)) {
+            throw new BadRequestError(`lessonn ${lessonId} is not exist`);
+        }
+
         const questions =
             await questionsGenerator.generateQuestionsFromLessonSummary(
-                videoSummarize
+                lesson.summary
             );
 
         const quiz = await quizzesDal.create({
-            title,
-            lessonId: lesson._id.toString(),
+            title: lesson.title,
+            lessonId,
             questions,
             settings: quizSettings
         });
