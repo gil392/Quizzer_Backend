@@ -7,8 +7,8 @@ import {
 import { createQuizRouter, QuizRouterDependencies } from '../../quiz/router';
 import { Service } from '../service';
 import { ServerConfig } from './config';
-import { getVideoDetails } from './youtube/getVideoDetails';
-import { fetchVideoTranscript } from './youtube/getCaptions';
+import { getVideoDetails } from '../../externalApis/youtube/getVideoDetails';
+import { fetchVideoTranscript } from '../../externalApis/youtube/getCaptions';
 import { requestErrorHandler } from './utils';
 
 export const createBasicApp = (): Express => {
@@ -36,35 +36,6 @@ export class Server extends Service {
         this.useErrorHandler();
 
         this.server = http.createServer(this.app);
-
-
-        this.registerRoutes();
-    }
-
-    private registerRoutes(): void {
-        this.app.get('/youtube/:videoId', this.handleYouTubeRoute.bind(this));
-    }
-
-    private async handleYouTubeRoute(req: Request, res: Response): Promise<void> {
-        const { videoId } = req.params;
-
-        try {
-            const videoDetails = await getVideoDetails(videoId);
-            if (!videoDetails) {
-                res.status(404).json({ error: 'Video not found or details unavailable.' });
-                return;
-            }
-
-            const transcript = await fetchVideoTranscript(videoId);
-
-            res.json({
-                videoDetails,
-                transcript: transcript || 'No transcript available.',
-            });
-        } catch (error: any) {
-            console.error('Error processing request:', error.message);
-            res.status(500).json({ error: 'Internal server error.' });
-        }
     }
 
     private useRouters = () => {

@@ -1,5 +1,5 @@
 import { google } from 'googleapis';
-import { authenticate } from './authenticate';
+import { authenticate } from './authentication';
 
 interface VideoDetails {
     title: string;

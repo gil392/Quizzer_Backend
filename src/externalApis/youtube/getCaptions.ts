@@ -1,5 +1,5 @@
 import { google } from 'googleapis';
-import { authenticate } from './authenticate';
+import { authenticate } from './authentication';
 import { YoutubeTranscript, TranscriptConfig } from 'youtube-transcript';
 
 interface CaptionDetails {
