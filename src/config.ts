@@ -11,7 +11,8 @@ const portZodSchema = z
 
 const processEnvZodSchema = z.object({
     PORT: portZodSchema,
-    DB_CONNECTION_STRING: z.string().url()
+    DB_CONNECTION_STRING: z.string().url(),
+    OPENAI_API_KEY: z.string()
 });
 export type ProcessEnv = z.infer<typeof processEnvZodSchema>;
 

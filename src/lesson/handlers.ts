@@ -7,6 +7,8 @@ import {
     createLessonRequstValidator,
     getLessonByIdRequstValidator
 } from './validators';
+import { extractVideoId } from '../externalApis/youtube/utils';
+import { getVideoDetails } from '../externalApis/youtube/getVideoDetails';
 
 export const getLessonById = (lessonsDal: LessonsDal) =>
     getLessonByIdRequstValidator(async (req, res) => {
@@ -25,13 +27,15 @@ export const createLesson = (
 ) =>
     createLessonRequstValidator(async (req, res) => {
         const { videoUrl, title } = req.body;
-        const summary = await videoSummeraizer.summerizeVideo(videoUrl);
+        const videoId = extractVideoId(videoUrl);
+        const videoDetails = await getVideoDetails(videoId)
+        const summary = await videoSummeraizer.summerizeVideo(videoId);
 
         const lesson = await lessonsDal.create({
             owner: 'owner Mock', // TODO: use logged user after auth
             sharedUsers: [],
             summary,
-            title,
+            title: videoDetails?.title ?? '',
             videoUrl
         });
         res.status(StatusCodes.CREATED).json(lesson.toObject());

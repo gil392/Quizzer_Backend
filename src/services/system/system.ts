@@ -13,12 +13,12 @@ export class System extends Service {
 
     constructor(config: SystemConfig) {
         super();
-        const { databaseConfig, serverConfig } = config;
+        const { databaseConfig, serverConfig, summarizerConfig } = config;
 
         this.database = new Database(databaseConfig);
         const dals = this.createDals();
         const questionsGenerator = new QuestionsGenerator();
-        const videoSummeraizer = new VideoSummeraizer();
+        const videoSummeraizer = new VideoSummeraizer(summarizerConfig);
         this.server = new Server(
             { ...dals, questionsGenerator, videoSummeraizer },
             serverConfig
