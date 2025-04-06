@@ -28,7 +28,7 @@ export class Summarizer {
 
           return response.choices[0]?.message?.content || "No response from AI.";
         } catch (error) {
-          throw new InternalServerError('Failed summerizing video trnascript', 
+          throw new InternalServerError('Failed summerizing video transcript', 
             error instanceof Error ? error : undefined)
       }
   }

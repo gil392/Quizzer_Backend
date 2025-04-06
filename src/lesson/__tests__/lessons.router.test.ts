@@ -29,10 +29,6 @@ describe('lessons routes', () => {
         summaryMock
     );
 
-    // const videoSummeraizerMock: Record<keyof VideoSummeraizer, jest.Mock> = {
-    //     summerizeVideo: jest.fn().mockResolvedValue(summaryMock)
-    // };
-
     const app: Express = createBasicApp();
     app.use(
         '/',
