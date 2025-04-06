@@ -107,7 +107,9 @@
     "skipLibCheck": true                                 /* Skip type checking all .d.ts files. */
   },
   "include": [
-    "src/**/*.ts"
+    "src/**/*.ts",
+    "youtube-token.json",
+    "youtube-credentials.json",
   ],
   "exclude": [
     "jest.config.ts",
