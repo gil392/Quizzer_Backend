@@ -14,7 +14,6 @@ export class QuestionsGenerator {
     questionsCount?: number
   ): Promise<Question[]> => {
     try {
-      console.log("Generating questions from lesson summary...");
       const optionsCount = 4;
       const questions = await this.generateQuestions(
         summary,
