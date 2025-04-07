@@ -70,7 +70,6 @@ export class QuestionsGenerator {
       });
 
       const generatedText = response.choices[0].message?.content;
-      console.log("Generated text:", generatedText);
 
       if (!generatedText) {
         throw new Error("Error in creating quiz from summary.");
