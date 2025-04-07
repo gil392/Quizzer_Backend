@@ -1,25 +1,25 @@
 import { isNotNil } from 'ramda';
 import {
-    FrontQuestion,
-    FrontQuiz,
+    QuizResponseQuestion,
+    QuizResponse,
     Question,
     QuestionAnswerSubmittion,
     QuestionResult,
     Quiz
 } from './types';
 
-export const createFrontQuestion = ({
+export const createQuizResponseQuestion = ({
     question,
     correctAnswer,
     incorrectAnswers
-}: Question): FrontQuestion => ({
+}: Question): QuizResponseQuestion => ({
     text: question,
     answers: incorrectAnswers.concat(correctAnswer)
 });
 
-export const createFrontQuiz = (quiz: Quiz): FrontQuiz => ({
+export const createQuizResponse = (quiz: Quiz): QuizResponse => ({
     ...quiz,
-    questions: quiz.questions.map(createFrontQuestion)
+    questions: quiz.questions.map(createQuizResponseQuestion)
 });
 
 const findQuestionById = (questions: Question[], id: string) =>

@@ -5,7 +5,7 @@ import { LessonsDal } from '../lesson/dal';
 import { BadRequestError } from '../services/server/exceptions';
 import { QuizzesDal } from './dal';
 import { QuestionResult, QuizResult } from './types';
-import { createFrontQuiz, getQuestionResultInQuiz } from './utils';
+import { createQuizResponse, getQuestionResultInQuiz } from './utils';
 import {
   generateQuizRequstValidator,
   submitQuizRequestValidator
@@ -22,7 +22,7 @@ export const generateQuiz = (
         } = req;
         const lesson = await lessonsDal.getById(lessonId).lean();
         if (isNil(lesson)) {
-            throw new BadRequestError(`lessonn ${lessonId} is not exist`);
+            throw new BadRequestError('lesson is not exist');
         }
 
         const questions =
@@ -37,7 +37,7 @@ export const generateQuiz = (
             questions,
             settings: quizSettings
         });
-        res.status(StatusCodes.CREATED).send(createFrontQuiz(quiz.toObject()));
+        res.status(StatusCodes.CREATED).send(createQuizResponse(quiz.toObject()));
     });
 
 export const submitQuiz = (quizzesDal: QuizzesDal) =>
@@ -46,7 +46,7 @@ export const submitQuiz = (quizzesDal: QuizzesDal) =>
 
         const quiz = await quizzesDal.getById(quizId).lean();
         if (isNil(quiz)) {
-            throw new BadRequestError(`quiz ${quizId} is not exist`);
+            throw new BadRequestError('quiz is not exist');
         }
 
         const questionsResults = questions.map<QuestionResult>(

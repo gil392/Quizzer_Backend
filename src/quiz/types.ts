@@ -28,12 +28,12 @@ export type Question = {
     correctAnswer: Answer;
 };
 
-export type FrontQuestion = {
+export type QuizResponseQuestion = {
     text: string;
     answers: Answer[];
 };
-export type FrontQuiz = Omit<Quiz, 'questions'> & {
-    questions: FrontQuestion[];
+export type QuizResponse = Omit<Quiz, 'questions'> & {
+    questions: QuizResponseQuestion[];
 };
 
 export type QuizResult = {
