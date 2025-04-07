@@ -26,7 +26,7 @@ export const createLesson = (
     videoSummeraizer: VideoSummeraizer
 ) =>
     createLessonRequstValidator(async (req, res) => {
-        const { videoUrl, title } = req.body;
+        const { videoUrl } = req.body;
         const videoId = extractVideoId(videoUrl);
         const videoDetails = await getVideoDetails(videoId)
         const summary = await videoSummeraizer.summerizeVideo(videoId);

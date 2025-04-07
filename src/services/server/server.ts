@@ -1,4 +1,5 @@
 import express, { Express } from 'express';
+import cors from 'cors';
 import * as http from 'http';
 import {
     createLessonRouter,
@@ -11,6 +12,7 @@ import { requestErrorHandler } from './utils';
 
 export const createBasicApp = (): Express => {
     const app = express();
+    app.use(cors());
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
 

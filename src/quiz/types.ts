@@ -29,6 +29,7 @@ export type Question = {
 };
 
 export type QuizResponseQuestion = {
+    _id: string;
     text: string;
     answers: Answer[];
 };

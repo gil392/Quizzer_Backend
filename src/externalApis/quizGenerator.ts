@@ -51,7 +51,7 @@ export class QuestionsGenerator {
           {
             role: "user",
             content: `
-  Generate multiple-choice questions in the following JSON format. Each question should follow this structure:
+  Generate multiple-choice questions in the following JSON format without markdowns. Each question should follow this structure and be inserted into an array:
   {
     "question": "string",
     "incorrectAnswers":
