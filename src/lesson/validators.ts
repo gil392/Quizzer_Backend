@@ -12,8 +12,7 @@ export const getLessonByIdRequstValidator = validateHandlerRequest(
 
 const createLessonRequstZodSchema = z.object({
     body: z.object({
-        videoUrl: z.string().url(),
-        title: z.string()
+        videoUrl: z.string().url()
     })
 });
 export type CreateLessonRequst = z.infer<typeof createLessonRequstZodSchema>;
