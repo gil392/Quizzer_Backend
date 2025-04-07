@@ -12,6 +12,8 @@ import { LessonsDal } from '../dal';
 import { Lesson } from '../model';
 import { createLessonRouter } from '../router';
 import { CreateLessonRequst } from '../validators';
+import { SummarizerConfig } from '../../externalApis/transcriptSummarizer/config';
+
 
 describe('lessons routes', () => {
     const config = createTestEnv();
@@ -24,9 +26,12 @@ describe('lessons routes', () => {
     const summaryMock = 'summary mock';
     const videoUrlMock = 'http://domain.com';
     const titleMock = 'lesson title';
-    const videoSummeraizerMock: Record<keyof VideoSummeraizer, jest.Mock> = {
-        summerizeVideo: jest.fn().mockResolvedValue(summaryMock)
-    };
+
+    const summarizerConfig: SummarizerConfig = { apiKey: '' };
+    const videoSummeraizerMock = new VideoSummeraizer(summarizerConfig);
+    jest.spyOn(videoSummeraizerMock, 'summerizeVideo').mockResolvedValue(
+        summaryMock
+    );
 
     const app: Express = createBasicApp();
     app.use(

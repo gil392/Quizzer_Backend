@@ -7,8 +7,8 @@ import { QuizzesDal } from './dal';
 import { QuestionResult, QuizResult } from './types';
 import { createFrontQuiz, getQuestionResultInQuiz } from './utils';
 import {
-    generateQuizRequstValidator,
-    submitQuizRequestValidator
+  generateQuizRequstValidator,
+  submitQuizRequestValidator
 } from './validators';
 
 export const generateQuiz = (
@@ -27,7 +27,8 @@ export const generateQuiz = (
 
         const questions =
             await questionsGenerator.generateQuestionsFromLessonSummary(
-                lesson.summary
+                lesson.summary,
+                quizSettings.maxQuestionCount
             );
 
         const quiz = await quizzesDal.create({
