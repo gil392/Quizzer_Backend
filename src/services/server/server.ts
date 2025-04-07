@@ -37,8 +37,8 @@ export class Server extends Service {
     }
 
     private useRouters = () => {
-        this.app.use('/lessons', createLessonRouter(this.dependencies));
-        this.app.use('/quizzes', createQuizRouter(this.dependencies));
+        this.app.use('/lesson', createLessonRouter(this.dependencies));
+        this.app.use('/quiz', createQuizRouter(this.dependencies));
     };
 
     private useErrorHandler = () => {

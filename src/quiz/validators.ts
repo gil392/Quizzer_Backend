@@ -18,3 +18,17 @@ export const generateQuizRequstZodSchema = z.object({
 export const generateQuizRequstValidator = validateHandlerRequest(
     generateQuizRequstZodSchema
 );
+
+export const questionAnswerSubmittionZodSchema = z.object({
+    questionId: z.string(),
+    selectedAnswer: z.string()
+});
+const submitQuizRequstZodSchema = z.object({
+    body: z.object({
+        quizId: z.string(),
+        questions: z.array(questionAnswerSubmittionZodSchema).min(1)
+    })
+});
+export const submitQuizRequestValidator = validateHandlerRequest(
+    submitQuizRequstZodSchema
+);
