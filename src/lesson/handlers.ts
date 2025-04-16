@@ -41,7 +41,48 @@ export const createLesson = (
     res.status(StatusCodes.CREATED).json(lesson.toObject());
   });
 
-export const getLessons = (lessonsDal: LessonsDal) => async (req, res) => {
-  const lessons = await lessonsDal.getAll();
-  res.status(StatusCodes.OK).json(lessons);
-};
+export const getLessons =
+  (lessonsDal: LessonsDal) => async (req: any, res: any) => {
+    const lessons = await lessonsDal.getAll();
+    res.status(StatusCodes.OK).json(lessons);
+  };
+
+export const deleteLesson =
+  (lessonsDal: LessonsDal) => async (req: any, res: any) => {
+    const { id } = req.params;
+
+    const lesson = await lessonsDal.getById(id).lean();
+    if (isNil(lesson)) {
+      throw new NotFoundError(`Could not find lesson with id ${id}`);
+    }
+
+    await lessonsDal.deleteById(id);
+    res
+      .status(StatusCodes.OK)
+      .send({ message: `Lesson with id ${id} deleted successfully.` });
+  };
+
+export const updateLesson =
+  (lessonsDal: LessonsDal) => async (req: any, res: any) => {
+    const { id } = req.params;
+    const { title, summary, videoUrl } = req.body;
+
+    const lesson = await lessonsDal.getById(id).lean();
+    if (isNil(lesson)) {
+      throw new NotFoundError(`Could not find lesson with id ${id}`);
+    }
+
+    const updatedLesson = await lessonsDal.updateById(id, {
+      title,
+      summary,
+      videoUrl,
+    });
+
+    if (updatedLesson !== null) {
+      res.status(StatusCodes.OK).json(updatedLesson.toObject());
+    } else {
+      res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ message: "Failed to update lesson" });
+    }
+  };

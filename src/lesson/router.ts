@@ -16,6 +16,8 @@ const createRouterController = ({
   createLesson: handlers.createLesson(lessonsDal, videoSummeraizer),
   getLessonById: handlers.getLessonById(lessonsDal),
   getLessons: handlers.getLessons(lessonsDal),
+  deleteLesson: handlers.deleteLesson(lessonsDal),
+  updateLesson: handlers.updateLesson(lessonsDal),
 });
 
 export const createLessonRouter = (
@@ -27,6 +29,8 @@ export const createLessonRouter = (
   router.get("/:id", controller.getLessonById);
   router.post("/", controller.createLesson);
   router.get("/", controller.getLessons);
+  router.delete("/delete/:id", controller.deleteLesson);
+  router.put("/updateLesson/:id", controller.updateLesson);
 
   return router;
 };
