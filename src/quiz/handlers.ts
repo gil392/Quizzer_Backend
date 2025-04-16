@@ -84,3 +84,26 @@ export const deleteQuiz =
       .status(StatusCodes.OK)
       .send({ message: `Quiz with id ${id} deleted successfully.` });
   };
+
+  export const updateQuiz =
+  (quizzesDal: QuizzesDal) => async (req: any, res: any) => {
+    const { id } = req.params;
+    const { title } = req.body;
+
+    const lesson = await quizzesDal.getById(id).lean();
+    if (isNil(lesson)) {
+      throw new NotFoundError(`Could not find quiz with id ${id}`);
+    }
+
+    const updatedQuiz = await quizzesDal.updateById(id, {
+      title,
+    });
+
+    if (updatedQuiz !== null) {
+      res.status(StatusCodes.OK).json(updatedQuiz.toObject());
+    } else {
+      res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ message: "Failed to update quiz" });
+    }
+  };

@@ -30,7 +30,7 @@ export const createLessonRouter = (
   router.post("/", controller.createLesson);
   router.get("/", controller.getLessons);
   router.delete("/delete/:id", controller.deleteLesson);
-  router.put("/updateLesson/:id", controller.updateLesson);
+  router.put("/update/:id", controller.updateLesson);
 
   return router;
 };
