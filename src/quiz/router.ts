@@ -22,6 +22,7 @@ const createRouterController = ({
   ),
   submitQuiz: handlers.submitQuiz(quizzesDal),
   getQuizzesByLessonId: handlers.getQuizzesByLessonId(quizzesDal),
+  deleteQuiz: handlers.deleteQuiz(quizzesDal),
 });
 
 export const createQuizRouter = (
@@ -33,6 +34,6 @@ export const createQuizRouter = (
   router.post("/", controller.generateQuiz);
   router.post("/submit", controller.submitQuiz);
   router.get("/lesson/:lessonId", controller.getQuizzesByLessonId);
-
+  router.delete("/delete/:id", controller.deleteQuiz);
   return router;
 };

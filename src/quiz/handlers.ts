@@ -2,7 +2,7 @@ import { StatusCodes } from "http-status-codes";
 import { isNil, prop } from "ramda";
 import { QuestionsGenerator } from "../externalApis/quizGenerator";
 import { LessonsDal } from "../lesson/dal";
-import { BadRequestError } from "../services/server/exceptions";
+import { BadRequestError, NotFoundError } from "../services/server/exceptions";
 import { QuizzesDal } from "./dal";
 import { QuestionResult, QuizResult } from "./types";
 import { createQuizResponse, getQuestionResultInQuiz } from "./utils";
@@ -66,4 +66,21 @@ export const getQuizzesByLessonId =
     const { lessonId } = req.params;
     const quizzes = await quizzesDal.getByLessonId(lessonId);
     res.status(StatusCodes.OK).json(quizzes);
+  };
+
+export const deleteQuiz =
+  (quizzesDal: QuizzesDal) => async (req: any, res: any) => {
+    const { id } = req.params;
+
+    console.log("delete quiz", id);
+
+    const quiz = await quizzesDal.getById(id).lean();
+    if (isNil(quiz)) {
+      throw new NotFoundError(`Could not find quiz with id ${id}`);
+    }
+
+    await quizzesDal.deleteById(id);
+    res
+      .status(StatusCodes.OK)
+      .send({ message: `Quiz with id ${id} deleted successfully.` });
   };
