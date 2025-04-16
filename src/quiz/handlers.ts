@@ -7,8 +7,11 @@ import { QuizzesDal } from "./dal";
 import { QuestionResult, QuizResult } from "./types";
 import { createQuizResponse, getQuestionResultInQuiz } from "./utils";
 import {
+    deleteQuizRequstValidator,
   generateQuizRequstValidator,
+  getQuizzesByLessonIdRequstValidator,
   submitQuizRequestValidator,
+  updateQuizRequstValidator,
 } from "./validators";
 
 export const generateQuiz = (
@@ -61,15 +64,16 @@ export const submitQuiz = (quizzesDal: QuizzesDal) =>
     } satisfies QuizResult);
   });
 
-export const getQuizzesByLessonId =
-  (quizzesDal: QuizzesDal) => async (req: any, res: any) => {
+export const getQuizzesByLessonId = (quizzesDal: QuizzesDal) =>
+    getQuizzesByLessonIdRequstValidator(async (req, res) => {
     const { lessonId } = req.params;
     const quizzes = await quizzesDal.getByLessonId(lessonId);
     res.status(StatusCodes.OK).json(quizzes);
-  };
+  });
 
 export const deleteQuiz =
-  (quizzesDal: QuizzesDal) => async (req: any, res: any) => {
+  (quizzesDal: QuizzesDal) => 
+    deleteQuizRequstValidator(async (req, res) => {
     const { id } = req.params;
 
     console.log("delete quiz", id);
@@ -83,10 +87,11 @@ export const deleteQuiz =
     res
       .status(StatusCodes.OK)
       .send({ message: `Quiz with id ${id} deleted successfully.` });
-  };
+  });
 
   export const updateQuiz =
-  (quizzesDal: QuizzesDal) => async (req: any, res: any) => {
+  (quizzesDal: QuizzesDal) => updateQuizRequstValidator(
+    async (req, res) => {
     const { id } = req.params;
     const { title } = req.body;
 
@@ -106,4 +111,4 @@ export const deleteQuiz =
         .status(StatusCodes.INTERNAL_SERVER_ERROR)
         .json({ message: "Failed to update quiz" });
     }
-  };
+  });

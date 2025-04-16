@@ -5,7 +5,9 @@ import { NotFoundError } from "../services/server/exceptions";
 import { LessonsDal } from "./dal";
 import {
   createLessonRequstValidator,
+  deleteLessonRequstValidator,
   getLessonByIdRequstValidator,
+  updateLessonRequstValidator,
 } from "./validators";
 import { extractVideoId } from "../externalApis/youtube/utils";
 import { getVideoDetails } from "../externalApis/youtube/getVideoDetails";
@@ -47,8 +49,8 @@ export const getLessons =
     res.status(StatusCodes.OK).json(lessons);
   };
 
-export const deleteLesson =
-  (lessonsDal: LessonsDal) => async (req: any, res: any) => {
+export const deleteLesson = (lessonsDal: LessonsDal) =>
+  deleteLessonRequstValidator(async (req, res) => {
     const { id } = req.params;
 
     const lesson = await lessonsDal.getById(id).lean();
@@ -60,12 +62,12 @@ export const deleteLesson =
     res
       .status(StatusCodes.OK)
       .send({ message: `Lesson with id ${id} deleted successfully.` });
-  };
+  });
 
-export const updateLesson =
-  (lessonsDal: LessonsDal) => async (req: any, res: any) => {
+export const updateLesson = (lessonsDal: LessonsDal) =>
+  updateLessonRequstValidator(async (req, res) => {
     const { id } = req.params;
-    const { title, summary, videoUrl } = req.body;
+    const {title, summary, videoUrl} = req.body;
 
     const lesson = await lessonsDal.getById(id).lean();
     if (isNil(lesson)) {
@@ -85,4 +87,4 @@ export const updateLesson =
         .status(StatusCodes.INTERNAL_SERVER_ERROR)
         .json({ message: "Failed to update lesson" });
     }
-  };
+  });

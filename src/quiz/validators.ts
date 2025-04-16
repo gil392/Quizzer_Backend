@@ -32,3 +32,33 @@ const submitQuizRequstZodSchema = z.object({
 export const submitQuizRequestValidator = validateHandlerRequest(
     submitQuizRequstZodSchema
 );
+
+const getQuizzesByLessonIdRequstZodSchema = z.object({
+    params: z.object({
+        lessonId: z.string()
+    })
+});
+export const getQuizzesByLessonIdRequstValidator = validateHandlerRequest(
+    getQuizzesByLessonIdRequstZodSchema
+);
+
+const deleteQuizRequstZodSchema = z.object({
+    params: z.object({
+        id: z.string()
+    }),
+});
+export const deleteQuizRequstValidator = validateHandlerRequest(
+    deleteQuizRequstZodSchema
+);
+
+const updateQuizRequstZodSchema = z.object({
+    params: z.object({
+        id: z.string()
+    }),
+    body: z.object({
+        title: z.string().optional(),
+    })
+});
+export const updateQuizRequstValidator = validateHandlerRequest(
+    updateQuizRequstZodSchema
+);
