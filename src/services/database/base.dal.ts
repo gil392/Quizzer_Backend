@@ -6,4 +6,6 @@ export class BasicDal<T> {
     create = (data: T) => this.model.create(data);
     
     getById = (id: string | ObjectId) => this.model.findById(id);
+
+    getAll = () => this.model.find({});
 }
