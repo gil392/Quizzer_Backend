@@ -12,19 +12,20 @@ export class Summarizer {
         private readonly config: SummarizerConfig ,
     ) {
         this.openAI = new OpenAI({apiKey: config.apiKey});
+        
     }
 
     async summarizeTranscript(transcript: string) : Promise<string>{
       const chuncks: string[] = splitTranscirptIntoChunks(transcript, CHUNCK_SIZE, OVERLAP);
-      const summaries: string[] = await Promise.all(chuncks.map(this.summarizeChunk));
-      const finalSummary: string = await this.summarizeAllSummaries(summaries); 
+      const summaries: string[] = await Promise.all(chuncks
+        .map((chunck, index) => this.summarizeChunk(chunck, index)));      
+      const finalSummary: string = await this.summarizeAllSummaries(summaries);       
       return finalSummary;
   }
 
 
-  async summarizeChunk(chunck: string, chunckIndex:number) : Promise<string>{
+  private async summarizeChunk(chunck: string, chunckIndex:number) : Promise<string>{    
     const systemPrompt: string = getSystemChunckSummaryPrompt(chunckIndex);
-  
     try {
           const response = await this.openAI.chat.completions.create({
             model: "gpt-3.5-turbo",
@@ -43,7 +44,7 @@ export class Summarizer {
       }
   }
 
-  async summarizeAllSummaries(summaries: string[]) : Promise<string>{
+  private async summarizeAllSummaries(summaries: string[]) : Promise<string>{
     const systemPrompt:string = FINAL_SUMMARY_SYSTEM_PROMPT;
     const combinedSummary = summaries.join('\n\n=== Next Section ===\n\n');
     
