@@ -7,7 +7,7 @@ import {
     InternalServerError,
     RequestHandlingError
 } from '../services/server/exceptions';
-import { UserModel } from '../user/model';
+import { UsersDal } from '../user/dal';
 import { AuthConfig, REFRESH_TOKEN_COOKIE_NAME } from './config';
 import { AuthenticationTokens } from './types';
 import { generateTokens, hashPassword, verifyRefreshToken } from './utils';
@@ -29,12 +29,17 @@ const responseSendTokensAndUserId = (
     response.send({ accessToken: tokens.accessToken, _id: userId });
 };
 
-export const register = (userModel: UserModel) =>
+export const register = (usersDal: UsersDal) =>
     validateRegisterRequest(async (request, response) => {
         const { username, email, password } = request.body;
         const hashedPassword = await hashPassword(password);
         try {
-            await userModel.create({ username, email, hashedPassword });
+            await usersDal.create({
+                username,
+                email,
+                hashedPassword,
+                streak: 0
+            });
             response.sendStatus(StatusCodes.CREATED);
         } catch (err) {
             const error = err as Error;
@@ -45,15 +50,18 @@ export const register = (userModel: UserModel) =>
         }
     });
 
-export const login = (authConfig: AuthConfig, userModel: UserModel) =>
+export const login = (authConfig: AuthConfig, usersDal: UsersDal) =>
     validateLoginRequest(async (request, response) => {
         const { username, password } = request.body;
         try {
-            const user = await userModel.findOne({ username });
+            const user = await usersDal.findByUsername(username);
             if (!user) {
                 throw new BadRequestError('wrong username or password');
             }
-            const validPassword = await bcrypt.compare(password, user.hashedPassword);
+            const validPassword = await bcrypt.compare(
+                password,
+                user.hashedPassword
+            );
             if (!validPassword) {
                 throw new BadRequestError('wrong username or password');
             }

@@ -2,6 +2,7 @@ import { RequestHandler, Router } from 'express';
 import { AuthConfig } from './config';
 import * as handlers from './handlers';
 import { UserModel } from '../user/model';
+import { UsersDal } from '../user/dal';
 
 /**
  * @swagger
@@ -21,17 +22,17 @@ import { UserModel } from '../user/model';
  */
 
 export type AuthRouterDependencies = {
-    userModel: UserModel;
+    usersDal: UsersDal;
 };
 
 const buildRouteHandlers = (
     config: AuthConfig,
     dependencies: AuthRouterDependencies
 ): Record<keyof typeof handlers, RequestHandler> => ({
-    login: handlers.login(config, dependencies.userModel),
+    login: handlers.login(config, dependencies.usersDal),
     logout: handlers.logout(config.tokenSecret),
     refresh: handlers.refresh(config),
-    register: handlers.register(dependencies.userModel)
+    register: handlers.register(dependencies.usersDal)
 });
 
 export const createAuthRouter = (
