@@ -11,3 +11,12 @@ export const splitTranscirptIntoChunks = (transcript: string, chunkSize: number,
 
   return chunks.length === 0 ? [transcript] : chunks;
 }
+
+export const getSystemChunckSummaryPrompt = (chunckIndex:number) => 
+    `Create a detailed summary of section ${chunckIndex + 1} in English.
+        Maintain all important information, arguments, and connections.
+        Pay special attention to:
+        - Main topics and arguments
+        - Important details and examples
+        - Connections with other mentioned topics
+        - Key statements and conclusions`;
