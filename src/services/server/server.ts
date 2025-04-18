@@ -1,6 +1,10 @@
-import express, { Express } from 'express';
 import cors from 'cors';
+import express, { Express } from 'express';
 import * as http from 'http';
+import {
+    AuthRouterDependencies,
+    createAuthRouter
+} from '../../authentication/router';
 import {
     createLessonRouter,
     LessonRouterDependencies
@@ -20,7 +24,8 @@ export const createBasicApp = (): Express => {
 };
 
 export type ServerDependencies = QuizRouterDependencies &
-    LessonRouterDependencies;
+    LessonRouterDependencies &
+    AuthRouterDependencies;
 
 export class Server extends Service {
     app: Express;
@@ -39,6 +44,10 @@ export class Server extends Service {
     }
 
     private useRouters = () => {
+        this.app.use(
+            '/auth',
+            createAuthRouter(this.config.authConfig, this.dependencies)
+        );
         this.app.use('/lesson', createLessonRouter(this.dependencies));
         this.app.use('/quiz', createQuizRouter(this.dependencies));
     };
