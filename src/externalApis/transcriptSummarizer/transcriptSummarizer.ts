@@ -26,34 +26,23 @@ export class Summarizer {
 
   private async summarizeChunk(chunck: string, chunckIndex:number) : Promise<string>{    
     const systemPrompt: string = getSystemChunckSummaryPrompt(chunckIndex);
-    try {
-          const response = await this.openAI.chat.completions.create({
-            model: "gpt-3.5-turbo",
-            messages: [
-              { role: "system", content: systemPrompt },
-              { role: "user", content: chunck },
-            ],
-            temperature: 0.7,
-            max_tokens: 500
-          });
-   
-          return response.choices[0]?.message?.content || "No response from AI.";
-        } catch (error) {
-          throw new InternalServerError('Failed summerizing video transcript', 
-            error instanceof Error ? error : undefined)
-      }
+    return this.createAPIRequest(systemPrompt, chunck);
   }
 
   private async summarizeAllSummaries(summaries: string[]) : Promise<string>{
     const systemPrompt:string = FINAL_SUMMARY_SYSTEM_PROMPT;
     const combinedSummary = summaries.join('\n\n=== Next Section ===\n\n');
-    
+    return this.createAPIRequest(systemPrompt, combinedSummary);
+  }
+
+
+  private async createAPIRequest(systemPrompt: string, userPrompt: string) : Promise<string>{
     try {
           const response = await this.openAI.chat.completions.create({
             model: "gpt-3.5-turbo",
             messages: [
               { role: "system", content: systemPrompt },
-              { role: "user", content: combinedSummary },
+              { role: "user", content: userPrompt },
             ],
             temperature: 0.7,
             max_tokens: 500
@@ -66,5 +55,3 @@ export class Summarizer {
       }
   }
 }
-
-
