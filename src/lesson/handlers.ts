@@ -69,22 +69,15 @@ export const updateLesson = (lessonsDal: LessonsDal) =>
     const { id } = req.params;
     const {title, summary, videoUrl} = req.body;
 
-    const lesson = await lessonsDal.getById(id).lean();
-    if (isNil(lesson)) {
-      throw new NotFoundError(`Could not find lesson with id ${id}`);
-    }
-
     const updatedLesson = await lessonsDal.updateById(id, {
       title,
       summary,
       videoUrl,
     });
 
-    if (updatedLesson !== null) {
+    if (isNil(updatedLesson)) {
+        throw new NotFoundError(`Could not find lesson with id ${id}`);
+      }
+      
       res.status(StatusCodes.OK).json(updatedLesson.toObject());
-    } else {
-      res
-        .status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .json({ message: "Failed to update lesson" });
-    }
   });

@@ -7,9 +7,9 @@ import { QuizzesDal } from "./dal";
 import { QuestionResult, QuizResult } from "./types";
 import { createQuizResponse, getQuestionResultInQuiz } from "./utils";
 import {
-    deleteQuizRequstValidator,
+  deleteQuizRequstValidator,
   generateQuizRequstValidator,
-  getQuizzesByLessonIdRequstValidator,
+  getQuizzesRequstValidator,
   submitQuizRequestValidator,
   updateQuizRequstValidator,
 } from "./validators";
@@ -64,47 +64,38 @@ export const submitQuiz = (quizzesDal: QuizzesDal) =>
     } satisfies QuizResult);
   });
 
-export const getQuizzesByLessonId = (quizzesDal: QuizzesDal) =>
-    getQuizzesByLessonIdRequstValidator(async (req, res) => {
-    const { lessonId } = req.params;
+export const getQuizzes = (quizzesDal: QuizzesDal) =>
+  getQuizzesRequstValidator(async (req, res) => {
+    const { lessonId } = req.query;
     const quizzes = await quizzesDal.getByLessonId(lessonId);
     res.status(StatusCodes.OK).json(quizzes);
   });
 
-export const deleteQuiz =
-  (quizzesDal: QuizzesDal) => 
-    deleteQuizRequstValidator(async (req, res) => {
+export const deleteQuiz = (quizzesDal: QuizzesDal) =>
+  deleteQuizRequstValidator(async (req, res) => {
     const { id } = req.params;
 
-    console.log("delete quiz", id);
+    const result = await quizzesDal.deleteById(id);
 
-    const quiz = await quizzesDal.getById(id).lean();
-    if (isNil(quiz)) {
+    if (isNil(result)) {
       throw new NotFoundError(`Could not find quiz with id ${id}`);
     }
 
-    await quizzesDal.deleteById(id);
     res
       .status(StatusCodes.OK)
       .send({ message: `Quiz with id ${id} deleted successfully.` });
   });
 
-  export const updateQuiz =
-  (quizzesDal: QuizzesDal) => updateQuizRequstValidator(
-    async (req, res) => {
+export const updateQuiz = (quizzesDal: QuizzesDal) =>
+  updateQuizRequstValidator(async (req, res) => {
     const { id } = req.params;
     const { title } = req.body;
-
-    const lesson = await quizzesDal.getById(id).lean();
-    if (isNil(lesson)) {
-      throw new NotFoundError(`Could not find quiz with id ${id}`);
-    }
 
     const updatedQuiz = await quizzesDal.updateById(id, {
       title,
     });
 
-    if (updatedQuiz !== null) {
+    if (!isNil(updatedQuiz)) {
       res.status(StatusCodes.OK).json(updatedQuiz.toObject());
     } else {
       res

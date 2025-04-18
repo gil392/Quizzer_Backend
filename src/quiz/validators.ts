@@ -1,64 +1,64 @@
-import { z } from 'zod';
-import { validateHandlerRequest } from '../services/server/validators';
-import { quizCheckTypes, QuizSettings } from './types';
+import { z } from "zod";
+import { validateHandlerRequest } from "../services/server/validators";
+import { quizCheckTypes, QuizSettings } from "./types";
 
 const quizSettingsZodSchema: z.ZodType<QuizSettings> = z.object({
-    checkType: z.enum(quizCheckTypes),
-    isRandomOrder: z.coerce.boolean(),
-    maxQuestionCount: z.coerce.number(),
-    solvingTimeMs: z.coerce.number()
+  checkType: z.enum(quizCheckTypes),
+  isRandomOrder: z.coerce.boolean(),
+  maxQuestionCount: z.coerce.number(),
+  solvingTimeMs: z.coerce.number(),
 });
 
 export const generateQuizRequstZodSchema = z.object({
-    body: z.object({
-        lessonId: z.string(),
-        settings: quizSettingsZodSchema
-    })
+  body: z.object({
+    lessonId: z.string(),
+    settings: quizSettingsZodSchema,
+  }),
 });
 export const generateQuizRequstValidator = validateHandlerRequest(
-    generateQuizRequstZodSchema
+  generateQuizRequstZodSchema
 );
 
 export const questionAnswerSubmittionZodSchema = z.object({
-    questionId: z.string(),
-    selectedAnswer: z.string()
+  questionId: z.string(),
+  selectedAnswer: z.string(),
 });
 const submitQuizRequstZodSchema = z.object({
-    body: z.object({
-        quizId: z.string(),
-        questions: z.array(questionAnswerSubmittionZodSchema).min(1)
-    })
+  body: z.object({
+    quizId: z.string(),
+    questions: z.array(questionAnswerSubmittionZodSchema).min(1),
+  }),
 });
 export const submitQuizRequestValidator = validateHandlerRequest(
-    submitQuizRequstZodSchema
+  submitQuizRequstZodSchema
 );
 
-const getQuizzesByLessonIdRequstZodSchema = z.object({
-    params: z.object({
-        lessonId: z.string()
-    })
+const getQuizzesRequstZodSchema = z.object({
+  query: z.object({
+    lessonId: z.string(),
+  }),
 });
-export const getQuizzesByLessonIdRequstValidator = validateHandlerRequest(
-    getQuizzesByLessonIdRequstZodSchema
+export const getQuizzesRequstValidator = validateHandlerRequest(
+  getQuizzesRequstZodSchema
 );
 
 const deleteQuizRequstZodSchema = z.object({
-    params: z.object({
-        id: z.string()
-    }),
+  params: z.object({
+    id: z.string(),
+  }),
 });
 export const deleteQuizRequstValidator = validateHandlerRequest(
-    deleteQuizRequstZodSchema
+  deleteQuizRequstZodSchema
 );
 
 const updateQuizRequstZodSchema = z.object({
-    params: z.object({
-        id: z.string()
-    }),
-    body: z.object({
-        title: z.string().optional(),
-    })
+  params: z.object({
+    id: z.string(),
+  }),
+  body: z.object({
+    title: z.string().optional(),
+  }),
 });
 export const updateQuizRequstValidator = validateHandlerRequest(
-    updateQuizRequstZodSchema
+  updateQuizRequstZodSchema
 );
