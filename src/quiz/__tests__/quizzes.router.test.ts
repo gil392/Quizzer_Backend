@@ -7,10 +7,10 @@ import { LessonsDal } from '../../lesson/dal';
 import { DatabaseConfig } from '../../services/database/config';
 import { Database } from '../../services/database/database';
 import { createBasicApp } from '../../services/server/server';
-import { createTestEnv } from '../../utils/tests';
+import { asMockOf, createTestEnv } from '../../utils/tests';
 import { QuizzesDal } from '../dal';
 import { createQuizRouter } from '../router';
-import { createFrontQuestion } from '../utils';
+import { createQuizResponseQuestion } from '../utils';
 import {
     generatedQuestionsMock,
     lessonMock,
@@ -30,11 +30,12 @@ describe('quizzes routes', () => {
     const { quizModel, lessonModel } = database.getModels();
     const quizzesDal = new QuizzesDal(quizModel);
     const lessonsDal = new LessonsDal(lessonModel);
-    const questionsGenerator: Record<keyof QuestionsGenerator, jest.Mock> = {
+    const questionsGenerator = asMockOf<QuestionsGenerator>({
         generateQuestionsFromLessonSummary: jest
             .fn()
-            .mockResolvedValue(generatedQuestionsMock)
-    };
+            .mockResolvedValue(generatedQuestionsMock),
+        generateQuestions: jest.fn()
+    });
 
     const app: Express = createBasicApp();
     app.use(
@@ -99,7 +100,9 @@ describe('quizzes routes', () => {
                 expect.objectContaining({
                     lessonId,
                     settings,
-                    questions: generatedQuestionsMock.map(createFrontQuestion)
+                    questions: generatedQuestionsMock.map(
+                        createQuizResponseQuestion
+                    )
                 })
             );
 
@@ -111,7 +114,7 @@ describe('quizzes routes', () => {
 
     describe('submit quiz', () => {
         const submitPostRequst = () => request(app).post('/submit');
- 
+
         beforeEach(async () => {
             await quizModel.create(quizMock);
         });
