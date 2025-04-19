@@ -13,12 +13,14 @@ import { createQuizRouter, QuizRouterDependencies } from '../../quiz/router';
 import { Service } from '../service';
 import { ServerConfig } from './config';
 import { requestErrorHandler } from './utils';
+import cookieParser from 'cookie-parser';
 
 export const createBasicApp = (): Express => {
     const app = express();
-    app.use(cors());
+    app.use(cors({ credentials: true }));
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
+    app.use(cookieParser());
 
     return app;
 };
