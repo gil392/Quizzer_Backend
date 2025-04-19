@@ -1,3 +1,5 @@
+import { BadRequestError } from "../../services/server/exceptions";
+
 export function extractVideoId(youtubeUrl: string): string {
     const patterns = [
         /(?:v=|\/)([0-9A-Za-z_-]{11}).*/,      // Standard and shared URLs
@@ -16,5 +18,5 @@ export function extractVideoId(youtubeUrl: string): string {
         }
     }
 
-    throw new Error("Could not extract video ID from URL");
+    throw new BadRequestError("Could not extract video ID from URL");
 }
