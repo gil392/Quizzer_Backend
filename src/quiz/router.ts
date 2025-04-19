@@ -34,119 +34,211 @@ const createRouterController = ({
 });
 
 export const createQuizRouter = (
-  dependecies: QuizRouterDependencies
+  dependencies: QuizRouterDependencies
 ): Router => {
   const router = Router();
-  const controller = createRouterController(dependecies);
+  const controller = createRouterController(dependencies);
 
+  /**
+   * @swagger
+   * /quiz:
+   *   post:
+   *     summary: Generate a quiz based on a lesson and quiz settings
+   *     tags: [Quiz]
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             required:
+   *               - lessonId
+   *               - settings
+   *             properties:
+   *               lessonId:
+   *                 type: string
+   *                 description: The ID of the lesson to generate the quiz from
+   *               settings:
+   *                 $ref: '#/components/schemas/QuizSettings'
+   *           example:
+   *             lessonId: "lesson123"
+   *             settings:
+   *               checkType: auto
+   *               isRandomOrder: true
+   *               maxQuestionCount: 5
+   *               solvingTimeMs: 600000
+   *     responses:
+   *       200:
+   *         description: The generated quiz
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: '#/components/schemas/Quiz'
+   *       400:
+   *         description: Invalid input
+   *       500:
+   *         description: Server error
+   */
   router.post("/", controller.generateQuiz);
+
+  /**
+   * @swagger
+   * /quiz/submit:
+   *   post:
+   *     summary: Submit a solved quiz
+   *     tags: [Quiz]
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             required:
+   *               - quizId
+   *               - questions
+   *             properties:
+   *               quizId:
+   *                 type: string
+   *                 description: The ID of the quiz being submitted
+   *               questions:
+   *                 type: array
+   *                 minItems: 1
+   *                 items:
+   *                   type: object
+   *                   required:
+   *                     - questionId
+   *                     - selectedAnswer
+   *                   properties:
+   *                     questionId:
+   *                       type: string
+   *                     selectedAnswer:
+   *                       type: string
+   *           example:
+   *             quizId: "quiz456"
+   *             questions:
+   *               - questionId: "q1"
+   *                 selectedAnswer: "A"
+   *               - questionId: "q2"
+   *                 selectedAnswer: "B"
+   *     responses:
+   *       200:
+   *         description: Quiz submission result (e.g., score or status)
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 grade:
+   *                   type: number
+   *                 passed:
+   *                   type: boolean
+   *               example:
+   *                 grade: 80
+   *                 passed: true
+   *       400:
+   *         description: Invalid input
+   *       500:
+   *         description: Server error
+   */
   router.post("/submit", controller.submitQuiz);
+
+  /**
+   * @swagger
+   * /quiz:
+   *   get:
+   *     summary: Get all quizzes, optionally filtered by lesson ID
+   *     tags: [Quiz]
+   *     parameters:
+   *       - in: query
+   *         name: lessonId
+   *         schema:
+   *           type: string
+   *         description: The ID of the lesson to filter quizzes by
+   *     responses:
+   *       200:
+   *         description: A list of quizzes
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: array
+   *               items:
+   *                 $ref: '#/components/schemas/Quiz'
+   *       500:
+   *         description: Server error
+   */
   router.get("/", controller.getQuizzes);
+
+  /**
+   * @swagger
+   * /quiz/delete/{id}:
+   *   delete:
+   *     summary: Delete a quiz by its ID
+   *     tags: [Quiz]
+   *     parameters:
+   *       - in: path
+   *         name: id
+   *         required: true
+   *         schema:
+   *           type: string
+   *         description: The ID of the quiz to delete
+   *     responses:
+   *       200:
+   *         description: Quiz successfully deleted
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 message:
+   *                   type: string
+   *                   example: Quiz with id 123 deleted successfully.
+   *       404:
+   *         description: Quiz not found
+   *       500:
+   *         description: Server error
+   */
   router.delete("/delete/:id", controller.deleteQuiz);
+
+  /**
+   * @swagger
+   * /quiz/update/{id}:
+   *   put:
+   *     summary: Update a quiz by its ID
+   *     tags: [Quiz]
+   *     parameters:
+   *       - in: path
+   *         name: id
+   *         required: true
+   *         schema:
+   *           type: string
+   *         description: The ID of the quiz to update
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             properties:
+   *               title:
+   *                 type: string
+   *                 description: The new title of the quiz
+   *           example:
+   *             title: Updated Quiz Title
+   *     responses:
+   *       200:
+   *         description: Quiz successfully updated
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: '#/components/schemas/Quiz'
+   *       404:
+   *         description: Quiz not found
+   *       400:
+   *         description: Invalid input
+   *       500:
+   *         description: Server error
+   */
   router.put("/update/:id", controller.updateQuiz);
+
   return router;
-    /**
-     * @swagger
-     * /quiz:
-     *   post:
-     *     summary: Generate a quiz based on a lesson and quiz settings
-     *     tags: [Quiz]
-     *     requestBody:
-     *       required: true
-     *       content:
-     *         application/json:
-     *           schema:
-     *             type: object
-     *             required:
-     *               - lessonId
-     *               - settings
-     *             properties:
-     *               lessonId:
-     *                 type: string
-     *                 description: The ID of the lesson to generate the quiz from
-     *               settings:
-     *                 $ref: '#/components/schemas/QuizSettings'
-     *           example:
-     *             lessonId: "lesson123"
-     *             settings:
-     *               checkType: auto
-     *               isRandomOrder: true
-     *               maxQuestionCount: 5
-     *               solvingTimeMs: 600000
-     *     responses:
-     *       200:
-     *         description: The generated quiz
-     *         content:
-     *           application/json:
-     *             schema:
-     *               $ref: '#/components/schemas/Quiz'
-     *       400:
-     *         description: Invalid input
-     *       500:
-     *         description: Server error
-     */
-    router.post('/', controller.generateQuiz);
-
-    /**
-     * @swagger
-     * /quiz/submit:
-     *   post:
-     *     summary: Submit a solved quiz
-     *     tags: [Quiz]
-     *     requestBody:
-     *       required: true
-     *       content:
-     *         application/json:
-     *           schema:
-     *             type: object
-     *             required:
-     *               - quizId
-     *               - questions
-     *             properties:
-     *               quizId:
-     *                 type: string
-     *                 description: The ID of the quiz being submitted
-     *               questions:
-     *                 type: array
-     *                 minItems: 1
-     *                 items:
-     *                   type: object
-     *                   required:
-     *                     - questionId
-     *                     - selectedAnswer
-     *                   properties:
-     *                     questionId:
-     *                       type: string
-     *                     selectedAnswer:
-     *                       type: string
-     *           example:
-     *             quizId: "quiz456"
-     *             questions:
-     *               - questionId: "q1"
-     *                 selectedAnswer: "A"
-     *               - questionId: "q2"
-     *                 selectedAnswer: "B"
-     *     responses:
-     *       200:
-     *         description: Quiz submission result (e.g., score or status)
-     *         content:
-     *           application/json:
-     *             schema:
-     *               type: object
-     *               properties:
-     *                 grade:
-     *                   type: number
-     *                 passed:
-     *                   type: boolean
-     *               example:
-     *                 grade: 80
-     *                 passed: true
-     *       400:
-     *         description: Invalid input
-     *       500:
-     *         description: Server error
-     */
-    router.post('/submit', controller.submitQuiz);
-
-    return router;
 };

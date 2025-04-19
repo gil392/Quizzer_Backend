@@ -35,7 +35,7 @@ export const submitQuizRequestValidator = validateHandlerRequest(
 
 const getQuizzesRequstZodSchema = z.object({
   query: z.object({
-    lessonId: z.string(),
+    lessonId: z.string().optional(),
   }),
 });
 export const getQuizzesRequstValidator = validateHandlerRequest(
