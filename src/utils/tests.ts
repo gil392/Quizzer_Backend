@@ -8,3 +8,7 @@ export const createTestEnv = (env?: Partial<ProcessEnv>): ProcessEnv => {
         ...(env ?? {})
     };
 };
+
+export const asMockOf = <MockedType>(
+    mock: Record<keyof MockedType, jest.Mock>
+): MockedType => mock as unknown as MockedType;

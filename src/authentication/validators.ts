@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { validateHandlerRequest } from '../services/server/validators';
 import { REFRESH_TOKEN_COOKIE_NAME } from './config';
 
-const registerRequestZodSchema = z.object({
+export const registerRequestZodSchema = z.object({
     body: z.object({
         username: z.string(),
         email: z.string().email(),
@@ -13,13 +13,7 @@ export const validateRegisterRequest = validateHandlerRequest(
     registerRequestZodSchema
 );
 
-export const requestWithRefreshTokenCookie = z.object({
-    cookies: z.object({
-        [REFRESH_TOKEN_COOKIE_NAME]: z.string()
-    })
-});
-
-const loginRequestZodSchema = z.object({
+export const loginRequestZodSchema = z.object({
     body: z.object({
         username: z.string(),
         password: z.string()
@@ -29,6 +23,11 @@ export const validateLoginRequest = validateHandlerRequest(
     loginRequestZodSchema
 );
 
+const requestWithRefreshTokenCookie = z.object({
+    cookies: z.object({
+        [REFRESH_TOKEN_COOKIE_NAME]: z.string()
+    })
+});
 export const validateRequestWithRefreshToken = validateHandlerRequest(
     requestWithRefreshTokenCookie
 );

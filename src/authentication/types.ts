@@ -1,5 +1,9 @@
 import { z } from 'zod';
-import { authenticatedRequestZodSchema } from './validators';
+import {
+    authenticatedRequestZodSchema,
+    loginRequestZodSchema,
+    registerRequestZodSchema
+} from './validators';
 
 export type AuthenticationTokens = {
     accessToken: string;
@@ -14,3 +18,6 @@ export type AuthenticationTokenPayload = {
 export type AuthenticatedRequest = z.infer<
     typeof authenticatedRequestZodSchema
 >;
+
+export type RegisterRequest = z.infer<typeof registerRequestZodSchema>;
+export type LoginRequest = z.infer<typeof loginRequestZodSchema>;
