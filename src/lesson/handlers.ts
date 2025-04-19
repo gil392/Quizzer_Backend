@@ -56,7 +56,7 @@ export const deleteLesson = (lessonsDal: LessonsDal) =>
     const result = await lessonsDal.deleteById(id);
 
     if (isNil(result)) {
-      throw new NotFoundError(`Could not find quiz with id ${id}`);
+      throw new NotFoundError(`Could not find lesson with id ${id}`);
     }
     res
       .status(StatusCodes.OK)
