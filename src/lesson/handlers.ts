@@ -53,12 +53,11 @@ export const deleteLesson = (lessonsDal: LessonsDal) =>
   deleteLessonRequstValidator(async (req, res) => {
     const { id } = req.params;
 
-    const lesson = await lessonsDal.getById(id).lean();
-    if (isNil(lesson)) {
-      throw new NotFoundError(`Could not find lesson with id ${id}`);
-    }
+    const result = await lessonsDal.deleteById(id);
 
-    await lessonsDal.deleteById(id);
+    if (isNil(result)) {
+      throw new NotFoundError(`Could not find quiz with id ${id}`);
+    }
     res
       .status(StatusCodes.OK)
       .send({ message: `Lesson with id ${id} deleted successfully.` });
@@ -67,7 +66,7 @@ export const deleteLesson = (lessonsDal: LessonsDal) =>
 export const updateLesson = (lessonsDal: LessonsDal) =>
   updateLessonRequstValidator(async (req, res) => {
     const { id } = req.params;
-    const {title, summary, videoUrl} = req.body;
+    const { title, summary, videoUrl } = req.body;
 
     const updatedLesson = await lessonsDal.updateById(id, {
       title,
@@ -76,8 +75,8 @@ export const updateLesson = (lessonsDal: LessonsDal) =>
     });
 
     if (isNil(updatedLesson)) {
-        throw new NotFoundError(`Could not find lesson with id ${id}`);
-      }
-      
-      res.status(StatusCodes.OK).json(updatedLesson.toObject());
+      throw new NotFoundError(`Could not find lesson with id ${id}`);
+    }
+
+    res.status(StatusCodes.OK).json(updatedLesson.toObject());
   });
