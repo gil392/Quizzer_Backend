@@ -55,18 +55,62 @@ import { z } from 'zod';
  *         friends: ["user123", "user321"]
  *         favoriteLessons: ["lesson1", "lesson2"]
  *         streak: 5
+ *
+ *     PublicUser:
+ *       type: object
+ *       required:
+ *         - email
+ *         - hashedPassword
+ *         - username
+ *         - streak
+ *       properties:
+ *         email:
+ *           type: string
+ *           format: email
+ *           description: User's email address
+ *         username:
+ *           type: string
+ *           description: The display name or handle of the user
+ *         friendRequests:
+ *           type: array
+ *           description: List of user IDs who sent friend requests
+ *           items:
+ *             type: string
+ *         friends:
+ *           type: array
+ *           description: List of user IDs who are friends
+ *           items:
+ *             type: string
+ *         favoriteLessons:
+ *           type: array
+ *           description: List of lesson IDs favorited by the user
+ *           items:
+ *             type: string
+ *         streak:
+ *           type: number
+ *           description: Current streak count (e.g., days active in a row)
+ *       example:
+ *         email: "jane.doe@example.com"
+ *         username: "jane_doe"
+ *         friendRequests: ["user456", "user789"]
+ *         friends: ["user123", "user321"]
+ *         favoriteLessons: ["lesson1", "lesson2"]
+ *         streak: 5
  */
 
-export interface User {
+export type PublicUser = {
     email: string;
     username: string;
     friendRequests?: string[];
     friends?: string[];
     favoriteLessons?: string[];
     streak: number;
+};
+
+export type User = PublicUser & {
     hashedPassword: string;
     refreshToken?: string[];
-}
+};
 
 export const userZodSchema: z.ZodType<User> = z.object({
     email: z.string().email(),
