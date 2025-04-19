@@ -20,7 +20,7 @@ export const generateQuiz = (
         const {
             body: { lessonId, settings: quizSettings }
         } = req;
-        const lesson = await lessonsDal.getById(lessonId).lean();
+        const lesson = await lessonsDal.findById(lessonId).lean();
         if (isNil(lesson)) {
             throw new BadRequestError('lesson is not exist');
         }
@@ -44,7 +44,7 @@ export const submitQuiz = (quizzesDal: QuizzesDal) =>
     submitQuizRequestValidator(async (req, res) => {
         const { quizId, questions } = req.body;
 
-        const quiz = await quizzesDal.getById(quizId).lean();
+        const quiz = await quizzesDal.findById(quizId).lean();
         if (isNil(quiz)) {
             throw new BadRequestError('quiz is not exist');
         }

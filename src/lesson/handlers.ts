@@ -13,7 +13,7 @@ import { getVideoDetails } from '../externalApis/youtube/getVideoDetails';
 export const getLessonById = (lessonsDal: LessonsDal) =>
     getLessonByIdRequstValidator(async (req, res) => {
         const { id } = req.params;
-        const lesson = await lessonsDal.getById(id).lean();
+        const lesson = await lessonsDal.findById(id).lean();
 
         if (isNil(lesson)) {
             throw new NotFoundError(`could not find lesson with id ${id}`);

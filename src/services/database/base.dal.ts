@@ -1,9 +1,10 @@
-import { Model, ObjectId } from 'mongoose';
+import { Model, ObjectId, ProjectionType } from 'mongoose';
 
 export class BasicDal<T> {
     constructor(protected readonly model: Model<T>) {}
 
     create = (data: T) => this.model.create(data);
-    
-    getById = (id: string | ObjectId) => this.model.findById(id);
+
+    findById = (id: string | ObjectId, projection?: ProjectionType<T>) =>
+        this.model.findById(id, projection);
 }
