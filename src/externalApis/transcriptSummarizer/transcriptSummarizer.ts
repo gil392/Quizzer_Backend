@@ -1,9 +1,9 @@
 
 import { OpenAI } from "openai";
 import { SummarizerConfig  } from "./config";
-import { CHUNCK_SIZE, FINAL_SUMMARY_SYSTEM_PROMPT, OVERLAP } from "./constants";
+import { CHUNCK_SIZE, FINAL_SUMMARY_SYSTEM_PROMPT, OVERLAP_SIZE, SYSTEM_CHUNCK_SUMMARY_PROMPT } from "./constants";
 import { InternalServerError } from "../../services/server/exceptions";
-import { getSystemChunckSummaryPrompt, splitTranscirptIntoChunks } from "./utils";
+import { splitTranscirptIntoChunks } from "./utils";
 
 export class Summarizer {
     private openAI: OpenAI;
@@ -16,7 +16,7 @@ export class Summarizer {
     }
 
     async summarizeTranscript(transcript: string) : Promise<string>{
-      const chuncks: string[] = splitTranscirptIntoChunks(transcript, CHUNCK_SIZE, OVERLAP);
+      const chuncks: string[] = splitTranscirptIntoChunks(transcript, CHUNCK_SIZE, OVERLAP_SIZE);
       const summaries: string[] = await Promise.all(chuncks
         .map((chunck, index) => this.summarizeChunk(chunck, index)));      
       const finalSummary: string = await this.summarizeAllSummaries(summaries);       
@@ -25,7 +25,7 @@ export class Summarizer {
 
 
   private async summarizeChunk(chunck: string, chunckIndex:number) : Promise<string>{    
-    const systemPrompt: string = getSystemChunckSummaryPrompt(chunckIndex);
+    const systemPrompt: string = SYSTEM_CHUNCK_SUMMARY_PROMPT;
     return this.createAPIRequest(systemPrompt, chunck);
   }
 

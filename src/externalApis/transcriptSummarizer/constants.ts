@@ -1,5 +1,5 @@
 export const CHUNCK_SIZE: number = 2000; // 15 minutes
-export const OVERLAP: number = 400; // 3 minutes
+export const OVERLAP_SIZE: number = 400; // 3 minutes
 export const FINAL_SUMMARY_SYSTEM_PROMPT = 
 `Please provide a detailed summary of the following content in English.
   Structure your response as follows:
@@ -22,3 +22,12 @@ export const FINAL_SUMMARY_SYSTEM_PROMPT =
   - Broader context discussion
   - Future implications
   Ensure the summary is comprehensive enough for someone who hasn't seen the original content.`;
+
+  export const SYSTEM_CHUNCK_SUMMARY_PROMPT = 
+      `Create a detailed summary in English.
+        Maintain all important information, arguments, and connections.
+        Pay special attention to:
+        - Main topics and arguments
+        - Important details and examples
+        - Connections with other mentioned topics
+        - Key statements and conclusions`;
