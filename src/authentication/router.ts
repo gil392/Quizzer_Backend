@@ -43,7 +43,7 @@ export const createAuthRouter = (
 
     /**
      * @swagger
-     * /api/auth/register:
+     * /auth/register:
      *   post:
      *     summary: registers a new user
      *     tags: [Auth]
@@ -79,7 +79,7 @@ export const createAuthRouter = (
 
     /**
      * @swagger
-     * /api/auth/login:
+     * /auth/login:
      *   post:
      *     summary: User login
      *     description: Authenticate user and return tokens
@@ -134,7 +134,7 @@ export const createAuthRouter = (
 
     /**
      * @swagger
-     * /api/auth/refresh:
+     * /auth/refresh:
      *   get:
      *     summary: Refresh tokens
      *     description: Refresh access and refresh tokens using the provided refresh token
@@ -173,7 +173,7 @@ export const createAuthRouter = (
 
     /**
      * @swagger
-     * /api/auth/logout:
+     * /auth/logout:
      *   post:
      *     summary: User logout
      *     description: Logout user and invalidate the refresh token
