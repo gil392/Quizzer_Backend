@@ -2,6 +2,7 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import express, { Express } from 'express';
 import * as http from 'http';
+import swaggerUI from 'swagger-ui-express';
 import { injectUserToRequest } from '../../authentication/middlewares';
 import {
     AuthRouterDependencies,
@@ -15,6 +16,7 @@ import { createQuizRouter, QuizRouterDependencies } from '../../quiz/router';
 import { createUsersRouter, UsersRouterDependencies } from '../../user/router';
 import { Service } from '../service';
 import { ServerConfig } from './config';
+import { createSwaggerSpecs } from './swagger';
 import { requestErrorHandler } from './utils';
 
 export const createBasicApp = (corsOrigin?: string): Express => {
@@ -44,6 +46,7 @@ export class Server extends Service {
         this.app = createBasicApp(config.corsOrigin);
         this.useRouters();
         this.useErrorHandler();
+        this.useSwagger();
 
         this.server = http.createServer(this.app);
     }
@@ -63,6 +66,11 @@ export class Server extends Service {
 
     private useErrorHandler = () => {
         this.app.use(requestErrorHandler);
+    };
+
+    private useSwagger = () => {
+        const specs = createSwaggerSpecs(this.config);
+        this.app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(specs));
     };
 
     async start() {
