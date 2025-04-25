@@ -118,7 +118,7 @@ export const createLessonRouter = (
 
   /**
    * @swagger
-   * /lesson/delete/{id}:
+   * /lesson/{id}:
    *   delete:
    *     summary: Delete a lesson by its ID
    *     tags: [Lesson]
@@ -147,11 +147,11 @@ export const createLessonRouter = (
    *       500:
    *         description: Server error
    */
-  router.delete("/delete/:id", controller.deleteLesson);
+  router.delete("/:id", controller.deleteLesson);
 
   /**
    * @swagger
-   * /lesson/update/{id}:
+   * /lesson/{id}:
    *   put:
    *     summary: Update a lesson by its ID
    *     tags: [Lesson]
@@ -192,7 +192,7 @@ export const createLessonRouter = (
    *       500:
    *         description: Server error
    */
-  router.put("/update/:id", controller.updateLesson);
+  router.put("/:id", controller.updateLesson);
 
   return router;
 };

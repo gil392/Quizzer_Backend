@@ -170,7 +170,7 @@ export const createQuizRouter = (
 
   /**
    * @swagger
-   * /quiz/delete/{id}:
+   * /quiz/{id}:
    *   delete:
    *     summary: Delete a quiz by its ID
    *     tags: [Quiz]
@@ -197,11 +197,11 @@ export const createQuizRouter = (
    *       500:
    *         description: Server error
    */
-  router.delete("/delete/:id", controller.deleteQuiz);
+  router.delete("/:id", controller.deleteQuiz);
 
   /**
    * @swagger
-   * /quiz/update/{id}:
+   * /quiz/{id}:
    *   put:
    *     summary: Update a quiz by its ID
    *     tags: [Quiz]
@@ -238,7 +238,7 @@ export const createQuizRouter = (
    *       500:
    *         description: Server error
    */
-  router.put("/update/:id", controller.updateQuiz);
+  router.put("/:id", controller.updateQuiz);
 
   return router;
 };
