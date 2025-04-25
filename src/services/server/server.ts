@@ -17,9 +17,9 @@ import { Service } from '../service';
 import { ServerConfig } from './config';
 import { requestErrorHandler } from './utils';
 
-export const createBasicApp = (): Express => {
+export const createBasicApp = (corsOrigin?: string): Express => {
     const app = express();
-    app.use(cors({ credentials: true }));
+    app.use(cors({ credentials: true, origin: corsOrigin }));
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
     app.use(cookieParser());
@@ -41,7 +41,7 @@ export class Server extends Service {
         private readonly config: ServerConfig
     ) {
         super();
-        this.app = createBasicApp();
+        this.app = createBasicApp(config.corsOrigin);
         this.useRouters();
         this.useErrorHandler();
 

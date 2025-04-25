@@ -19,6 +19,7 @@ const processEnvZodSchema = z.object({
     PORT: portZodSchema,
     DB_CONNECTION_STRING: z.string().url(),
     OPENAI_API_KEY: z.string(),
+    CORS_ORIGIN: z.string().optional(),
 
     // AuthConfig
     AUTH_TOKEN_SECRET: z.string(),
