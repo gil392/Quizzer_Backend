@@ -26,7 +26,7 @@ const responseSendTokensAndUserId = (
         sameSite: 'strict',
         httpOnly: true
     });
-    response.send({ accessToken: tokens.accessToken, _id: userId });
+    response.send({ token: tokens.accessToken, userId });
 };
 
 export const register = (usersDal: UsersDal) =>
