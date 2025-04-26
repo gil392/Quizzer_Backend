@@ -22,6 +22,7 @@ const createRouterController = ({
     lessonsDal,
     questionsGenerator
 }: QuizRouterDependencies) => ({
+    getQuizById: handlers.getQuizById(quizzesDal),
     generateQuiz: handlers.generateQuiz(
         quizzesDal,
         lessonsDal,
@@ -35,6 +36,35 @@ export const createQuizRouter = (
 ): Router => {
     const router = Router();
     const controller = createRouterController(dependecies);
+
+    /**
+     * @swagger
+     * /quiz/{quizId}:
+     *   get:
+     *     summary: Get a quiz by its ID
+     *     tags: [Quiz]
+     *     parameters:
+     *       - in: path
+     *         name: quizId
+     *         required: true
+     *         schema:
+     *           type: string
+     *         description: The ID of the quiz to retrieve
+     *     responses:
+     *       200:
+     *         description: The requested quiz
+     *         content:
+     *           application/json:
+     *             schema:
+     *               $ref: '#/components/schemas/Quiz'
+     *       400:
+     *         description: Invalid input (e.g., missing or invalid quizId)
+     *       404:
+     *         description: Quiz not found
+     *       500:
+     *         description: Server error
+     */
+    router.get('/:quizId', controller.getQuizById);
 
     /**
      * @swagger

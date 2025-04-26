@@ -6,10 +6,24 @@ import { BadRequestError } from '../services/server/exceptions';
 import { QuizzesDal } from './dal';
 import { QuestionResult, QuizResult } from './types';
 import { createQuizResponse, getQuestionResultInQuiz } from './utils';
+import { NotFoundError } from "../services/server/exceptions";
 import {
-  generateQuizRequstValidator,
-  submitQuizRequestValidator
+    getQuizByIdRequestValidator,
+    generateQuizRequstValidator,
+    submitQuizRequestValidator
 } from './validators';
+
+export const getQuizById = (quizzesDal: QuizzesDal) =>
+    getQuizByIdRequestValidator(async (req, res) => {
+        const { quizId } = req.params;
+
+        const quiz = await quizzesDal.getById(quizId).lean();
+        if (isNil(quiz)) {
+            throw new NotFoundError(`could not find quiz with id ${quizId}`);
+        }
+
+        res.status(StatusCodes.OK).send(createQuizResponse(quiz));
+    });
 
 export const generateQuiz = (
     quizzesDal: QuizzesDal,

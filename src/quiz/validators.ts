@@ -9,6 +9,16 @@ const quizSettingsZodSchema: z.ZodType<QuizSettings> = z.object({
     solvingTimeMs: z.coerce.number()
 });
 
+export const getQuizByIdRequestZodSchema = z.object({
+    params: z.object({
+        quizId: z.string(),
+    }),
+});
+
+export const getQuizByIdRequestValidator = validateHandlerRequest(
+    getQuizByIdRequestZodSchema
+);
+
 export const generateQuizRequstZodSchema = z.object({
     body: z.object({
         lessonId: z.string(),
