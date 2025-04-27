@@ -59,9 +59,8 @@ export class QuestionsGenerator {
     "correctAnswer": "string"
   }
   
-  Each question must have exactly ${optionsCount} options (1 correct answer and ${
-              optionsCount - 1
-            } incorrect answers). Use the summary below to create ${questionsCount} questions:
+  Each question must have exactly ${optionsCount} options (1 correct answer and ${optionsCount - 1
+              } incorrect answers). Use the summary below to create ${questionsCount} questions:
   
   ${summary}
   `,
