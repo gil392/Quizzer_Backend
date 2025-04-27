@@ -7,4 +7,11 @@ export class BasicDal<T> {
 
     findById = (id: string | ObjectId, projection?: ProjectionType<T>) =>
         this.model.findById(id, projection);
+
+    findAll = () => this.model.find({});
+
+    deleteById = (id: string | ObjectId) => this.model.findByIdAndDelete(id);
+
+    updateById = (id: string | ObjectId, data: Partial<T>) =>
+        this.model.findByIdAndUpdate(id, data, { new: true });
 }
