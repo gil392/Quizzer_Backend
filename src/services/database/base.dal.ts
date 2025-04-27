@@ -1,16 +1,17 @@
-import { Model, ObjectId } from "mongoose";
+import { Model, ObjectId, ProjectionType } from 'mongoose';
 
 export class BasicDal<T> {
-  constructor(protected readonly model: Model<T>) {}
+    constructor(protected readonly model: Model<T>) {}
 
-  create = (data: T) => this.model.create(data);
+    create = (data: T) => this.model.create(data);
 
-  getById = (id: string | ObjectId) => this.model.findById(id);
+    findById = (id: string | ObjectId, projection?: ProjectionType<T>) =>
+        this.model.findById(id, projection);
 
-  getAll = () => this.model.find({});
+    findAll = () => this.model.find({});
 
-  deleteById = (id: string | ObjectId) => this.model.findByIdAndDelete(id);
+    deleteById = (id: string | ObjectId) => this.model.findByIdAndDelete(id);
 
-  updateById = (id: string | ObjectId, data: Partial<T>) =>
-    this.model.findByIdAndUpdate(id, data, { new: true });
+    updateById = (id: string | ObjectId, data: Partial<T>) =>
+        this.model.findByIdAndUpdate(id, data, { new: true });
 }

@@ -19,7 +19,7 @@ export const getQuizById = (quizzesDal: QuizzesDal) =>
     getQuizByIdRequestValidator(async (req, res) => {
         const { quizId } = req.params;
 
-        const quiz = await quizzesDal.getById(quizId).lean();
+        const quiz = await quizzesDal.findById(quizId).lean();
         if (isNil(quiz)) {
             throw new NotFoundError(`could not find quiz with id ${quizId}`);
         }
@@ -36,7 +36,7 @@ export const generateQuiz = (
         const {
             body: { lessonId, settings: quizSettings },
         } = req;
-        const lesson = await lessonsDal.getById(lessonId).lean();
+        const lesson = await lessonsDal.findById(lessonId).lean();
         if (isNil(lesson)) {
             throw new BadRequestError("lesson is not exist");
         }
@@ -60,7 +60,7 @@ export const submitQuiz = (quizzesDal: QuizzesDal) =>
     submitQuizRequestValidator(async (req, res) => {
         const { quizId, questions } = req.body;
 
-        const quiz = await quizzesDal.getById(quizId).lean();
+        const quiz = await quizzesDal.findById(quizId).lean();
         if (isNil(quiz)) {
             throw new BadRequestError("quiz is not exist");
         }
@@ -80,7 +80,7 @@ export const submitQuiz = (quizzesDal: QuizzesDal) =>
 export const getQuizzes = (quizzesDal: QuizzesDal) =>
     getQuizzesRequstValidator(async (req, res) => {
         const { lessonId } = req.query;
-        const quizzes = await quizzesDal.getByLessonId(lessonId);
+        const quizzes = await quizzesDal.findByLessonId(lessonId);
         res.status(StatusCodes.OK).json(quizzes);
     });
 

@@ -4,16 +4,15 @@ import { Types } from 'mongoose';
 import { dissoc } from 'ramda';
 import request from 'supertest';
 import { VideoSummeraizer } from '../../externalApis/videoSummerizer';
+import * as youtubeGetVideoDetails from '../../externalApis/youtube/getVideoDetails';
 import { DatabaseConfig } from '../../services/database/config';
 import { Database } from '../../services/database/database';
 import { createBasicApp } from '../../services/server/server';
-import { createTestEnv } from '../../utils/tests';
+import { asMockOf, createTestEnv } from '../../utils/tests';
 import { LessonsDal } from '../dal';
 import { Lesson } from '../model';
 import { createLessonRouter } from '../router';
 import { CreateLessonRequst } from '../validators';
-import { SummarizerConfig } from '../../externalApis/transcriptSummarizer/config';
-
 
 describe('lessons routes', () => {
     const config = createTestEnv();
@@ -24,14 +23,18 @@ describe('lessons routes', () => {
     const { lessonModel } = database.getModels();
     const lessonsDal = new LessonsDal(lessonModel);
     const summaryMock = 'summary mock';
-    const videoUrlMock = 'http://domain.com';
+    const videoUrlMock = 'https://www.youtube.com/watch?v=d56mG7DezGs';
     const titleMock = 'lesson title';
 
-    const summarizerConfig: SummarizerConfig = { apiKey: '' };
-    const videoSummeraizerMock = new VideoSummeraizer(summarizerConfig);
-    jest.spyOn(videoSummeraizerMock, 'summerizeVideo').mockResolvedValue(
-        summaryMock
-    );
+    const videoSummeraizerMock = asMockOf<VideoSummeraizer>({
+        summerizeVideo: jest.fn().mockResolvedValue(summaryMock)
+    });
+    jest.spyOn(youtubeGetVideoDetails, 'getVideoDetails').mockResolvedValue({
+        channel: 'channel',
+        duration: '10000',
+        title: 'video title',
+        views: '0'
+    });
 
     const app: Express = createBasicApp();
     app.use(
@@ -56,23 +59,13 @@ describe('lessons routes', () => {
     describe('create lesson', () => {
         const createLessonRequest = () => request(app).post('/');
 
-        test('missing title should return BAD_REQUEST', async () => {
-            const response = await createLessonRequest().send({
-                videoUrl: videoUrlMock
-            });
-            expect(response.status).toBe(StatusCodes.BAD_REQUEST);
-        });
-
         test('missing videoUrl should return BAD_REQUEST', async () => {
-            const response = await createLessonRequest().send({
-                title: titleMock
-            });
+            const response = await createLessonRequest().send({});
             expect(response.status).toBe(StatusCodes.BAD_REQUEST);
         });
 
         test('videoUrl not url should return BAD_REQUEST', async () => {
             const response = await createLessonRequest().send({
-                title: titleMock,
                 videoUrl: 'some string'
             });
             expect(response.status).toBe(StatusCodes.BAD_REQUEST);
@@ -80,7 +73,6 @@ describe('lessons routes', () => {
 
         test('valid lesson should create lesson', async () => {
             const lessonToCreate: CreateLessonRequst['body'] = {
-                title: 'lesson Title',
                 videoUrl: videoUrlMock
             };
             const response = await createLessonRequest().send(lessonToCreate);

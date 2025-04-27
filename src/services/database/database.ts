@@ -1,12 +1,14 @@
 import mongoose, { Connection } from 'mongoose';
 import { lessonModel, LessonModel } from '../../lesson/model';
 import { quizModel, QuizModel } from '../../quiz/model';
+import { UserModel, userModel } from '../../user/model';
 import { Service } from '../service';
 import { DatabaseConfig } from './config';
 
 type DatabaseModels = {
     quizModel: QuizModel;
     lessonModel: LessonModel;
+    userModel: UserModel;
 };
 
 export class Database extends Service {
@@ -20,7 +22,8 @@ export class Database extends Service {
 
         this.models = {
             quizModel,
-            lessonModel
+            lessonModel,
+            userModel
         };
     }
 

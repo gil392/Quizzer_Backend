@@ -1,28 +1,38 @@
+import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import express, { Express } from 'express';
 import * as http from 'http';
 import swaggerUI from 'swagger-ui-express';
+import { injectUserToRequest } from '../../authentication/middlewares';
+import {
+    AuthRouterDependencies,
+    createAuthRouter
+} from '../../authentication/router';
 import {
     createLessonRouter,
     LessonRouterDependencies
 } from '../../lesson/router';
 import { createQuizRouter, QuizRouterDependencies } from '../../quiz/router';
+import { createUsersRouter, UsersRouterDependencies } from '../../user/router';
 import { Service } from '../service';
 import { ServerConfig } from './config';
 import { createSwaggerSpecs } from './swagger';
 import { requestErrorHandler } from './utils';
 
-export const createBasicApp = (): Express => {
+export const createBasicApp = (corsOrigin?: string): Express => {
     const app = express();
-    app.use(cors());
+    app.use(cors({ credentials: true, origin: corsOrigin }));
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
+    app.use(cookieParser());
 
     return app;
 };
 
 export type ServerDependencies = QuizRouterDependencies &
-    LessonRouterDependencies;
+    LessonRouterDependencies &
+    AuthRouterDependencies &
+    UsersRouterDependencies;
 
 export class Server extends Service {
     app: Express;
@@ -33,7 +43,7 @@ export class Server extends Service {
         private readonly config: ServerConfig
     ) {
         super();
-        this.app = createBasicApp();
+        this.app = createBasicApp(config.corsOrigin);
         this.useRouters();
         this.useErrorHandler();
         this.useSwagger();
@@ -42,8 +52,16 @@ export class Server extends Service {
     }
 
     private useRouters = () => {
+        const { authConfig } = this.config;
+        const authMiddleware = injectUserToRequest(authConfig.tokenSecret);
+
+        this.app.use('/auth', createAuthRouter(authConfig, this.dependencies));
         this.app.use('/lesson', createLessonRouter(this.dependencies));
         this.app.use('/quiz', createQuizRouter(this.dependencies));
+        this.app.use(
+            '/user',
+            createUsersRouter(authMiddleware, this.dependencies)
+        );
     };
 
     private useErrorHandler = () => {

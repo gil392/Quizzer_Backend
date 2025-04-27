@@ -2,7 +2,7 @@ import { BasicDal } from "../services/database/base.dal";
 import { Quiz } from "./types";
 
 export class QuizzesDal extends BasicDal<Quiz> {
-  getByLessonId = (lessonId: string | undefined) => {
+  findByLessonId = (lessonId: string | undefined) => {
     const filter = lessonId ? { lessonId } : {};
     return this.model.find(filter);
   };
