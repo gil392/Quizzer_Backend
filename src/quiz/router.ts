@@ -24,6 +24,7 @@ const createRouterController = ({
   quizzesDal,
   lessonsDal,
   questionsGenerator,
+  quizzesRatingDal,
 }: QuizRouterDependencies) => ({
   getQuizById: handlers.getQuizById(quizzesDal),
   generateQuiz: handlers.generateQuiz(
@@ -32,7 +33,7 @@ const createRouterController = ({
     questionsGenerator
   ),
   getQuizzes: handlers.getQuizzes(quizzesDal),
-  deleteQuiz: handlers.deleteQuiz(quizzesDal),
+  deleteQuiz: handlers.deleteQuiz(quizzesDal, quizzesRatingDal),
   updateQuiz: handlers.updateQuiz(quizzesDal),
   submitQuiz: handlers.submitQuiz(quizzesDal),
   rateQuiz: rateQuiz(quizzesDal),
