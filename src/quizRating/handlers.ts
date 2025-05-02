@@ -15,14 +15,14 @@ export const rateQuiz = (quizzesDal: QuizzesDal) =>
       throw new NotFoundError(`Quiz with id ${quizId} not found.`);
     }
 
-    const newRating = await quizRatingModel.create({
-      quizId,
-      rater,
-      rating,
-    });
+    const updatedRating = await quizRatingModel.findOneAndUpdate(
+      { quizId, rater }, // Match by quizId and rater to decide if to update or create a new one
+      { quizId, rater, rating },
+      { new: true, upsert: true }
+    );
 
     res.status(StatusCodes.CREATED).send({
       message: `Rating for quiz ${quizId} by rater ${rater} submitted successfully.`,
-      rating: newRating,
+      rating: updatedRating,
     });
   });
