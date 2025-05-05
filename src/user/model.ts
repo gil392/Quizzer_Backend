@@ -1,5 +1,10 @@
-import { Model, Schema, model } from 'mongoose';
-import { z } from 'zod';
+import { Model, Schema, model } from "mongoose";
+import { z } from "zod";
+import {
+  DefaultSettings,
+  defaultSettingsSchema,
+  defaultSettingsZodSchema,
+} from "./defaultSettingsModel";
 
 /**
  * @swagger
@@ -46,6 +51,9 @@ import { z } from 'zod';
  *         streak:
  *           type: number
  *           description: Current streak count (e.g., days active in a row)
+ *         defaultSettings:
+ *           type: DefaultSettings
+ *           description: User default settings for lesson
  *       example:
  *         email: "jane.doe@example.com"
  *         hashedPassword: "$2b$10$E8xKkF..."
@@ -55,6 +63,12 @@ import { z } from 'zod';
  *         friends: ["user123", "user321"]
  *         favoriteLessons: ["lesson1", "lesson2"]
  *         streak: 5
+ *         defaultSettings: { feedbackType: "onSubmit",
+ *                            questionsOrder: "chronological",
+ *                            displayMode: "Light",
+ *                            maxQuestionCount: 10,
+ *                            isManualCount: false,
+ *                            solvingTimeMs: 6000 , }
  *
  *     PublicUser:
  *       type: object
@@ -89,6 +103,9 @@ import { z } from 'zod';
  *         streak:
  *           type: number
  *           description: Current streak count (e.g., days active in a row)
+ *         defaultSettings:
+ *           type: DefaultSettings
+ *           description: User default settings for lesson
  *       example:
  *         email: "jane.doe@example.com"
  *         username: "jane_doe"
@@ -96,43 +113,52 @@ import { z } from 'zod';
  *         friends: ["user123", "user321"]
  *         favoriteLessons: ["lesson1", "lesson2"]
  *         streak: 5
+ *         defaultSettings: { feedbackType: "onSubmit",
+ *                            questionsOrder: "chronological",
+ *                            displayMode: "Light",
+ *                            maxQuestionCount: 10,
+ *                            isManualCount: false,
+ *                            solvingTimeMs: 6000 , }
  */
 
 export type PublicUser = {
-    email: string;
-    username: string;
-    friendRequests?: string[];
-    friends?: string[];
-    favoriteLessons?: string[];
-    streak: number;
+  email: string;
+  username: string;
+  streak: number;
+  friendRequests?: string[];
+  friends?: string[];
+  favoriteLessons?: string[];
+  defaultSettings?: DefaultSettings;
 };
 
 export type User = PublicUser & {
-    hashedPassword: string;
-    refreshToken?: string[];
+  hashedPassword: string;
+  refreshToken?: string[];
 };
 
 export const userZodSchema: z.ZodType<User> = z.object({
-    email: z.string().email(),
-    hashedPassword: z.string(),
-    username: z.string(),
-    refreshToken: z.array(z.string()).default([]),
-    friendRequests: z.array(z.string()).default([]),
-    friends: z.array(z.string()).default([]),
-    favoriteLessons: z.array(z.string()).default([]),
-    streak: z.coerce.number()
+  email: z.string().email(),
+  hashedPassword: z.string(),
+  username: z.string(),
+  streak: z.coerce.number(),
+  refreshToken: z.array(z.string()).default([]),
+  friendRequests: z.array(z.string()).default([]),
+  friends: z.array(z.string()).default([]),
+  favoriteLessons: z.array(z.string()).default([]),
+  defaultSettings: defaultSettingsZodSchema.optional(),
 });
 
 const userSchema = new Schema<User>({
-    email: { type: String, required: true, unique: true },
-    hashedPassword: { type: String, required: true },
-    username: { type: String, required: true },
-    refreshToken: { type: [String], default: [] },
-    friendRequests: { type: [String], default: [] },
-    friends: { type: [String], default: [] },
-    favoriteLessons: { type: [String], default: [] },
-    streak: { type: Number, default: 0 }
+  email: { type: String, required: true, unique: true },
+  hashedPassword: { type: String, required: true },
+  username: { type: String, required: true },
+  streak: { type: Number, default: 0 },
+  refreshToken: { type: [String], default: [] },
+  friendRequests: { type: [String], default: [] },
+  friends: { type: [String], default: [] },
+  favoriteLessons: { type: [String], default: [] },
+  defaultSettings: { type: defaultSettingsSchema, required: false },
 });
 
 export type UserModel = Model<User>;
-export const userModel = model<User>('users', userSchema);
+export const userModel = model<User>("users", userSchema);
