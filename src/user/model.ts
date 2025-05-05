@@ -1,5 +1,10 @@
 import { Model, Schema, model } from "mongoose";
 import { z } from "zod";
+import {
+  DefaultSettings,
+  defaultSettingsSchema,
+  defaultSettingsZodSchema,
+} from "./defaultSettingsModel";
 
 /**
  * @swagger
@@ -58,12 +63,12 @@ import { z } from "zod";
  *         friends: ["user123", "user321"]
  *         favoriteLessons: ["lesson1", "lesson2"]
  *         streak: 5
- *         defaultSettings: { feedbackType: "onSubmit"
- *                            questionsOrder: "chronological"
- *                            displayMode: "Light"
- *                            maxQuestionCount: 10
- *                            isManualCount: false
- *                            solvingTimeMs: 6000  }
+ *         defaultSettings: { feedbackType: "onSubmit",
+ *                            questionsOrder: "chronological",
+ *                            displayMode: "Light",
+ *                            maxQuestionCount: 10,
+ *                            isManualCount: false,
+ *                            solvingTimeMs: 6000 , }
  *
  *     PublicUser:
  *       type: object
@@ -108,31 +113,13 @@ import { z } from "zod";
  *         friends: ["user123", "user321"]
  *         favoriteLessons: ["lesson1", "lesson2"]
  *         streak: 5
- *         defaultSettings: { feedbackType: "onSubmit"
- *                            questionsOrder: "chronological"
- *                            displayMode: "Light"
- *                            maxQuestionCount: 10
- *                            isManualCount: false
- *                            solvingTimeMs: 6000  }
+ *         defaultSettings: { feedbackType: "onSubmit",
+ *                            questionsOrder: "chronological",
+ *                            displayMode: "Light",
+ *                            maxQuestionCount: 10,
+ *                            isManualCount: false,
+ *                            solvingTimeMs: 6000 , }
  */
-
-export type DefaultSettings = {
-  feedbackType: "onSubmit" | "onSelectAnswer";
-  questionsOrder: "chronological" | "random";
-  displayMode: "Light" | "Dark";
-  maxQuestionCount: number;
-  isManualCount: boolean;
-  solvingTimeMs: number;
-};
-
-export const DefaultSettingsSchema = z.object({
-  feedbackType: z.enum(["onSubmit", "onSelectAnswer"]),
-  questionsOrder: z.enum(["chronological", "random"]),
-  displayMode: z.enum(["Light", "Dark"]),
-  maxQuestionCount: z.number(),
-  isManualCount: z.boolean(),
-  solvingTimeMs: z.number(),
-});
 
 export type PublicUser = {
   email: string;
@@ -158,7 +145,7 @@ export const userZodSchema: z.ZodType<User> = z.object({
   friendRequests: z.array(z.string()).default([]),
   friends: z.array(z.string()).default([]),
   favoriteLessons: z.array(z.string()).default([]),
-  defaultSettings: DefaultSettingsSchema.optional(),
+  defaultSettings: defaultSettingsZodSchema.optional(),
 });
 
 const userSchema = new Schema<User>({
@@ -170,7 +157,7 @@ const userSchema = new Schema<User>({
   friendRequests: { type: [String], default: [] },
   friends: { type: [String], default: [] },
   favoriteLessons: { type: [String], default: [] },
-  defaultSettings: { type: DefaultSettingsSchema, defualt: undefined },
+  defaultSettings: { type: defaultSettingsSchema, required: false },
 });
 
 export type UserModel = Model<User>;
