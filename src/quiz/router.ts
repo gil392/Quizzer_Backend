@@ -222,7 +222,7 @@ export const createQuizRouter = (
    * @swagger
    * /quiz:
    *   get:
-   *     summary: Get all quizzes, optionally filtered by lesson ID
+   *     summary: Get all quizzes, optionally filtered by lesson ID and user ID
    *     tags: [Quiz]
    *     parameters:
    *       - in: query
@@ -230,15 +230,38 @@ export const createQuizRouter = (
    *         schema:
    *           type: string
    *         description: The ID of the lesson to filter quizzes by
+   *       - in: query
+   *         name: userId
+   *         schema:
+   *           type: string
+   *         description: The ID of the user to filter ratings by. Only ratings from this user will be included in the response.
    *     responses:
    *       200:
-   *         description: A list of quizzes
+   *         description: A list of quizzes with ratings filtered by the specified user ID
    *         content:
    *           application/json:
    *             schema:
    *               type: array
    *               items:
-   *                 $ref: '#/components/schemas/Quiz'
+   *                 type: object
+   *                 properties:
+   *                   _id:
+   *                     type: string
+   *                     description: The ID of the quiz
+   *                   title:
+   *                     type: string
+   *                     description: The title of the quiz
+   *                   lessonId:
+   *                     type: string
+   *                     description: The ID of the lesson this quiz belongs to
+   *                   ratings:
+   *                     type: array
+   *                     description: An array of ratings for the quiz, filtered by the specified user ID
+   *                     items:
+   *                       type: number
+   *                       description: The rating value
+   *       400:
+   *         description: Invalid input (e.g., invalid query parameters)
    *       500:
    *         description: Server error
    */

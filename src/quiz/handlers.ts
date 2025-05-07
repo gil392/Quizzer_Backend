@@ -4,7 +4,7 @@ import { QuestionsGenerator } from "../externalApis/quizGenerator";
 import { LessonsDal } from "../lesson/dal";
 import { BadRequestError, NotFoundError } from "../services/server/exceptions";
 import { QuizzesDal } from "./dal";
-import { QuestionResult, QuizResult } from "./types";
+import { QuestionResult, Quiz, QuizResult } from "./types";
 import { createQuizResponse, getQuestionResultInQuiz } from "./utils";
 import {
   getQuizByIdRequestValidator,
@@ -81,10 +81,11 @@ export const submitQuiz = (quizzesDal: QuizzesDal) =>
 export const getQuizzes = (quizzesDal: QuizzesDal) =>
   getQuizzesRequstValidator(async (req, res) => {
     const { lessonId, userId } = req.query;
-    const quizzes = await quizzesDal.findByLessonAndUser(lessonId, userId);
+    const quizzes: (Quiz & { ratings: { rating: number }[] })[] =
+      await quizzesDal.findByLessonAndUser(lessonId, userId);
     const quizzesWithRatings = quizzes.map((quiz) => ({
       ...quiz,
-      ratings: quiz.ratings.map((rating: any) => rating.rating),
+      rating: quiz.ratings[0]?.rating ?? null,
     }));
     res.status(StatusCodes.OK).json(quizzesWithRatings);
   });
