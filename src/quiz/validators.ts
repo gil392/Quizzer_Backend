@@ -10,13 +10,13 @@ const quizSettingsZodSchema: z.ZodType<QuizSettings> = z.object({
 });
 
 export const getQuizByIdRequestZodSchema = z.object({
-    params: z.object({
-        quizId: z.string(),
-    }),
+  params: z.object({
+    quizId: z.string(),
+  }),
 });
 
 export const getQuizByIdRequestValidator = validateHandlerRequest(
-    getQuizByIdRequestZodSchema
+  getQuizByIdRequestZodSchema
 );
 
 export const generateQuizRequstZodSchema = z.object({
@@ -46,6 +46,7 @@ export const submitQuizRequestValidator = validateHandlerRequest(
 const getQuizzesRequstZodSchema = z.object({
   query: z.object({
     lessonId: z.string().optional(),
+    userId: z.string().optional(),
   }),
 });
 export const getQuizzesRequstValidator = validateHandlerRequest(

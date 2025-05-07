@@ -80,9 +80,13 @@ export const submitQuiz = (quizzesDal: QuizzesDal) =>
 
 export const getQuizzes = (quizzesDal: QuizzesDal) =>
   getQuizzesRequstValidator(async (req, res) => {
-    const { lessonId } = req.query;
-    const quizzes = await quizzesDal.findByLessonId(lessonId);
-    res.status(StatusCodes.OK).json(quizzes);
+    const { lessonId, userId } = req.query;
+    const quizzes = await quizzesDal.findByLessonAndUser(lessonId, userId);
+    const quizzesWithRatings = quizzes.map((quiz) => ({
+      ...quiz,
+      ratings: quiz.ratings.map((rating: any) => rating.rating),
+    }));
+    res.status(StatusCodes.OK).json(quizzesWithRatings);
   });
 
 export const deleteQuiz = (
