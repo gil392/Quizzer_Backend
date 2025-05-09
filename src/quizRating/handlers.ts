@@ -7,8 +7,9 @@ import { NotFoundError } from "../services/server/exceptions";
 
 export const rateQuiz = (quizzesDal: QuizzesDal) =>
   rateQuizRequestValidator(async (req, res) => {
-    const { quizId, rater } = req.query;
+    const { quizId } = req.query;
     const { rating } = req.body;
+    const { id: rater } = req.user;
 
     const quiz = await quizzesDal.findById(quizId).lean();
     if (isNil(quiz)) {

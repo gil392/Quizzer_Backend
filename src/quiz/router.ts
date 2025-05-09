@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { RequestHandler, Router } from "express";
 import { QuestionsGenerator } from "../externalApis/quizGenerator";
 import { LessonsDal } from "../lesson/dal";
 import { QuizzesDal } from "./dal";
@@ -40,6 +40,7 @@ const createRouterController = ({
 });
 
 export const createQuizRouter = (
+    authMiddleware: RequestHandler,
   dependencies: QuizRouterDependencies
 ): Router => {
   const router = Router();
@@ -391,7 +392,7 @@ export const createQuizRouter = (
    *       500:
    *         description: Server error
    */
-  router.post("/rate", controller.rateQuiz);
+  router.post("/rate", authMiddleware ,controller.rateQuiz);
 
   return router;
 };
