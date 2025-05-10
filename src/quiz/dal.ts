@@ -12,7 +12,7 @@ export class QuizzesDal extends BasicDal<Quiz> {
       { $match: filter },
       {
         $addFields: {
-          idAsString: { $toString: "$_id" }, 
+          idAsString: { $toString: "$_id" },
         },
       },
       {
@@ -22,11 +22,8 @@ export class QuizzesDal extends BasicDal<Quiz> {
           foreignField: "quizId",
           as: "ratings",
           pipeline: userId
-            ? [
-                { $match: { rater: userId } },
-              ]
+            ? [{ $match: { rater: userId } }, { $limit: 1 }]
             : [], // If no userId, include all ratings
-          
         },
       },
     ]);

@@ -341,19 +341,6 @@ export const createQuizRouter = (
    *   post:
    *     summary: Rate a quiz
    *     tags: [Quiz]
-   *     parameters:
-   *       - in: query
-   *         name: quizId
-   *         required: true
-   *         schema:
-   *           type: string
-   *         description: The ID of the quiz to rate
-   *       - in: query
-   *         name: rater
-   *         required: true
-   *         schema:
-   *           type: string
-   *         description: The ID of the user rating the quiz
    *     requestBody:
    *       required: true
    *       content:
@@ -361,12 +348,19 @@ export const createQuizRouter = (
    *           schema:
    *             type: object
    *             required:
+   *               - quizId
    *               - rating
    *             properties:
+   *               quizId:
+   *                 type: string
+   *                 description: The ID of the quiz to rate
    *               rating:
    *                 type: number
    *                 description: The rating for the quiz (1-5)
+   *                 minimum: 1
+   *                 maximum: 5
    *           example:
+   *             quizId: "quiz123"
    *             rating: 4
    *     responses:
    *       201:
@@ -378,12 +372,33 @@ export const createQuizRouter = (
    *               properties:
    *                 message:
    *                   type: string
+   *                   example: Rating for quiz quiz123 submitted successfully.
    *                 rating:
-   *                   $ref: '#/components/schemas/QuizRating'
+   *                   type: object
+   *                   properties:
+   *                     quizId:
+   *                       type: string
+   *                       description: The ID of the quiz
+   *                     rater:
+   *                       type: string
+   *                       description: The ID of the user who rated the quiz
+   *                     rating:
+   *                       type: number
+   *                       description: The rating value
+   *                     createdAt:
+   *                       type: string
+   *                       format: date-time
+   *                       description: The timestamp when the rating was created
+   *                     updatedAt:
+   *                       type: string
+   *                       format: date-time
+   *                       description: The timestamp when the rating was last updated
+   *       204:
+   *         description: Rating deleted successfully (if rating is null)
+   *       400:
+   *         description: Invalid input (e.g., missing or invalid quizId or rating)
    *       404:
    *         description: Quiz not found
-   *       400:
-   *         description: Invalid input
    *       500:
    *         description: Server error
    */
