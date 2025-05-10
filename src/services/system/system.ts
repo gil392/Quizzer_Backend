@@ -14,12 +14,12 @@ export class System extends Service {
 
   constructor(config: SystemConfig) {
     super();
-    const { databaseConfig, serverConfig, summarizerConfig } = config;
+    const { databaseConfig, serverConfig, openAiConfig } = config;
 
     this.database = new Database(databaseConfig);
     const dals = this.createDals();
-    const questionsGenerator = new QuestionsGenerator(summarizerConfig);
-    const videoSummeraizer = new VideoSummeraizer(summarizerConfig);
+    const questionsGenerator = new QuestionsGenerator(openAiConfig);
+    const videoSummeraizer = new VideoSummeraizer(openAiConfig);
     this.server = new Server(
       { ...dals, questionsGenerator, videoSummeraizer },
       serverConfig
