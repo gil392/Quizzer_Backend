@@ -31,8 +31,6 @@ export const rateQuiz = (
         .json({ rating: updatedRating.toObject() });
     } else {
       await quizRatingModel.deleteOne({ quizId, rater });
-      res.status(StatusCodes.OK).send({
-        message: `Rating for quiz ${quizId} by rater ${rater} deleted successfully.`,
-      });
+      res.sendStatus(StatusCodes.OK);
     }
   });
