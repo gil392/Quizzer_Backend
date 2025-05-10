@@ -2,9 +2,9 @@ import { BasicDal } from "../services/database/base.dal";
 import { Quiz } from "./types";
 
 export class QuizzesDal extends BasicDal<Quiz> {
-  findByLessonAndUser = (
+  findQuizzesWithUserRatingByLesson = (
     lessonId: string | undefined,
-    userId: string | undefined
+    raterId: string | undefined
   ) => {
     const filter = lessonId ? { lessonId } : {};
 
@@ -21,8 +21,8 @@ export class QuizzesDal extends BasicDal<Quiz> {
           localField: "idAsString",
           foreignField: "quizId",
           as: "ratings",
-          pipeline: userId
-            ? [{ $match: { rater: userId } }, { $limit: 1 }]
+          pipeline: raterId
+            ? [{ $match: { rater: raterId } }, { $limit: 1 }]
             : [], // If no userId, include all ratings
         },
       },

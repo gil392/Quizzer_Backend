@@ -83,7 +83,7 @@ export const getQuizzes = (quizzesDal: QuizzesDal) =>
     const { lessonId } = req.query;
     const { id: userId } = req.user;
     const quizzes: (Quiz & { ratings: { rating: number }[] })[] =
-      await quizzesDal.findByLessonAndUser(lessonId, userId);
+      await quizzesDal.findQuizzesWithUserRatingByLesson(lessonId, userId);
     const quizzesWithRatings = quizzes.map((quiz) => ({
       ...quiz,
       rating: quiz.ratings[0]?.rating ?? null,
