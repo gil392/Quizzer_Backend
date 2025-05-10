@@ -24,6 +24,7 @@ const createRouterController = ({
   getLessons: handlers.getLessons(lessonsDal),
   deleteLesson: handlers.deleteLesson(lessonsDal),
   updateLesson: handlers.updateLesson(lessonsDal),
+  getRelatedVideos: handlers.getRelatedVideosForLesson(lessonsDal)
 });
 
 export const createLessonRouter = (
@@ -193,6 +194,50 @@ export const createLessonRouter = (
    *         description: Server error
    */
   router.put("/:id", controller.updateLesson);
+
+  /**
+   * @swagger
+   * /lesson/{id}/relatedVideos:
+   *   get:
+   *     summary: Get related videos for a lesson
+   *     tags: [Lesson]
+   *     parameters:
+   *       - in: path
+   *         name: lessonId
+   *         required: true
+   *         schema:
+   *           type: string
+   *         description: ID of the lesson to fetch related videos for
+   *     responses:
+   *       200:
+   *         description: A list of related videos
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: array
+   *               items:
+   *                 type: object
+   *                 properties:
+   *                   videoId:
+   *                     type: string
+   *                     description: ID of the related video
+   *                   title:
+   *                     type: string
+   *                     description: Title of the related video
+   *                   channelId:
+   *                     type: string
+   *                     description: ID of the channel that uploaded the related video
+   *                   channelTitle:
+   *                     type: string
+   *                     description: Name of the channel that uploaded the related video
+   *       404:
+   *         description: Lesson not found
+   *       400:
+   *         description: Invalid lesson ID or missing video details
+   *       500:
+   *         description: Server error
+   */
+  router.get("/:id/relatedVideos", controller.getRelatedVideos);
 
   return router;
 };

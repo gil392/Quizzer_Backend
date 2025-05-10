@@ -4,30 +4,27 @@ import { OpenAiConfig } from '../openAiConfig';
 import { authenticate } from './authentication';
 import { VideoDetails } from './getVideoDetails';
 
-const enableRelated = process.env.ENABLE_RELATED_VIDEOS === 'true';
-
-const openai = (openAiConfig: OpenAiConfig) =>
-    new OpenAI({ apiKey: openAiConfig.apiKey });
+const enableRelatedVideos = process.env.ENABLE_RELATED_VIDEOS ?? false;
+const openAiConfig: OpenAiConfig = { apiKey: process.env.OPENAI_API_KEY! };
 
 export async function generateQuery(
     videoDetails: VideoDetails,
     summary: string,
-    openAiConfig: OpenAiConfig
 ): Promise<string> {
-    const { title, description, tags } = videoDetails;
+    const { title, description } = videoDetails;
 
-    const prompt = `You are a YouTube assistant generating a concise search query to find related educational videos. 
-Based on this data, return a 5–10 word search string. Do not repeat the title.
+    const prompt = `You are a YouTube assistant generating a concise search query to find related videos. 
+Prioritize the title and summary over the description when generating the query. 
+Focus on the main subject of the video and avoid unrelated information like social media links or promotions.
 
 Title: "${title}"
-Description: "${description.slice(0, 300)}"
-Tags: ${tags?.join(', ') || 'None'}
-Summary: ${summary}
+Summary: "${summary}"
+Description: "${description.slice(0, 100)}"
 
-Search Query:`;
+Return a 2-5 word search string that captures the main subject of the video.`
 
     try {
-        const openAiClient = openai(openAiConfig);
+        const openAiClient = new OpenAI({ apiKey: openAiConfig.apiKey });
         const response = await openAiClient.chat.completions.create({
             model: 'gpt-3.5-turbo',
             messages: [{ role: 'user', content: prompt }],
@@ -58,7 +55,7 @@ export async function searchYouTube(
             part: ['snippet'],
             q: query,
             type: ['video'],
-            maxResults: 20,
+            maxResults: 10,
             relevanceLanguage: 'en',
             videoCaption: 'closedCaption',
         });
@@ -86,15 +83,13 @@ export async function getRelatedVideos(
     videoId: string,
     videoDetails: VideoDetails,
     summary: string,
-    openAiConfig: OpenAiConfig,
 ): Promise<any[]> {
-    if (!enableRelated) {
-        console.log('Related videos feature is disabled.');
+    if (!enableRelatedVideos) {
         return [];
     }
 
     try {
-        const query = await generateQuery(videoDetails, summary, openAiConfig);
+        const query = await generateQuery(videoDetails, summary);
 
         return await searchYouTube(query, videoId, videoDetails?.channelId);
     } catch (error) {

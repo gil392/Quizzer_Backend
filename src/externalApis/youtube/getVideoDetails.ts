@@ -40,6 +40,7 @@ export const getVideoDetails = async (videoId: string): Promise<VideoDetails | n
             description: snippet.description ?? 'No Description',
             channelId: snippet.channelId ?? '',
             views: statistics.viewCount || '',
+            tags: snippet.tags || [],
             duration: contentDetails.duration ?? 'Unknown Duration',
         };
     } catch (error) {
