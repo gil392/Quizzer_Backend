@@ -36,11 +36,11 @@ const createRouterController = ({
   deleteQuiz: handlers.deleteQuiz(quizzesDal, quizzesRatingDal),
   updateQuiz: handlers.updateQuiz(quizzesDal),
   submitQuiz: handlers.submitQuiz(quizzesDal),
-  rateQuiz: rateQuiz(quizzesDal),
+  rateQuiz: rateQuiz(quizzesDal, quizzesRatingDal),
 });
 
 export const createQuizRouter = (
-    authMiddleware: RequestHandler,
+  authMiddleware: RequestHandler,
   dependencies: QuizRouterDependencies
 ): Router => {
   const router = Router();
@@ -223,7 +223,7 @@ export const createQuizRouter = (
    * @swagger
    * /quiz:
    *   get:
-   *     summary: Get all quizzes, optionally filtered by lesson ID and user ID
+   *     summary: Get all quizzes, optionally filtered by lesson ID
    *     tags: [Quiz]
    *     parameters:
    *       - in: query
@@ -231,14 +231,9 @@ export const createQuizRouter = (
    *         schema:
    *           type: string
    *         description: The ID of the lesson to filter quizzes by
-   *       - in: query
-   *         name: userId
-   *         schema:
-   *           type: string
-   *         description: The ID of the user to filter ratings by. Only ratings from this user will be included in the response.
    *     responses:
    *       200:
-   *         description: A list of quizzes with ratings filtered by the specified user ID
+   *         description: A list of quizzes with ratings filtered by the authenticated user
    *         content:
    *           application/json:
    *             schema:
@@ -257,7 +252,7 @@ export const createQuizRouter = (
    *                     description: The ID of the lesson this quiz belongs to
    *                   ratings:
    *                     type: array
-   *                     description: An array of ratings for the quiz, filtered by the specified user ID
+   *                     description: An array of ratings for the quiz, filtered by the authenticated user
    *                     items:
    *                       type: number
    *                       description: The rating value
@@ -266,7 +261,7 @@ export const createQuizRouter = (
    *       500:
    *         description: Server error
    */
-  router.get("/", controller.getQuizzes);
+  router.get("/", authMiddleware, controller.getQuizzes);
 
   /**
    * @swagger
@@ -392,7 +387,7 @@ export const createQuizRouter = (
    *       500:
    *         description: Server error
    */
-  router.post("/rate", authMiddleware ,controller.rateQuiz);
+  router.post("/rate", authMiddleware, controller.rateQuiz);
 
   return router;
 };

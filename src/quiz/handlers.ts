@@ -80,7 +80,8 @@ export const submitQuiz = (quizzesDal: QuizzesDal) =>
 
 export const getQuizzes = (quizzesDal: QuizzesDal) =>
   getQuizzesRequstValidator(async (req, res) => {
-    const { lessonId, userId } = req.query;
+    const { lessonId } = req.query;
+    const { id: userId } = req.user;
     const quizzes: (Quiz & { ratings: { rating: number }[] })[] =
       await quizzesDal.findByLessonAndUser(lessonId, userId);
     const quizzesWithRatings = quizzes.map((quiz) => ({

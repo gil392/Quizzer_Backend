@@ -4,8 +4,12 @@ import { quizRatingModel } from "./model";
 import { rateQuizRequestValidator } from "./validators";
 import { QuizzesDal } from "../quiz/dal";
 import { NotFoundError } from "../services/server/exceptions";
+import { QuizzesRatingDal } from "./dal";
 
-export const rateQuiz = (quizzesDal: QuizzesDal) =>
+export const rateQuiz = (
+  quizzesDal: QuizzesDal,
+  quizzesRatingDal: QuizzesRatingDal
+) =>
   rateQuizRequestValidator(async (req, res) => {
     const { quizId } = req.query;
     const { rating } = req.body;
@@ -17,16 +21,14 @@ export const rateQuiz = (quizzesDal: QuizzesDal) =>
     }
 
     if (rating !== null) {
-      const updatedRating = await quizRatingModel.findOneAndUpdate(
-        { quizId, rater }, // Match by quizId and rater to decide if to update or create a new one
-        { quizId, rater, rating },
-        { new: true, upsert: true }
+      const updatedRating = await quizzesRatingDal.updateRating(
+        quizId,
+        rater,
+        rating
       );
-
-      res.status(StatusCodes.CREATED).send({
-        message: `Rating for quiz ${quizId} by rater ${rater} submitted successfully.`,
-        rating: updatedRating,
-      });
+      res
+        .status(StatusCodes.CREATED)
+        .json({ rating: updatedRating.toObject() });
     } else {
       await quizRatingModel.deleteOne({ quizId, rater });
       res.status(StatusCodes.OK).send({
