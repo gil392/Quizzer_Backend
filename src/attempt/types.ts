@@ -1,6 +1,5 @@
-import { Types } from 'mongoose';
 import { z } from 'zod';
-import { questionAnswerSubmittionZodSchema } from './validators';
+import { createAttemptRequestSchema } from './validators';
 
 export type QuizAttempt = {
     quizId: string;
@@ -16,5 +15,5 @@ export type QuestionAttempt = {
 };
 
 export type QuestionAnswerSubmittion = z.infer<
-    typeof questionAnswerSubmittionZodSchema
+    typeof createAttemptRequestSchema
 >;

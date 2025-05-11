@@ -20,7 +20,7 @@ const createRouterController = ({
     QuizzesDal
 }: AttemptRouterDependencies) => ({
     CreateAttempt: handlers.createAttempt(QuizzesDal, AttemptDal),
-    GetAttemptsByQuizId: handlers.GetAttemptsByQuizId(AttemptDal),
+    //GetAttemptsByQuizId: handlers.GetAttemptsByQuizId(AttemptDal),
 });
 
 export const createAttemptRouter = (
@@ -77,7 +77,7 @@ export const createAttemptRouter = (
      *       500:
      *         description: Server error
      */
-    router.get('/:quizId', controller.GetAttemptsByQuizId);
+    //router.get('/:quizId', controller.GetAttemptsByQuizId);
 
     /**
      * @swagger
