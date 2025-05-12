@@ -1,5 +1,6 @@
 import { Model, Schema, model } from "mongoose";
 import { z } from "zod";
+import { Settings, settingsSchema, settingsZodSchema } from "./settingsModel";
 
 /**
  * @swagger
@@ -46,6 +47,9 @@ import { z } from "zod";
  *         streak:
  *           type: number
  *           description: Current streak count (e.g., days active in a row)
+ *         settings:
+ *           type: Settings
+ *           description: User settings for lesson
  *       example:
  *         email: "jane.doe@example.com"
  *         hashedPassword: "$2b$10$E8xKkF..."
@@ -55,6 +59,12 @@ import { z } from "zod";
  *         friends: ["user123", "user321"]
  *         favoriteLessons: ["lesson1", "lesson2"]
  *         streak: 5
+ *         settings: { feedbackType: "onSubmit",
+ *                     questionsOrder: "chronological",
+ *                     displayMode: "Light",
+ *                     maxQuestionCount: 10,
+ *                     isManualCount: false,
+ *                     solvingTimeMs: 6000 , }
  *
  *     PublicUser:
  *       type: object
@@ -89,6 +99,9 @@ import { z } from "zod";
  *         streak:
  *           type: number
  *           description: Current streak count (e.g., days active in a row)
+ *         settings:
+ *           type: Settings
+ *           description: User settings
  *       example:
  *         email: "jane.doe@example.com"
  *         username: "jane_doe"
@@ -96,6 +109,12 @@ import { z } from "zod";
  *         friends: ["user123", "user321"]
  *         favoriteLessons: ["lesson1", "lesson2"]
  *         streak: 5
+ *         settings: { feedbackType: "onSubmit",
+ *                     questionsOrder: "chronological",
+ *                     displayMode: "Light",
+ *                     maxQuestionCount: 10,
+ *                     isManualCount: false,
+ *                     solvingTimeMs: 6000 , }
  */
 
 export type PublicUser = {
@@ -105,6 +124,7 @@ export type PublicUser = {
   friends?: string[];
   favoriteLessons?: string[];
   streak: number;
+  settings?: Settings;
 };
 
 export type User = PublicUser & {
@@ -121,6 +141,7 @@ export const userZodSchema: z.ZodType<User> = z.object({
   friends: z.array(z.string()).default([]),
   favoriteLessons: z.array(z.string()).default([]),
   streak: z.coerce.number(),
+  settings: settingsZodSchema.optional(),
 });
 
 const userSchema = new Schema<User>({
@@ -132,6 +153,7 @@ const userSchema = new Schema<User>({
   friends: { type: [String], default: [] },
   favoriteLessons: { type: [String], default: [] },
   streak: { type: Number, default: 0 },
+  settings: { type: settingsSchema, required: false },
 });
 userSchema.index({ username: "text", email: "text" });
 

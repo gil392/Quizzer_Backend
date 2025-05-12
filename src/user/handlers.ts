@@ -5,6 +5,7 @@ import { UsersDal } from "./dal";
 import {
   validateAnswerFriendRequestRequest,
   validateCreateFriendRequestRequest,
+  validateEditUserRequest,
   validateSearchUsersRequest,
 } from "./validators";
 
@@ -63,4 +64,18 @@ export const getUserFriendsRequests = (usersDal: UsersDal) =>
     const users = await usersDal.getUserFriendsRequests(userId);
 
     response.json(users);
+  });
+  
+export const editUser = (usersDal: UsersDal) =>
+  validateEditUserRequest(async (request, response) => {
+    const { id: userId } = request.user;
+    const { username, settings } = request.body;
+    const updatedUser = await usersDal
+      .updateById(userId, { username, settings })
+      .lean();
+
+    if (!updatedUser) {
+      throw new NotFoundError("could not find user");
+    }
+    response.json(updatedUser);
   });
