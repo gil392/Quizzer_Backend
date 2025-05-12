@@ -1,5 +1,5 @@
-import { Model, Schema, model } from 'mongoose';
-import { z } from 'zod';
+import { Model, Schema, model } from "mongoose";
+import { z } from "zod";
 
 /**
  * @swagger
@@ -99,40 +99,41 @@ import { z } from 'zod';
  */
 
 export type PublicUser = {
-    email: string;
-    username: string;
-    friendRequests?: string[];
-    friends?: string[];
-    favoriteLessons?: string[];
-    streak: number;
+  email: string;
+  username: string;
+  friendRequests?: string[];
+  friends?: string[];
+  favoriteLessons?: string[];
+  streak: number;
 };
 
 export type User = PublicUser & {
-    hashedPassword: string;
-    refreshToken?: string[];
+  hashedPassword: string;
+  refreshToken?: string[];
 };
 
 export const userZodSchema: z.ZodType<User> = z.object({
-    email: z.string().email(),
-    hashedPassword: z.string(),
-    username: z.string(),
-    refreshToken: z.array(z.string()).default([]),
-    friendRequests: z.array(z.string()).default([]),
-    friends: z.array(z.string()).default([]),
-    favoriteLessons: z.array(z.string()).default([]),
-    streak: z.coerce.number()
+  email: z.string().email(),
+  hashedPassword: z.string(),
+  username: z.string(),
+  refreshToken: z.array(z.string()).default([]),
+  friendRequests: z.array(z.string()).default([]),
+  friends: z.array(z.string()).default([]),
+  favoriteLessons: z.array(z.string()).default([]),
+  streak: z.coerce.number(),
 });
 
 const userSchema = new Schema<User>({
-    email: { type: String, required: true, unique: true },
-    hashedPassword: { type: String, required: true },
-    username: { type: String, required: true },
-    refreshToken: { type: [String], default: [] },
-    friendRequests: { type: [String], default: [] },
-    friends: { type: [String], default: [] },
-    favoriteLessons: { type: [String], default: [] },
-    streak: { type: Number, default: 0 }
+  email: { type: String, required: true, unique: true },
+  hashedPassword: { type: String, required: true },
+  username: { type: String, required: true },
+  refreshToken: { type: [String], default: [] },
+  friendRequests: { type: [String], default: [] },
+  friends: { type: [String], default: [] },
+  favoriteLessons: { type: [String], default: [] },
+  streak: { type: Number, default: 0 },
 });
+userSchema.index({ username: "text", email: "text" });
 
 export type UserModel = Model<User>;
-export const userModel = model<User>('users', userSchema);
+export const userModel = model<User>("users", userSchema);
