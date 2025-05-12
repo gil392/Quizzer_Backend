@@ -1,9 +1,12 @@
+import { Document, Types } from "mongoose";
+import { isEmpty } from "ramda";
 import { BasicDal } from "../services/database/base.dal";
 import {
   EXCLUDE_USER_PRIVATE_PROPERTIES_PROJECTION,
   SEARCH_USER_SELECT,
+  USER_FRIENDS_PROJECTION,
 } from "./consts";
-import { User } from "./model";
+import { PublicUser, User } from "./model";
 
 export class UsersDal extends BasicDal<User> {
   findByUsername = (username: string) => this.model.findOne({ username });
@@ -21,6 +24,37 @@ export class UsersDal extends BasicDal<User> {
       .select(SEARCH_USER_SELECT)
       .limit(limit);
   };
+
+  private getUsersFromUser = async (
+    userId: string,
+    propery: "friends" | "friendRequests"
+  ): Promise<(PublicUser & Document)[]> => {
+    const result = await this.model.aggregate([
+      {
+        $match: { _id: new Types.ObjectId(userId) },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: propery,
+          foreignField: "_id",
+          as: "friendUsers",
+        },
+      },
+      {
+        $project: {
+          friendUsers: USER_FRIENDS_PROJECTION,
+        },
+      },
+    ]);
+
+    return isEmpty(result) ? [] : result[0].friendUsers;
+  };
+
+  getUserFriends = (userId: string) => this.getUsersFromUser(userId, "friends");
+
+  getUserFriendsRequests = (userId: string) =>
+    this.getUsersFromUser(userId, "friendRequests");
 
   addFriendRequest = (userId: string, friendToAdd: string) =>
     this.model.updateOne(

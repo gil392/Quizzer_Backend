@@ -19,6 +19,10 @@ const buildRouteHandlers = (
   searchUsers: handlers.searchUsers(dependencies.usersDal),
   answerFriendRequest: handlers.answerFriendRequest(dependencies.usersDal),
   createFriendRequest: handlers.createFriendRequest(dependencies.usersDal),
+  getUserFriends: handlers.getUserFriends(dependencies.usersDal),
+  getUserFriendsRequests: handlers.getUserFriendsRequests(
+    dependencies.usersDal
+  ),
 });
 
 export const createUsersRouter = (
@@ -104,12 +108,68 @@ export const createUsersRouter = (
 
   /**
    * @swagger
+   * /user/friend/requests:
+   *   get:
+   *     summary: Get incoming friend requests
+   *     description: Retrieves a list of users who sent friend requests to the authenticated user.
+   *     tags:
+   *       - User
+   *     security:
+   *       - bearerAuth: []
+   *     responses:
+   *       200:
+   *         description: List of users who sent friend requests
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: array
+   *               items:
+   *                 $ref: '#/components/schemas/PublicUser'
+   *       401:
+   *         description: Unauthorized - missing or invalid token
+   *       500:
+   *         description: Internal server error
+   */
+  router.get(
+    "/friend/requests",
+    authMiddleware,
+    handlers.getUserFriendsRequests
+  );
+
+  /**
+   * @swagger
+   * /friend:
+   *   get:
+   *     summary: Get user's friends
+   *     description: Retrieves a list of users who are friends with the authenticated user.
+   *     tags:
+   *       - User
+   *     security:
+   *       - bearerAuth: []
+   *     responses:
+   *       200:
+   *         description: List of user's friends
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: array
+   *               items:
+   *                 $ref: '#/components/schemas/PublicUser'
+   *       401:
+   *         description: Unauthorized - missing or invalid token
+   *       500:
+   *         description: Internal server error
+   */
+  router.get("/friend", authMiddleware, handlers.getUserFriends);
+
+  /**
+   * @swagger
    * /user/friend:
    *   post:
    *     summary: Send a friend request
    *     description: Authenticated user sends a friend request to another user.
    *     tags:
-   *       - Friend
+   *       - User
    *     security:
    *       - bearerAuth: []
    *     requestBody:
@@ -147,7 +207,7 @@ export const createUsersRouter = (
    *     summary: Respond to a friend request
    *     description: Accept or decline a pending friend request.
    *     tags:
-   *       - Friend
+   *       - User
    *     security:
    *       - bearerAuth: []
    *     requestBody:

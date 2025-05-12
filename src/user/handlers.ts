@@ -48,3 +48,19 @@ export const answerFriendRequest = (usersDal: UsersDal) =>
 
     response.sendStatus(StatusCodes.OK);
   });
+
+export const getUserFriends = (usersDal: UsersDal) =>
+  validateAuthenticatedRequest(async (request, response) => {
+    const { id: userId } = request.user;
+    const users = await usersDal.getUserFriends(userId);
+
+    response.json(users);
+  });
+
+export const getUserFriendsRequests = (usersDal: UsersDal) =>
+  validateAuthenticatedRequest(async (request, response) => {
+    const { id: userId } = request.user;
+    const users = await usersDal.getUserFriendsRequests(userId);
+
+    response.json(users);
+  });
