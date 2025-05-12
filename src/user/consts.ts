@@ -15,4 +15,4 @@ export const USER_FRIENDS_PROJECTION: ProjectionType<User> = {
   streak: 1,
 };
 
-export const SEARCH_USER_SELECT = "username email picture -_id";
+export const SEARCH_USER_SELECT = "username email picture _id";
