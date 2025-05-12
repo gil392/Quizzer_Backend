@@ -21,4 +21,25 @@ export class UsersDal extends BasicDal<User> {
       .select(SEARCH_USER_SELECT)
       .limit(limit);
   };
+
+  addFriendRequest = (userId: string, friendToAdd: string) =>
+    this.model.updateOne(
+      { _id: userId },
+      { $addToSet: { friendRequests: friendToAdd } }
+    );
+
+  declineFriendship = (userId: string, declinedFriend: string) =>
+    this.model.updateOne(
+      { _id: userId },
+      { $pull: { friendRequests: declinedFriend } }
+    );
+
+  acceptFriendship = (userId: string, acceptedFriend: string) =>
+    this.model.updateOne(
+      { _id: userId },
+      {
+        $pull: { friendRequests: acceptedFriend },
+        $addToSet: { friends: acceptedFriend },
+      }
+    );
 }
