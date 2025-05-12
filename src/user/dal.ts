@@ -27,16 +27,27 @@ export class UsersDal extends BasicDal<User> {
 
   private getUsersFromUser = async (
     userId: string,
-    propery: "friends" | "friendRequests"
+    property: "friends" | "friendRequests"
   ): Promise<(PublicUser & Document)[]> => {
     const result = await this.model.aggregate([
       {
         $match: { _id: new Types.ObjectId(userId) },
       },
       {
+        $addFields: {
+          objectIds: {
+            $map: {
+              input: `$${property}`,
+              as: "id",
+              in: { $toObjectId: "$$id" },
+            },
+          },
+        },
+      },
+      {
         $lookup: {
           from: "users",
-          localField: propery,
+          localField: "objectIds",
           foreignField: "_id",
           as: "friendUsers",
         },

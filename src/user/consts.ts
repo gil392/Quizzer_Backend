@@ -8,6 +8,7 @@ export const EXCLUDE_USER_PRIVATE_PROPERTIES_PROJECTION: ProjectionType<User> =
   };
 
 export const USER_FRIENDS_PROJECTION: ProjectionType<User> = {
+  _id: 1,
   email: 1,
   username: 1,
   favoriteLessons: 1,
