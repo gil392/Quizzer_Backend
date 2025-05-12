@@ -25,3 +25,26 @@ export const searchUsers = (usersDal: UsersDal) =>
 
     response.json(users);
   });
+
+export const createFriendRequest = (usersDal: UsersDal) =>
+  validateCreateFriendRequestRequest(async (request, response) => {
+    const { user } = request.body;
+    const { id: friendToAdd } = request.user;
+    await usersDal.addFriendRequest(user, friendToAdd);
+
+    response.sendStatus(StatusCodes.CREATED);
+  });
+
+export const answerFriendRequest = (usersDal: UsersDal) =>
+  validateAnswerFriendRequestRequest(async (request, response) => {
+    const { accepted, friendRequester } = request.body;
+    const { id: userId } = request.user;
+
+    if (accepted) {
+      await usersDal.acceptFriendship(userId, friendRequester);
+    } else {
+      await usersDal.declineFriendship(userId, friendRequester);
+    }
+
+    response.sendStatus(StatusCodes.OK);
+  });
