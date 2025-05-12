@@ -80,11 +80,21 @@ export class UsersDal extends BasicDal<User> {
     );
 
   acceptFriendship = (userId: string, acceptedFriend: string) =>
-    this.model.updateOne(
-      { _id: userId },
+    this.model.bulkWrite([
       {
-        $pull: { friendRequests: acceptedFriend },
-        $addToSet: { friends: acceptedFriend },
-      }
-    );
+        updateOne: {
+          filter: { _id: userId },
+          update: {
+            $pull: { friendRequests: acceptedFriend },
+            $addToSet: { friends: acceptedFriend },
+          },
+        },
+      },
+      {
+        updateOne: {
+          filter: { _id: acceptedFriend },
+          update: { $addToSet: { friends: userId } },
+        },
+      },
+    ]);
 }
