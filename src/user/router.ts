@@ -73,9 +73,9 @@ export const createUsersRouter = (
    *                 type: string
    *                 description: user new username
    *                 example: new user username
-   *               defaultSettings:
-   *                 type: DefaultSettings
-   *                 description: default settings in Quizzer
+   *               settings:
+   *                 type: Settings
+   *                 description: user settings in Quizzer
    *                 example: Dark Mode
    *     responses:
    *       200:

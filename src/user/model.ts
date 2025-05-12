@@ -1,10 +1,6 @@
 import { Model, Schema, model } from "mongoose";
 import { z } from "zod";
-import {
-  DefaultSettings,
-  defaultSettingsSchema,
-  defaultSettingsZodSchema,
-} from "./defaultSettingsModel";
+import { Settings, settingsSchema, settingsZodSchema } from "./settingsModel";
 
 /**
  * @swagger
@@ -51,9 +47,9 @@ import {
  *         streak:
  *           type: number
  *           description: Current streak count (e.g., days active in a row)
- *         defaultSettings:
- *           type: DefaultSettings
- *           description: User default settings for lesson
+ *         settings:
+ *           type: Settings
+ *           description: User settings for lesson
  *       example:
  *         email: "jane.doe@example.com"
  *         hashedPassword: "$2b$10$E8xKkF..."
@@ -63,12 +59,12 @@ import {
  *         friends: ["user123", "user321"]
  *         favoriteLessons: ["lesson1", "lesson2"]
  *         streak: 5
- *         defaultSettings: { feedbackType: "onSubmit",
- *                            questionsOrder: "chronological",
- *                            displayMode: "Light",
- *                            maxQuestionCount: 10,
- *                            isManualCount: false,
- *                            solvingTimeMs: 6000 , }
+ *         settings: { feedbackType: "onSubmit",
+ *                     questionsOrder: "chronological",
+ *                     displayMode: "Light",
+ *                     maxQuestionCount: 10,
+ *                     isManualCount: false,
+ *                     solvingTimeMs: 6000 , }
  *
  *     PublicUser:
  *       type: object
@@ -103,9 +99,9 @@ import {
  *         streak:
  *           type: number
  *           description: Current streak count (e.g., days active in a row)
- *         defaultSettings:
- *           type: DefaultSettings
- *           description: User default settings for lesson
+ *         settings:
+ *           type: Settings
+ *           description: User settings
  *       example:
  *         email: "jane.doe@example.com"
  *         username: "jane_doe"
@@ -113,12 +109,12 @@ import {
  *         friends: ["user123", "user321"]
  *         favoriteLessons: ["lesson1", "lesson2"]
  *         streak: 5
- *         defaultSettings: { feedbackType: "onSubmit",
- *                            questionsOrder: "chronological",
- *                            displayMode: "Light",
- *                            maxQuestionCount: 10,
- *                            isManualCount: false,
- *                            solvingTimeMs: 6000 , }
+ *         settings: { feedbackType: "onSubmit",
+ *                     questionsOrder: "chronological",
+ *                     displayMode: "Light",
+ *                     maxQuestionCount: 10,
+ *                     isManualCount: false,
+ *                     solvingTimeMs: 6000 , }
  */
 
 export type PublicUser = {
@@ -128,7 +124,7 @@ export type PublicUser = {
   friendRequests?: string[];
   friends?: string[];
   favoriteLessons?: string[];
-  defaultSettings?: DefaultSettings;
+  settings?: Settings;
 };
 
 export type User = PublicUser & {
@@ -145,7 +141,7 @@ export const userZodSchema: z.ZodType<User> = z.object({
   friendRequests: z.array(z.string()).default([]),
   friends: z.array(z.string()).default([]),
   favoriteLessons: z.array(z.string()).default([]),
-  defaultSettings: defaultSettingsZodSchema.optional(),
+  settings: settingsZodSchema.optional(),
 });
 
 const userSchema = new Schema<User>({
@@ -157,7 +153,7 @@ const userSchema = new Schema<User>({
   friendRequests: { type: [String], default: [] },
   friends: { type: [String], default: [] },
   favoriteLessons: { type: [String], default: [] },
-  defaultSettings: { type: defaultSettingsSchema, required: false },
+  settings: { type: settingsSchema, required: false },
 });
 
 export type UserModel = Model<User>;

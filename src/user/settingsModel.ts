@@ -1,7 +1,7 @@
 import { Schema } from "mongoose";
 import { z } from "zod";
 
-export type DefaultSettings = {
+export type Settings = {
   feedbackType: "onSubmit" | "onSelectAnswer";
   questionsOrder: "chronological" | "random";
   displayMode: "Light" | "Dark";
@@ -10,7 +10,7 @@ export type DefaultSettings = {
   solvingTimeMs: number;
 };
 
-export const defaultSettingsZodSchema: z.ZodType<DefaultSettings> = z.object({
+export const settingsZodSchema: z.ZodType<Settings> = z.object({
   feedbackType: z.enum(["onSubmit", "onSelectAnswer"]),
   questionsOrder: z.enum(["chronological", "random"]),
   displayMode: z.enum(["Light", "Dark"]),
@@ -19,7 +19,7 @@ export const defaultSettingsZodSchema: z.ZodType<DefaultSettings> = z.object({
   solvingTimeMs: z.coerce.number(),
 });
 
-export const defaultSettingsSchema = new Schema<DefaultSettings>({
+export const settingsSchema = new Schema<Settings>({
   feedbackType: {
     type: String,
     enum: ["onSubmit", "onSelectAnswer"],

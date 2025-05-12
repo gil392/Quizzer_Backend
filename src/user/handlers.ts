@@ -16,9 +16,9 @@ export const getLoggedUser = (usersDal: UsersDal) =>
 export const editUser = (usersDal: UsersDal) =>
   validateEditUserRequest(async (request, response) => {
     const { id: userId } = request.user;
-    const { username, defaultSettings } = request.body;
+    const { username, settings } = request.body;
     const updatedUser = await usersDal
-      .updateById(userId, { username, defaultSettings })
+      .updateById(userId, { username, settings })
       .lean();
 
     if (!updatedUser) {
