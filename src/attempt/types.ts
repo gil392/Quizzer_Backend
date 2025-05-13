@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { createAttemptRequestSchema } from './validators';
+import { questionAttemptZodSchema } from './validators';
 
 export type QuizAttempt = {
     quizId: string;
@@ -14,6 +14,6 @@ export type QuestionAttempt = {
     isCorrect: boolean;
 };
 
-export type QuestionAnswerSubmittion = z.infer<
-    typeof createAttemptRequestSchema
+export type QuestionAnswerAttempt = z.infer<
+    typeof questionAttemptZodSchema
 >;

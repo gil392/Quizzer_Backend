@@ -1,9 +1,7 @@
-import { isNotNil } from 'ramda';
 import {
     QuizResponseQuestion,
     QuizResponse,
     Question,
-    QuestionAnswerSubmittion,
     Quiz
 } from './types';
 
