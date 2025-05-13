@@ -31,7 +31,6 @@ const createRouterController = ({
     getQuizzes: handlers.getQuizzes(quizzesDal),
     deleteQuiz: handlers.deleteQuiz(quizzesDal),
     updateQuiz: handlers.updateQuiz(quizzesDal),
-    submitQuiz: handlers.submitQuiz(quizzesDal)
 });
 
 export const createQuizRouter = (
@@ -151,67 +150,6 @@ export const createQuizRouter = (
      *         description: Server error
      */
     router.post("/", controller.generateQuiz);
-
-    /**
-     * @swagger
-     * /quiz/submit:
-     *   post:
-     *     summary: Submit a solved quiz
-     *     tags: [Quiz]
-     *     requestBody:
-     *       required: true
-     *       content:
-     *         application/json:
-     *           schema:
-     *             type: object
-     *             required:
-     *               - quizId
-     *               - questions
-     *             properties:
-     *               quizId:
-     *                 type: string
-     *                 description: The ID of the quiz being submitted
-     *               questions:
-     *                 type: array
-     *                 minItems: 1
-     *                 items:
-     *                   type: object
-     *                   required:
-     *                     - questionId
-     *                     - selectedAnswer
-     *                   properties:
-     *                     questionId:
-     *                       type: string
-     *                     selectedAnswer:
-     *                       type: string
-     *           example:
-     *             quizId: "quiz456"
-     *             questions:
-     *               - questionId: "q1"
-     *                 selectedAnswer: "A"
-     *               - questionId: "q2"
-     *                 selectedAnswer: "B"
-     *     responses:
-     *       200:
-     *         description: Quiz submission result (e.g., score or status)
-     *         content:
-     *           application/json:
-     *             schema:
-     *               type: object
-     *               properties:
-     *                 grade:
-     *                   type: number
-     *                 passed:
-     *                   type: boolean
-     *               example:
-     *                 grade: 80
-     *                 passed: true
-     *       400:
-     *         description: Invalid input
-     *       500:
-     *         description: Server error
-     */
-    router.post("/submit", controller.submitQuiz);
 
     /**
      * @swagger
