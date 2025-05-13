@@ -8,8 +8,7 @@ import {
 } from "./validators";
 import { getQuestionResultInQuiz } from "./utils";
 import { QuizzesDal } from "../quiz/dal";
-import { QuestionResult } from "../quiz/types";
-import { QuizAttempt } from "./types";
+import { QuestionAttempt, QuizAttempt } from "./types";
 
 export const GetAttemptsByQuizId = (AttemptDal: AttemptDal) =>
     getAttemptsByQuizIdRequestValidator(async (req, res) => {
@@ -29,8 +28,7 @@ export const createAttempt = (quizzesDal: QuizzesDal, AttemptDal: AttemptDal) =>
             throw new BadRequestError("Quiz does not exist");
         }
 
-
-        const questionsResults: QuestionResult[] = questions.map(
+        const questionsResults: QuestionAttempt[] = questions.map(
             getQuestionResultInQuiz(quiz)
         );
 
