@@ -2,6 +2,7 @@ import { QuestionsGenerator } from "../../externalApis/quizGenerator";
 import { VideoSummeraizer } from "../../externalApis/videoSummerizer";
 import { LessonsDal } from "../../lesson/dal";
 import { QuizzesDal } from "../../quiz/dal";
+import { QuizzesRatingDal } from "../../quizRating/dal";
 import { UsersDal } from "../../user/dal";
 import { Database } from "../database/database";
 import { Server } from "../server/server";
@@ -27,15 +28,18 @@ export class System extends Service {
   }
 
   private createDals = () => {
-    const { quizModel, lessonModel, userModel } = this.database.getModels();
+    const { quizModel, lessonModel, userModel, quizRatingModel } =
+      this.database.getModels();
     const quizzesDal = new QuizzesDal(quizModel);
     const lessonsDal = new LessonsDal(lessonModel);
     const usersDal = new UsersDal(userModel);
+    const quizzesRatingDal = new QuizzesRatingDal(quizRatingModel);
 
     return {
       quizzesDal,
       lessonsDal,
-      usersDal
+      usersDal,
+      quizzesRatingDal,
     };
   };
 
