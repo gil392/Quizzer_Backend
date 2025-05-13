@@ -1,6 +1,6 @@
 import { isNotNil } from 'ramda';
-import { Question, QuestionAnswerSubmittion, Quiz } from '../quiz/types';
-import { QuestionAttempt } from './types';
+import { Question, Quiz } from '../quiz/types';
+import { QuestionAnswerAttempt, QuestionAttempt } from './types';
 
 
 const findQuestionById = (questions: Question[], id: string) =>
@@ -8,7 +8,7 @@ const findQuestionById = (questions: Question[], id: string) =>
 
 export const getQuestionResultInQuiz =
     (quiz: Quiz) =>
-    (questionAnswerSubmittion: QuestionAnswerSubmittion): QuestionAttempt => {
+    (questionAnswerSubmittion: QuestionAnswerAttempt): QuestionAttempt => {
         const { questionId, selectedAnswer } = questionAnswerSubmittion;
         const question = findQuestionById(quiz.questions, questionId);
         const correctAnswer = question?.correctAnswer ?? '';
