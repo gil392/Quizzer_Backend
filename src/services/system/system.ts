@@ -1,3 +1,5 @@
+import { AttemptDal } from "../../attempt/dal";
+import { quizAttemptModel } from "../../attempt/model";
 import { QuestionsGenerator } from "../../externalApis/quizGenerator";
 import { VideoSummeraizer } from "../../externalApis/videoSummerizer";
 import { LessonsDal } from "../../lesson/dal";
@@ -31,11 +33,13 @@ export class System extends Service {
     const quizzesDal = new QuizzesDal(quizModel);
     const lessonsDal = new LessonsDal(lessonModel);
     const usersDal = new UsersDal(userModel);
+    const attemptDal = new AttemptDal(quizAttemptModel);
 
     return {
       quizzesDal,
       lessonsDal,
-      usersDal
+      usersDal,
+      attemptDal
     };
   };
 

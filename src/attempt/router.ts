@@ -11,16 +11,16 @@ import { QuizzesDal } from "../quiz/dal";
  */
 
 export type AttemptRouterDependencies = {
-    AttemptDal: AttemptDal;
-    QuizzesDal: QuizzesDal;
+    attemptDal: AttemptDal;
+    quizzesDal: QuizzesDal;
 };
 
 const createRouterController = ({
-    AttemptDal,
-    QuizzesDal
+    attemptDal,
+    quizzesDal
 }: AttemptRouterDependencies) => ({
-    CreateAttempt: handlers.createAttempt(QuizzesDal, AttemptDal),
-    //GetAttemptsByQuizId: handlers.GetAttemptsByQuizId(AttemptDal),
+    CreateAttempt: handlers.createAttempt(quizzesDal, attemptDal),
+    GetAttemptsByQuizId: handlers.GetAttemptsByQuizId(attemptDal),
 });
 
 export const createAttemptRouter = (
@@ -31,10 +31,10 @@ export const createAttemptRouter = (
 
     /**
      * @swagger
-     * /quiz/{quizId}:
+     * /attempt/{quizId}:
      *   get:
      *     summary: Get attempts by quiz ID
-     *     tags: [Quiz]
+     *     tags: [Attempt]
      *     parameters:
      *       - in: path
      *         name: quizId
@@ -77,14 +77,14 @@ export const createAttemptRouter = (
      *       500:
      *         description: Server error
      */
-    //router.get('/:quizId', controller.GetAttemptsByQuizId);
+    router.get('/:quizId', controller.GetAttemptsByQuizId);
 
     /**
      * @swagger
-     * /quiz/submit:
+     * /Attempt:
      *   post:
      *     summary: Submit a solved quiz
-     *     tags: [Quiz]
+     *     tags: [Attempt]
      *     requestBody:
      *       required: true
      *       content:

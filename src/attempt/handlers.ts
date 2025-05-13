@@ -6,19 +6,19 @@ import {
     getAttemptsByQuizIdRequestValidator,
     createAttemptRequestValidator,
 } from "./validators";
-import { getQuestionResultInQuiz, createAttemptsResponse } from "./utils";
+import { getQuestionResultInQuiz } from "./utils";
 import { QuizzesDal } from "../quiz/dal";
 import { QuestionResult } from "../quiz/types";
 import { QuizAttempt } from "./types";
 
-/*export const GetAttemptsByQuizId = (AttemptDal: AttemptDal) =>
+export const GetAttemptsByQuizId = (AttemptDal: AttemptDal) =>
     getAttemptsByQuizIdRequestValidator(async (req, res) => {
         const { quizId } = req.params;
 
         const attempts = await AttemptDal.findByQuizId(quizId).lean();
 
-        res.status(StatusCodes.OK).send(createAttemptsResponse(attempts));
-    });*/
+        res.status(StatusCodes.OK).send(attempts);
+    });
 
 export const createAttempt = (quizzesDal: QuizzesDal, AttemptDal: AttemptDal) =>
     createAttemptRequestValidator(async (req, res) => {

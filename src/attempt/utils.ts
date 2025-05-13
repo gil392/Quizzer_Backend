@@ -2,22 +2,6 @@ import { isNotNil } from 'ramda';
 import { Question, QuestionAnswerSubmittion, QuestionResult, Quiz, QuizResponse, QuizResponseQuestion } from '../quiz/types';
 
 
-export const createAttemptsResponse = ({
-    _id,
-    question,
-    correctAnswer,
-    incorrectAnswers
-}: Question): QuizResponseQuestion => ({
-    _id: _id?.toString() ?? '',
-    text: question,
-    answers: incorrectAnswers.concat(correctAnswer),
-});
-
-export const createQuizResponse = (quiz: Quiz): QuizResponse => ({
-    ...quiz,
-    questions: quiz.questions.map(createAttemptsResponse)
-});
-
 const findQuestionById = (questions: Question[], id: string) =>
     questions.find(({ _id }) => (_id?.toString() ?? '') === id);
 
