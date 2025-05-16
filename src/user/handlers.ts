@@ -21,7 +21,7 @@ export const getLoggedUser = (usersDal: UsersDal) =>
 
 export const searchUsers = (usersDal: UsersDal) =>
   validateSearchUsersRequest(async (request, response) => {
-    const { q: searchTerm } = request.query;
+    const { searchTerm } = request.query;
     const users = await usersDal.searchUsers(searchTerm);
 
     response.json(users);

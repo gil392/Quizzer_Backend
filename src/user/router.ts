@@ -71,7 +71,7 @@ export const createUsersRouter = (
    *       - bearerAuth: []
    *     parameters:
    *       - in: query
-   *         name: q
+   *         name: searchTerm
    *         required: true
    *         schema:
    *           type: string

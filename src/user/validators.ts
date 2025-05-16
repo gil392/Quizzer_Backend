@@ -5,7 +5,7 @@ import { settingsZodSchema } from "./settingsModel";
 
 const searchUsersRequestZodSchema = z.object({
   query: z.object({
-    q: z.string(),
+    searchTerm: z.string(),
   }),
 });
 export const validateSearchUsersRequest = validateHandlerRequest(
