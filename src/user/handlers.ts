@@ -8,6 +8,7 @@ import {
   validateEditUserRequest,
   validateSearchUsersRequest,
 } from "./validators";
+import { RequestHandler } from "express";
 
 export const getLoggedUser = (usersDal: UsersDal) =>
   validateAuthenticatedRequest(async (request, response) => {
@@ -65,7 +66,7 @@ export const getUserFriendsRequests = (usersDal: UsersDal) =>
 
     response.json(users);
   });
-  
+
 export const editUser = (usersDal: UsersDal) =>
   validateEditUserRequest(async (request, response) => {
     const { id: userId } = request.user;
@@ -79,3 +80,7 @@ export const editUser = (usersDal: UsersDal) =>
     }
     response.json(updatedUser);
   });
+
+export const getMessages: RequestHandler = (_req, res) => {
+  res.sendStatus(StatusCodes.NOT_IMPLEMENTED);
+};

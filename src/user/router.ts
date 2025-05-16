@@ -24,6 +24,7 @@ const buildRouteHandlers = (
     dependencies.usersDal
   ),
   editUser: handlers.editUser(dependencies.usersDal),
+  getMessages: handlers.getMessages,
 });
 
 export const createUsersRouter = (
@@ -58,6 +59,22 @@ export const createUsersRouter = (
    *         description: Server error
    */
   router.get("/me", authMiddleware, handlers.getLoggedUser);
+
+  /**
+   * @swagger
+   * /user/me:
+   *   get:
+   *     summary: get logged user messages since timestamp
+   *     description: get logged user messages since timestamp
+   *     tags:
+   *       - User
+   *     security:
+   *       - bearerAuth: []
+   *     responses:
+   *       501:
+   *         description: Route Handler Not Implemented
+   */
+  router.get("/messages", authMiddleware, handlers.getMessages);
 
   /**
    * @swagger
