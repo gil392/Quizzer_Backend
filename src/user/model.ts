@@ -99,6 +99,9 @@ import { Settings, settingsSchema, settingsZodSchema } from "./settingsModel";
  *         streak:
  *           type: number
  *           description: Current streak count (e.g., days active in a row)
+ *         xp:
+ *           type: number
+ *           description: Current xp of the user (gained by achivments)
  *         settings:
  *           type: Settings
  *           description: User settings
@@ -124,6 +127,7 @@ export type PublicUser = {
   friends?: string[];
   favoriteLessons?: string[];
   streak: number;
+  xp: number;
   settings?: Settings;
 };
 
@@ -141,6 +145,7 @@ export const userZodSchema: z.ZodType<User> = z.object({
   friends: z.array(z.string()).default([]),
   favoriteLessons: z.array(z.string()).default([]),
   streak: z.coerce.number(),
+  xp: z.coerce.number(),
   settings: settingsZodSchema.optional(),
 });
 
@@ -153,6 +158,7 @@ const userSchema = new Schema<User>({
   friends: { type: [String], default: [] },
   favoriteLessons: { type: [String], default: [] },
   streak: { type: Number, default: 0 },
+  xp: { type: Number, default: 0 },
   settings: { type: settingsSchema, required: false },
 });
 userSchema.index({ username: "text", email: "text" });
