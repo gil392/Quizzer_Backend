@@ -5,6 +5,7 @@ import { authenticate } from './authentication';
 import { VideoDetails } from './getVideoDetails';
 
 const enableRelatedVideos = process.env.ENABLE_RELATED_VIDEOS ?? false;
+const MAX_RELATED_VIDEOS = 10;
 const openAiConfig: OpenAiConfig = { apiKey: process.env.OPENAI_API_KEY! };
 
 export async function generateQuery(
@@ -55,7 +56,7 @@ export async function searchYouTube(
             part: ['snippet'],
             q: query,
             type: ['video'],
-            maxResults: 10,
+            maxResults: MAX_RELATED_VIDEOS,
             relevanceLanguage: 'en',
             videoCaption: 'closedCaption',
         });
@@ -72,7 +73,17 @@ export async function searchYouTube(
             );
         });
 
-        return results?.slice(0, 10) || [];
+        return (results?.slice(0, MAX_RELATED_VIDEOS).map(item => ({
+            videoId: item.id?.videoId,
+            snippet: {
+                title: item.snippet?.title,
+                description: item.snippet?.description,
+                publishTime: item.snippet?.publishedAt,
+                channelTitle: item.snippet?.channelTitle,
+                channelId: item.snippet?.channelId,
+                thumbnail: item.snippet?.thumbnails?.default
+            }
+        })) || []);
     } catch (error) {
         console.error('Error searching YouTube:', error);
         throw new Error('Failed to search YouTube.');
