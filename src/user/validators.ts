@@ -7,7 +7,7 @@ const editUserRequestZodSchema = authenticatedRequestZodSchema.and(
   z.object({
     body: z.object({
       username: z.string().optional(),
-      settings: settingsZodSchema.optional(),
+      settings: settingsZodSchema.partial().optional(),
     }),
   })
 );
