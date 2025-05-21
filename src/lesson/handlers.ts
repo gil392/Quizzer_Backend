@@ -87,7 +87,7 @@ export const updateLesson = (lessonsDal: LessonsDal) =>
 
 export const getRelatedVideosForLesson = (lessonsDal: LessonsDal) =>
   relatedVideosLessonRequstValidator(async (req, res) => {
-    const { id } = req.params;
+    const { id } = req.query;
 
     const lesson = await lessonsDal.findById(id).lean();
     if (isNil(lesson)) {

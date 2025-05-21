@@ -34,6 +34,71 @@ export const createLessonRouter = (
   const controller = createRouterController(dependecies);
 
   /**
+ * @swagger
+ * /lesson/relatedVideos:
+ *   get:
+ *     summary: Get related videos for a lesson
+ *     tags: [Lesson]
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the lesson to fetch related videos for
+ *     responses:
+ *       200:
+ *         description: A list of related videos
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   videoId:
+ *                     type: string
+ *                     description: ID of the related video
+ *                   snippet:
+ *                     type: object
+ *                     properties:
+ *                       title:
+ *                         type: string
+ *                         description: Title of the related video
+ *                       description:
+ *                         type: string
+ *                         description: Description of the related video
+ *                       publishTime:
+ *                         type: string
+ *                         description: Publish time of the related video
+ *                       channelTitle:
+ *                         type: string
+ *                         description: Name of the channel that uploaded the related video
+ *                       channelId:
+ *                         type: string
+ *                         description: ID of the channel that uploaded the related video
+ *                       thumbnail:
+ *                         type: object
+ *                         properties:
+ *                           url:
+ *                             type: string
+ *                             description: Thumbnail URL
+ *                           width:
+ *                             type: number
+ *                             description: Thumbnail width
+ *                           height:
+ *                             type: number
+ *                             description: Thumbnail height
+ *       404:
+ *         description: Lesson not found
+ *       400:
+ *         description: Invalid lesson ID or missing video details
+ *       500:
+ *         description: Server error
+ */
+  router.get("/relatedVideos", controller.getRelatedVideos);
+
+  /**
    * @swagger
    * /lesson/{id}:
    *   get:
@@ -195,49 +260,6 @@ export const createLessonRouter = (
    */
   router.put("/:id", controller.updateLesson);
 
-  /**
-   * @swagger
-   * /lesson/{id}/relatedVideos:
-   *   get:
-   *     summary: Get related videos for a lesson
-   *     tags: [Lesson]
-   *     parameters:
-   *       - in: path
-   *         name: lessonId
-   *         required: true
-   *         schema:
-   *           type: string
-   *         description: ID of the lesson to fetch related videos for
-   *     responses:
-   *       200:
-   *         description: A list of related videos
-   *         content:
-   *           application/json:
-   *             schema:
-   *               type: array
-   *               items:
-   *                 type: object
-   *                 properties:
-   *                   videoId:
-   *                     type: string
-   *                     description: ID of the related video
-   *                   title:
-   *                     type: string
-   *                     description: Title of the related video
-   *                   channelId:
-   *                     type: string
-   *                     description: ID of the channel that uploaded the related video
-   *                   channelTitle:
-   *                     type: string
-   *                     description: Name of the channel that uploaded the related video
-   *       404:
-   *         description: Lesson not found
-   *       400:
-   *         description: Invalid lesson ID or missing video details
-   *       500:
-   *         description: Server error
-   */
-  router.get("/:id/relatedVideos", controller.getRelatedVideos);
 
   return router;
 };

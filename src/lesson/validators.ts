@@ -44,7 +44,7 @@ export const updateLessonRequstValidator = validateHandlerRequest(
 );
 
 const relatedVideosLessonRequstZodSchema = z.object({
-  params: z.object({
+  query: z.object({
     id: z.string(),
   }),
 });
