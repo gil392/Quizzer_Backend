@@ -12,7 +12,7 @@ import { QuestionAttempt, QuizAttempt } from "./types";
 
 export const GetAttemptsByQuizId = (AttemptDal: AttemptDal) =>
     getAttemptsByQuizIdRequestValidator(async (req, res) => {
-        const { quizId } = req.params;
+        const { quizId } = req.query;
 
         const attempts = await AttemptDal.findByQuizId(quizId).lean();
 

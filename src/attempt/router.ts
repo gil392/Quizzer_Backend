@@ -6,8 +6,8 @@ import { QuizzesDal } from "../quiz/dal";
 /**
  * @swagger
  * tags:
- *   name: Quiz
- *   description: API for /quiz
+ *   name: Attempt
+ *   description: API for /attempt
  */
 
 export type AttemptRouterDependencies = {
@@ -31,12 +31,12 @@ export const createAttemptRouter = (
 
     /**
      * @swagger
-     * /attempt/{quizId}:
+     * /attempt:
      *   get:
      *     summary: Get attempts by quiz ID
      *     tags: [Attempt]
      *     parameters:
-     *       - in: path
+     *       - in: query
      *         name: quizId
      *         required: true
      *         schema:
@@ -77,11 +77,11 @@ export const createAttemptRouter = (
      *       500:
      *         description: Server error
      */
-    router.get('/:quizId', controller.GetAttemptsByQuizId);
+    router.get('/', controller.GetAttemptsByQuizId);
 
     /**
      * @swagger
-     * /Attempt:
+     * /attempt:
      *   post:
      *     summary: Submit a solved quiz
      *     tags: [Attempt]

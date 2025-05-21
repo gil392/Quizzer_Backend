@@ -2,7 +2,7 @@ import { z } from "zod";
 import { validateHandlerRequest } from "../services/server/validators";
 
 export const getAttemptsByQuizIdRequestSchema = z.object({
-    params: z.object({
+    query: z.object({
         quizId: z.string(),
     }),
 });
