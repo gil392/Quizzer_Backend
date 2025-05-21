@@ -1,16 +1,16 @@
 import { ProcessEnv } from '../../config';
-import { createSummarizerConfig, SummarizerConfig } from '../../externalApis/transcriptSummarizer/config';
+import { createOpenAiConfig, OpenAiConfig } from '../../externalApis/openAiConfig';
 import { createDatabaseConfig, DatabaseConfig } from '../database/config';
 import { createServerConfig, ServerConfig } from '../server/config';
 
 export type SystemConfig = {
     databaseConfig: DatabaseConfig;
     serverConfig: ServerConfig;
-    summarizerConfig: SummarizerConfig
+    openAiConfig: OpenAiConfig
 };
 
 export const createSystemConfig = (processEnv: ProcessEnv): SystemConfig => ({
     serverConfig: createServerConfig(processEnv),
     databaseConfig: createDatabaseConfig(processEnv),
-    summarizerConfig: createSummarizerConfig(processEnv)
+    openAiConfig: createOpenAiConfig(processEnv)
 });

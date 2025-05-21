@@ -1,9 +1,12 @@
 import { google } from 'googleapis';
 import { authenticate } from './authentication';
 
-interface VideoDetails {
+export interface VideoDetails {
     title: string;
     channel: string;
+    channelId: string;
+    description: string;
+    tags?: string[];
     views: string;
     duration: string;
 }
@@ -34,7 +37,10 @@ export const getVideoDetails = async (videoId: string): Promise<VideoDetails | n
         return {
             title: snippet.title ?? 'Unknown Title',
             channel: snippet.channelTitle ?? 'Unknown Channel',
-            views: statistics.viewCount || '0',
+            description: snippet.description ?? 'No Description',
+            channelId: snippet.channelId ?? '',
+            views: statistics.viewCount || '',
+            tags: snippet.tags || [],
             duration: contentDetails.duration ?? 'Unknown Duration',
         };
     } catch (error) {
