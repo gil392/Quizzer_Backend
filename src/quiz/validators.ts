@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { validateHandlerRequest } from "../services/server/validators";
 import { quizCheckTypes, QuizSettings } from "./types";
+import { authenticatedRequestZodSchema } from "../authentication/validators";
 
 const quizSettingsZodSchema: z.ZodType<QuizSettings> = z.object({
   checkType: z.enum(quizCheckTypes),
@@ -10,13 +11,13 @@ const quizSettingsZodSchema: z.ZodType<QuizSettings> = z.object({
 });
 
 export const getQuizByIdRequestZodSchema = z.object({
-    params: z.object({
-        quizId: z.string(),
-    }),
+  params: z.object({
+    quizId: z.string(),
+  }),
 });
 
 export const getQuizByIdRequestValidator = validateHandlerRequest(
-    getQuizByIdRequestZodSchema
+  getQuizByIdRequestZodSchema
 );
 
 export const generateQuizRequstZodSchema = z.object({
@@ -38,7 +39,8 @@ const getQuizzesRequstZodSchema = z.object({
   query: z.object({
     lessonId: z.string().optional(),
   }),
-});
+}).merge(authenticatedRequestZodSchema);
+
 export const getQuizzesRequstValidator = validateHandlerRequest(
   getQuizzesRequstZodSchema
 );

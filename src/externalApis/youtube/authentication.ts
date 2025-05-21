@@ -39,16 +39,33 @@ const refreshAccessToken = async (oauth2Client: Auth.OAuth2Client): Promise<void
         const token = loadToken();
         oauth2Client.setCredentials(token);
 
-        oauth2Client.on('tokens', (newTokens) => {
-            const updated = { ...token, ...newTokens };
-            saveToken(updated);
+        oauth2Client.on('tokens', (tokens) => {
+            if (tokens.refresh_token) {
+                // Save full token including new refresh_token if issued
+                saveToken({ ...loadToken(), ...tokens });
+            } else {
+                // Preserve existing refresh_token
+                saveToken({
+                    ...loadToken(),
+                    access_token: tokens.access_token,
+                    expiry_date: tokens.expiry_date,
+                });
+            }
             console.log('Token auto-refreshed and saved.');
         });
 
         const accessTokenResponse = await oauth2Client.getAccessToken();
-        console.log('Access token:', accessTokenResponse?.token || 'Unknown');
+        if (!accessTokenResponse || !accessTokenResponse.token) {
+            throw new Error('Failed to retrieve access token.');
+        }
+
+        console.log('Access token refreshed successfully.');
     } catch (error: any) {
-        console.error('Error refreshing access token:', error.message);
+        if (error.response?.data?.error === 'invalid_grant') {
+            console.error('Refresh token is no longer valid.');
+        } else {
+            console.error('Error refreshing access token:', error.message);
+        }
         throw error;
     }
 };

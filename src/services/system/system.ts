@@ -4,6 +4,7 @@ import { QuestionsGenerator } from "../../externalApis/quizGenerator";
 import { VideoSummeraizer } from "../../externalApis/videoSummerizer";
 import { LessonsDal } from "../../lesson/dal";
 import { QuizzesDal } from "../../quiz/dal";
+import { QuizzesRatingDal } from "../../quizRating/dal";
 import { UsersDal } from "../../user/dal";
 import { Database } from "../database/database";
 import { Server } from "../server/server";
@@ -16,12 +17,12 @@ export class System extends Service {
 
   constructor(config: SystemConfig) {
     super();
-    const { databaseConfig, serverConfig, summarizerConfig } = config;
+    const { databaseConfig, serverConfig, openAiConfig } = config;
 
     this.database = new Database(databaseConfig);
     const dals = this.createDals();
-    const questionsGenerator = new QuestionsGenerator(summarizerConfig);
-    const videoSummeraizer = new VideoSummeraizer(summarizerConfig);
+    const questionsGenerator = new QuestionsGenerator(openAiConfig);
+    const videoSummeraizer = new VideoSummeraizer(openAiConfig);
     this.server = new Server(
       { ...dals, questionsGenerator, videoSummeraizer },
       serverConfig
@@ -29,17 +30,20 @@ export class System extends Service {
   }
 
   private createDals = () => {
-    const { quizModel, lessonModel, userModel } = this.database.getModels();
+    const { quizModel, lessonModel, userModel, quizRatingModel } =
+      this.database.getModels();
     const quizzesDal = new QuizzesDal(quizModel);
     const lessonsDal = new LessonsDal(lessonModel);
     const usersDal = new UsersDal(userModel);
     const attemptDal = new AttemptDal(quizAttemptModel);
+    const quizzesRatingDal = new QuizzesRatingDal(quizRatingModel);
 
     return {
       quizzesDal,
       lessonsDal,
       usersDal,
-      attemptDal
+      attemptDal,
+      quizzesRatingDal,
     };
   };
 

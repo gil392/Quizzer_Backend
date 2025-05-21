@@ -14,7 +14,16 @@ export const lessonMock: Lesson & { _id: Types.ObjectId } = {
     sharedUsers: [],
     summary: 'summary mock',
     title: 'lesson title',
-    videoUrl: 'https://video.url.com'
+    videoDetails: {
+        title: 'video title',
+        channel: 'channel',
+        channelId: 'channelId',
+        description: 'description',
+        videoId: 'xvFZjo5PgG0',
+        views: '0',
+        tags: ['tag1'],
+        duration: '10000',
+    }
 };
 
 export const generatedQuestionsMock = [

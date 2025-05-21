@@ -42,3 +42,12 @@ const updateLessonRequstZodSchema = z.object({
 export const updateLessonRequstValidator = validateHandlerRequest(
   updateLessonRequstZodSchema
 );
+
+const relatedVideosLessonRequstZodSchema = z.object({
+  query: z.object({
+    id: z.string(),
+  }),
+});
+export const relatedVideosLessonRequstValidator = validateHandlerRequest(
+  relatedVideosLessonRequstZodSchema
+);
