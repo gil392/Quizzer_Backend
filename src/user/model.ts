@@ -124,7 +124,7 @@ export type PublicUser = {
   friendRequests?: string[];
   friends?: string[];
   favoriteLessons?: string[];
-  settings?: Settings;
+  settings?: Partial<Settings>;
 };
 
 export type User = PublicUser & {
