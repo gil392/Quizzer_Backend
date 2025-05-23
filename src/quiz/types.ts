@@ -1,6 +1,4 @@
 import { Types } from 'mongoose';
-import { z } from 'zod';
-import { questionAnswerSubmittionZodSchema } from './validators';
 
 export const quizCheckTypes = ['onSubmit', 'onSelectAnswer'] as const;
 
@@ -36,20 +34,3 @@ export type QuizResponseQuestion = {
 export type QuizResponse = Omit<Quiz, 'questions'> & {
     questions: QuizResponseQuestion[];
 };
-
-export type QuizResult = {
-    quizId: string;
-    results: QuestionResult[];
-    score: number;
-};
-
-export type QuestionResult = {
-    questionId: string;
-    selectedAnswer: string;
-    correctAnswer: string;
-    isCorrect: boolean;
-};
-
-export type QuestionAnswerSubmittion = z.infer<
-    typeof questionAnswerSubmittionZodSchema
->;

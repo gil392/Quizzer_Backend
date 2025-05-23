@@ -9,15 +9,16 @@ import {
   createAuthRouter,
 } from "../../authentication/router";
 import {
-  createLessonRouter,
-  LessonRouterDependencies,
-} from "../../lesson/router";
-import { createQuizRouter, QuizRouterDependencies } from "../../quiz/router";
-import { createUsersRouter, UsersRouterDependencies } from "../../user/router";
-import { Service } from "../service";
-import { ServerConfig } from "./config";
-import { createSwaggerSpecs } from "./swagger";
-import { requestErrorHandler } from "./utils";
+    createLessonRouter,
+    LessonRouterDependencies
+} from '../../lesson/router';
+import { createQuizRouter, QuizRouterDependencies } from '../../quiz/router';
+import { createUsersRouter, UsersRouterDependencies } from '../../user/router';
+import { Service } from '../service';
+import { ServerConfig } from './config';
+import { createSwaggerSpecs } from './swagger';
+import { requestErrorHandler } from './utils';
+import { AttemptRouterDependencies, createAttemptRouter } from '../../attempt/router';
 
 export const createBasicApp = (corsOrigin?: string): Express => {
   const app = express();
@@ -29,10 +30,11 @@ export const createBasicApp = (corsOrigin?: string): Express => {
   return app;
 };
 
-export type ServerDependencies = QuizRouterDependencies &
-  LessonRouterDependencies &
-  AuthRouterDependencies &
-  UsersRouterDependencies;
+export type ServerDependencies = AttemptRouterDependencies &
+    QuizRouterDependencies &
+    LessonRouterDependencies &
+    AuthRouterDependencies &
+    UsersRouterDependencies;
 
 export class Server extends Service {
   app: Express;
@@ -55,11 +57,15 @@ export class Server extends Service {
     const { authConfig } = this.config;
     const authMiddleware = injectUserToRequest(authConfig.tokenSecret);
 
-    this.app.use("/auth", createAuthRouter(authConfig, this.dependencies));
-    this.app.use("/lesson", createLessonRouter(this.dependencies));
-    this.app.use("/quiz", createQuizRouter(authMiddleware, this.dependencies));
-    this.app.use("/user", createUsersRouter(authMiddleware, this.dependencies));
-  };
+        this.app.use('/auth', createAuthRouter(authConfig, this.dependencies));
+        this.app.use('/lesson', createLessonRouter(this.dependencies));
+        this.app.use('/quiz', createQuizRouter(authMiddleware, this.dependencies));
+        this.app.use('/attempt', createAttemptRouter(this.dependencies));
+        this.app.use(
+            '/user',
+            createUsersRouter(authMiddleware, this.dependencies)
+        );
+    };
 
   private useErrorHandler = () => {
     this.app.use(requestErrorHandler);

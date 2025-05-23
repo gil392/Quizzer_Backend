@@ -1,11 +1,11 @@
 import OpenAI from "openai";
 import { Lesson } from "../lesson/model";
 import { Question, QuizSettings } from "../quiz/types";
-import { SummarizerConfig } from "./transcriptSummarizer/config";
+import { OpenAiConfig } from "./openAiConfig";
 
 export class QuestionsGenerator {
   private openAI: OpenAI;
-  constructor(private readonly config: SummarizerConfig) {
+  constructor(private readonly config: OpenAiConfig) {
     this.openAI = new OpenAI({ apiKey: config.apiKey });
   }
 

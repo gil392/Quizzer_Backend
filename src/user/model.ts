@@ -128,7 +128,7 @@ export type PublicUser = {
   favoriteLessons?: string[];
   streak: number;
   xp: number;
-  settings?: Settings;
+  settings?: Partial<Settings>;
 };
 
 export type User = PublicUser & {
