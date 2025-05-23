@@ -8,7 +8,8 @@ import {
   deleteLessonRequstValidator,
   getLessonByIdRequstValidator,
   updateLessonRequstValidator,
-  relatedVideosLessonRequstValidator
+  relatedVideosLessonRequstValidator,
+  createMergedLessonRequstValidator,
 } from "./validators";
 import { extractVideoId } from "../externalApis/youtube/utils";
 import { getVideoDetails } from "../externalApis/youtube/getVideoDetails";
@@ -42,9 +43,41 @@ export const createLesson = (
       sharedUsers: [],
       title: videoDetails.title ?? "Untitled",
       summary,
-      videoDetails: videoDetails as VideoDetails
+      videoDetails: videoDetails as VideoDetails,
     });
     res.status(StatusCodes.CREATED).json(lesson.toObject());
+  });
+
+export const createMergedLesson = (lessonsDal: LessonsDal) =>
+  createMergedLessonRequstValidator(async (req, res) => {
+    const { lessonIds, title } = req.body;
+
+    if (!Array.isArray(lessonIds) || lessonIds.length === 0) {
+      console.error("lessonIds must be a non-empty array");
+      throw new BadRequestError("lessonIds must be a non-empty array");
+    }
+
+    const lessons = await lessonsDal.findAllWithFilter({
+      _id: { $in: lessonIds },
+    });
+
+    if (lessons.length !== lessonIds.length) {
+      console.error("One or more lessons not found");
+      throw new NotFoundError("One or more lessons not found");
+    }
+
+    const mergedSummary = lessons.map((lesson) => lesson.summary).join("\n\n");
+
+    const newLesson = await lessonsDal.create({
+      owner: "owner Mock", // TODO: use logged user after auth
+      sharedUsers: [],
+      title:
+        title ?? "Merged Lessons:" + lessons.map((l) => l.title).join(", "),
+      summary: mergedSummary,
+      videoDetails: lessons[0].videoDetails, // todo: remove this line
+    });
+
+    res.status(StatusCodes.CREATED).json(newLesson.toObject());
   });
 
 export const getLessons =
@@ -83,7 +116,6 @@ export const updateLesson = (lessonsDal: LessonsDal) =>
 
     res.status(StatusCodes.OK).json(updatedLesson.toObject());
   });
-
 
 export const getRelatedVideosForLesson = (lessonsDal: LessonsDal) =>
   relatedVideosLessonRequstValidator(async (req, res) => {
