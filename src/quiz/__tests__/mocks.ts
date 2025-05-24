@@ -1,6 +1,7 @@
 import { Types } from "mongoose";
 import { Lesson } from "../../lesson/model";
 import { Question, Quiz, QuizSettings } from "../types";
+import { QuestionAnswerAttempt, QuestionAttempt } from "../../attempt/types";
 
 export const lessonMock: Lesson & { _id: Types.ObjectId } = {
   _id: new Types.ObjectId(),
@@ -50,29 +51,29 @@ export const quizMock = {
   title: lessonMock.title,
 } satisfies Quiz & { _id: string };
 
-// export const questionAnswerSubmittionsMock = [
-//   {
-//     questionId: generatedQuestionsMock[0]._id!.toString(),
-//     selectedAnswer: generatedQuestionsMock[0].correctAnswer,
-//   },
-//   {
-//     questionId: generatedQuestionsMock[1]._id!.toString(),
-//     selectedAnswer: generatedQuestionsMock[1].incorrectAnswers[0],
-//   },
-// ] satisfies QuestionAnswerSubmittion[];
+export const questionAnswerSubmittionsMock = [
+  {
+    questionId: generatedQuestionsMock[0]._id!.toString(),
+    selectedAnswer: generatedQuestionsMock[0].correctAnswer,
+  },
+  {
+    questionId: generatedQuestionsMock[1]._id!.toString(),
+    selectedAnswer: generatedQuestionsMock[1].incorrectAnswers[0],
+  },
+] satisfies QuestionAnswerAttempt[];
 
 export const questionAnswerSubmittionsMockScore = 50;
-// export const questionAnswerSubmittionsMockResults = [
-//   {
-//     questionId: questionAnswerSubmittionsMock[0].questionId,
-//     correctAnswer: generatedQuestionsMock[0].correctAnswer,
-//     selectedAnswer: questionAnswerSubmittionsMock[0].selectedAnswer,
-//     isCorrect: true,
-//   },
-//   {
-//     questionId: questionAnswerSubmittionsMock[1].questionId,
-//     correctAnswer: generatedQuestionsMock[1].correctAnswer,
-//     selectedAnswer: questionAnswerSubmittionsMock[1].selectedAnswer,
-//     isCorrect: false,
-//   },
-// ] satisfies QuestionResult[];
+export const questionAnswerSubmittionsMockResults = [
+  {
+    questionId: questionAnswerSubmittionsMock[0].questionId,
+    correctAnswer: generatedQuestionsMock[0].correctAnswer,
+    selectedAnswer: questionAnswerSubmittionsMock[0].selectedAnswer,
+    isCorrect: true,
+  },
+  {
+    questionId: questionAnswerSubmittionsMock[1].questionId,
+    correctAnswer: generatedQuestionsMock[1].correctAnswer,
+    selectedAnswer: questionAnswerSubmittionsMock[1].selectedAnswer,
+    isCorrect: false,
+  },
+] satisfies QuestionAttempt[];
