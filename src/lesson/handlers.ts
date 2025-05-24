@@ -14,7 +14,7 @@ import {
 } from "./validators";
 import { extractVideoId } from "../externalApis/youtube/utils";
 import { getVideoDetails } from "../externalApis/youtube/getVideoDetails";
-import { VideoDetails } from "./model";
+import { Lesson, VideoDetails } from "./model";
 import { getRelatedVideos } from "../externalApis/youtube/getRelatedVideos";
 import { Response } from "express";
 
@@ -35,6 +35,7 @@ export const createLesson = (
 ) =>
   createLessonRequstValidator(async (req, res) => {
     const { videoUrl } = req.body;
+    console.log("Creating lesson for video URL:", videoUrl);
     const videoId = extractVideoId(videoUrl);
     await createLessonFunc(videoId, videoSummeraizer, lessonsDal, res);
   });
@@ -154,13 +155,17 @@ async function createLessonFunc(
 
   const summary = await videoSummeraizer.summerizeVideo(videoId);
 
-  const lesson = await lessonsDal.create({
+  const item: Partial<Lesson> = {
     owner: "owner Mock", // TODO: use logged user after auth
     sharedUsers: [],
     title: videoDetails.title ?? "Untitled",
     summary,
     videoDetails: videoDetails as VideoDetails,
-    relatedLessonId: relatedLessonId,
-  });
+  };
+
+  if (relatedLessonId) {
+    item.relatedLessonId = relatedLessonId;
+  }
+  const lesson = await lessonsDal.create(item);
   res.status(StatusCodes.CREATED).json(lesson.toObject());
 }
