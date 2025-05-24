@@ -10,11 +10,13 @@ import {
   updateLessonRequstValidator,
   relatedVideosLessonRequstValidator,
   createMergedLessonRequstValidator,
+  createRelatedLessonRequestValidator,
 } from "./validators";
 import { extractVideoId } from "../externalApis/youtube/utils";
 import { getVideoDetails } from "../externalApis/youtube/getVideoDetails";
 import { VideoDetails } from "./model";
 import { getRelatedVideos } from "../externalApis/youtube/getRelatedVideos";
+import { Response } from "express";
 
 export const getLessonById = (lessonsDal: LessonsDal) =>
   getLessonByIdRequstValidator(async (req, res) => {
@@ -34,29 +36,28 @@ export const createLesson = (
   createLessonRequstValidator(async (req, res) => {
     const { videoUrl } = req.body;
     const videoId = extractVideoId(videoUrl);
-    const videoDetails = { ...(await getVideoDetails(videoId)), videoId };
+    await createLessonFunc(videoId, videoSummeraizer, lessonsDal, res);
+  });
 
-    const summary = await videoSummeraizer.summerizeVideo(videoId);
-
-    const lesson = await lessonsDal.create({
-      owner: "owner Mock", // TODO: use logged user after auth
-      sharedUsers: [],
-      title: videoDetails.title ?? "Untitled",
-      summary,
-      videoDetails: videoDetails as VideoDetails,
-    });
-    res.status(StatusCodes.CREATED).json(lesson.toObject());
+export const createRelatedLesson = (
+  lessonsDal: LessonsDal,
+  videoSummeraizer: VideoSummeraizer
+) =>
+  createRelatedLessonRequestValidator(async (req, res) => {
+    const { videoId, relatedLessonId } = req.body;
+    await createLessonFunc(
+      videoId,
+      videoSummeraizer,
+      lessonsDal,
+      res,
+      relatedLessonId
+    );
   });
 
 export const createMergedLesson = (lessonsDal: LessonsDal) =>
   createMergedLessonRequstValidator(async (req, res) => {
     const { lessonIds, title } = req.body;
     const { id: userId } = req.user;
-
-    if (!Array.isArray(lessonIds) || lessonIds.length === 0) {
-      console.error("lessonIds must be a non-empty array");
-      throw new BadRequestError("lessonIds must be a non-empty array");
-    }
 
     const lessons = await lessonsDal.findAll({
       _id: { $in: lessonIds },
@@ -141,3 +142,25 @@ export const getRelatedVideosForLesson = (lessonsDal: LessonsDal) =>
 
     res.status(StatusCodes.OK).json(relatedVideos);
   });
+
+async function createLessonFunc(
+  videoId: string,
+  videoSummeraizer: VideoSummeraizer,
+  lessonsDal: LessonsDal,
+  res: Response,
+  relatedLessonId?: string
+) {
+  const videoDetails = { ...(await getVideoDetails(videoId)), videoId };
+
+  const summary = await videoSummeraizer.summerizeVideo(videoId);
+
+  const lesson = await lessonsDal.create({
+    owner: "owner Mock", // TODO: use logged user after auth
+    sharedUsers: [],
+    title: videoDetails.title ?? "Untitled",
+    summary,
+    videoDetails: videoDetails as VideoDetails,
+    relatedLessonId: relatedLessonId,
+  });
+  res.status(StatusCodes.CREATED).json(lesson.toObject());
+}
