@@ -8,12 +8,15 @@ import {
   deleteLessonRequstValidator,
   getLessonByIdRequstValidator,
   updateLessonRequstValidator,
-  relatedVideosLessonRequstValidator
+  relatedVideosLessonRequstValidator,
+  createMergedLessonRequstValidator,
+  createRelatedLessonRequestValidator,
 } from "./validators";
 import { extractVideoId } from "../externalApis/youtube/utils";
 import { getVideoDetails } from "../externalApis/youtube/getVideoDetails";
-import { VideoDetails } from "./model";
+import { Lesson, VideoDetails } from "./model";
 import { getRelatedVideos } from "../externalApis/youtube/getRelatedVideos";
+import { Response } from "express";
 
 export const getLessonById = (lessonsDal: LessonsDal) =>
   getLessonByIdRequstValidator(async (req, res) => {
@@ -32,19 +35,52 @@ export const createLesson = (
 ) =>
   createLessonRequstValidator(async (req, res) => {
     const { videoUrl } = req.body;
+    console.log("Creating lesson for video URL:", videoUrl);
     const videoId = extractVideoId(videoUrl);
-    const videoDetails = { ...await getVideoDetails(videoId), videoId };
+    await createLessonFunc(videoId, videoSummeraizer, lessonsDal, res);
+  });
 
-    const summary = await videoSummeraizer.summerizeVideo(videoId);
+export const createRelatedLesson = (
+  lessonsDal: LessonsDal,
+  videoSummeraizer: VideoSummeraizer
+) =>
+  createRelatedLessonRequestValidator(async (req, res) => {
+    const { videoId, relatedLessonId } = req.body;
+    await createLessonFunc(
+      videoId,
+      videoSummeraizer,
+      lessonsDal,
+      res,
+      relatedLessonId
+    );
+  });
 
-    const lesson = await lessonsDal.create({
-      owner: "owner Mock", // TODO: use logged user after auth
-      sharedUsers: [],
-      title: videoDetails.title ?? "Untitled",
-      summary,
-      videoDetails: videoDetails as VideoDetails
+export const createMergedLesson = (lessonsDal: LessonsDal) =>
+  createMergedLessonRequstValidator(async (req, res) => {
+    const { lessonIds, title } = req.body;
+    const { id: userId } = req.user;
+
+    const lessons = await lessonsDal.findAll({
+      _id: { $in: lessonIds },
     });
-    res.status(StatusCodes.CREATED).json(lesson.toObject());
+
+    if (lessons.length !== lessonIds.length) {
+      console.error("One or more lessons not found");
+      throw new NotFoundError("One or more lessons not found");
+    }
+
+    const mergedSummary = lessons.map((lesson) => lesson.summary).join("\n\n");
+
+    const newLesson = await lessonsDal.create({
+      owner: userId,
+      sharedUsers: [],
+      title:
+        title ?? "Merged Lessons: " + lessons.map((l) => l.title).join(", "),
+      summary: mergedSummary,
+      videoDetails: lessons[0].videoDetails, // todo: remove this line
+    });
+
+    res.status(StatusCodes.CREATED).json(newLesson.toObject());
   });
 
 export const getLessons =
@@ -84,7 +120,6 @@ export const updateLesson = (lessonsDal: LessonsDal) =>
     res.status(StatusCodes.OK).json(updatedLesson.toObject());
   });
 
-
 export const getRelatedVideosForLesson = (lessonsDal: LessonsDal) =>
   relatedVideosLessonRequstValidator(async (req, res) => {
     const { id } = req.query;
@@ -108,3 +143,29 @@ export const getRelatedVideosForLesson = (lessonsDal: LessonsDal) =>
 
     res.status(StatusCodes.OK).json(relatedVideos);
   });
+
+async function createLessonFunc(
+  videoId: string,
+  videoSummeraizer: VideoSummeraizer,
+  lessonsDal: LessonsDal,
+  res: Response,
+  relatedLessonId?: string
+) {
+  const videoDetails = { ...(await getVideoDetails(videoId)), videoId };
+
+  const summary = await videoSummeraizer.summerizeVideo(videoId);
+
+  const item: Partial<Lesson> = {
+    owner: "owner Mock", // TODO: use logged user after auth
+    sharedUsers: [],
+    title: videoDetails.title ?? "Untitled",
+    summary,
+    videoDetails: videoDetails as VideoDetails,
+  };
+
+  if (relatedLessonId) {
+    item.relatedLessonId = relatedLessonId;
+  }
+  const lesson = await lessonsDal.create(item);
+  res.status(StatusCodes.CREATED).json(lesson.toObject());
+}

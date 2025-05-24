@@ -6,11 +6,11 @@ import { BadRequestError, NotFoundError } from "../services/server/exceptions";
 import { QuizzesDal } from "./dal";
 import { createQuizResponse } from "./utils";
 import {
-    getQuizByIdRequestValidator,
-    deleteQuizRequstValidator,
-    generateQuizRequstValidator,
-    getQuizzesRequstValidator,
-    updateQuizRequstValidator,
+  getQuizByIdRequestValidator,
+  deleteQuizRequstValidator,
+  generateQuizRequstValidator,
+  getQuizzesRequstValidator,
+  updateQuizRequstValidator,
 } from "./validators";
 import { QuizzesRatingDal } from "../quizRating/dal";
 import { Quiz } from "./types";

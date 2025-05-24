@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { validateHandlerRequest } from "../services/server/validators";
+import { authenticatedRequestZodSchema } from "../authentication/validators";
 
 const getLessonByIdRequstZodSchema = z.object({
   params: z.object({
@@ -15,9 +16,34 @@ const createLessonRequstZodSchema = z.object({
     videoUrl: z.string().url(),
   }),
 });
+
 export type CreateLessonRequst = z.infer<typeof createLessonRequstZodSchema>;
 export const createLessonRequstValidator = validateHandlerRequest(
   createLessonRequstZodSchema
+);
+
+const createRelatedLessonRequstZodSchema = z.object({
+  body: z.object({
+    videoId: z.string(),
+    relatedLessonId: z.string().optional(),
+  }),
+});
+
+export const createRelatedLessonRequestValidator = validateHandlerRequest(
+  createRelatedLessonRequstZodSchema
+);
+
+const createMergedLessonRequstZodSchema = z
+  .object({
+    body: z.object({
+      lessonIds: z.array(z.string()).min(1, "At least one lesson ID is required"),
+      title: z.string().optional(),
+    }),
+  })
+  .merge(authenticatedRequestZodSchema);
+
+export const createMergedLessonRequstValidator = validateHandlerRequest(
+  createMergedLessonRequstZodSchema
 );
 
 const deleteLessonRequstZodSchema = z.object({
