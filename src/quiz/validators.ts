@@ -1,10 +1,10 @@
 import { z } from "zod";
 import { validateHandlerRequest } from "../services/server/validators";
-import { quizCheckTypes, QuizSettings } from "./types";
+import { quizFeedbacks, QuizSettings } from "./types";
 import { authenticatedRequestZodSchema } from "../authentication/validators";
 
 const quizSettingsZodSchema: z.ZodType<QuizSettings> = z.object({
-  checkType: z.enum(quizCheckTypes),
+  feedbackType: z.enum(quizFeedbacks),
   isRandomOrder: z.coerce.boolean(),
   maxQuestionCount: z.coerce.number(),
   solvingTimeMs: z.coerce.number(),
@@ -35,11 +35,13 @@ export const questionAnswerSubmittionZodSchema = z.object({
   selectedAnswer: z.string(),
 });
 
-const getQuizzesRequstZodSchema = z.object({
-  query: z.object({
-    lessonId: z.string().optional(),
-  }),
-}).merge(authenticatedRequestZodSchema);
+const getQuizzesRequstZodSchema = z
+  .object({
+    query: z.object({
+      lessonId: z.string().optional(),
+    }),
+  })
+  .merge(authenticatedRequestZodSchema);
 
 export const getQuizzesRequstValidator = validateHandlerRequest(
   getQuizzesRequstZodSchema
