@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { validateHandlerRequest } from "../services/server/validators";
+import { authenticatedRequestZodSchema } from "../authentication/validators";
 
 const getLessonByIdRequstZodSchema = z.object({
   params: z.object({
@@ -16,12 +17,15 @@ const createLessonRequstZodSchema = z.object({
   }),
 });
 
-const createMergedLessonRequstZodSchema = z.object({
-  body: z.object({
-    lessonIds: z.array(z.string()),
-    title: z.string().optional(),
-  }),
-});
+const createMergedLessonRequstZodSchema = z
+  .object({
+    body: z.object({
+      lessonIds: z.array(z.string()),
+      title: z.string().optional(),
+    }),
+  })
+  .merge(authenticatedRequestZodSchema);
+
 export type CreateLessonRequst = z.infer<typeof createLessonRequstZodSchema>;
 export const createLessonRequstValidator = validateHandlerRequest(
   createLessonRequstZodSchema

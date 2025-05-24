@@ -8,9 +8,7 @@ export class BasicDal<T> {
   findById = (id: string | ObjectId, projection?: ProjectionType<T>) =>
     this.model.findById(id, projection);
 
-  findAll = () => this.model.find({});
-
-  findAllWithFilter = (filter: FilterQuery<T> = {}) => this.model.find(filter);
+  findAll = (filter: FilterQuery<T> = {}) => this.model.find(filter);
   deleteById = (id: string | ObjectId) => this.model.findByIdAndDelete(id);
 
   updateById = (id: string | ObjectId, data: Partial<T>) =>

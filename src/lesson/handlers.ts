@@ -34,7 +34,7 @@ export const createLesson = (
   createLessonRequstValidator(async (req, res) => {
     const { videoUrl } = req.body;
     const videoId = extractVideoId(videoUrl);
-    const videoDetails = { ...await getVideoDetails(videoId), videoId };
+    const videoDetails = { ...(await getVideoDetails(videoId)), videoId };
 
     const summary = await videoSummeraizer.summerizeVideo(videoId);
 
@@ -51,13 +51,14 @@ export const createLesson = (
 export const createMergedLesson = (lessonsDal: LessonsDal) =>
   createMergedLessonRequstValidator(async (req, res) => {
     const { lessonIds, title } = req.body;
+    const { id: userId } = req.user;
 
     if (!Array.isArray(lessonIds) || lessonIds.length === 0) {
       console.error("lessonIds must be a non-empty array");
       throw new BadRequestError("lessonIds must be a non-empty array");
     }
 
-    const lessons = await lessonsDal.findAllWithFilter({
+    const lessons = await lessonsDal.findAll({
       _id: { $in: lessonIds },
     });
 
@@ -69,10 +70,10 @@ export const createMergedLesson = (lessonsDal: LessonsDal) =>
     const mergedSummary = lessons.map((lesson) => lesson.summary).join("\n\n");
 
     const newLesson = await lessonsDal.create({
-      owner: "owner Mock", // TODO: use logged user after auth
+      owner: userId,
       sharedUsers: [],
       title:
-        title ?? "Merged Lessons:" + lessons.map((l) => l.title).join(", "),
+        title ?? "Merged Lessons: " + lessons.map((l) => l.title).join(", "),
       summary: mergedSummary,
       videoDetails: lessons[0].videoDetails, // todo: remove this line
     });

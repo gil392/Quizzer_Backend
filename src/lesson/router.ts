@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { RequestHandler, Router } from "express";
 import { VideoSummeraizer } from "../externalApis/videoSummerizer";
 import { LessonsDal } from "../lesson/dal";
 import * as handlers from "./handlers";
@@ -29,6 +29,7 @@ const createRouterController = ({
 });
 
 export const createLessonRouter = (
+  authMiddleware: RequestHandler,
   dependecies: LessonRouterDependencies
 ): Router => {
   const router = Router();
@@ -301,7 +302,7 @@ export const createLessonRouter = (
    *       500:
    *         description: Server error
    */
-  router.post("/merge", controller.createMergedLesson);
+  router.post("/merge", authMiddleware, controller.createMergedLesson);
 
   return router;
 };
