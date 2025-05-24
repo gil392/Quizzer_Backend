@@ -1,7 +1,8 @@
 import { RequestHandler } from "express";
 import { StatusCodes } from "http-status-codes";
+import { isNil } from "ramda";
 import { validateAuthenticatedRequest } from "../authentication/validators";
-import { NotFoundError } from "../services/server/exceptions";
+import { BadRequestError, NotFoundError } from "../services/server/exceptions";
 import { UsersDal } from "./dal";
 import { Settings } from "./settingsModel";
 import {
@@ -33,7 +34,11 @@ export const createFriendRequest = (usersDal: UsersDal) =>
   validateCreateFriendRequestRequest(async (request, response) => {
     const { user } = request.body;
     const { id: friendToAdd } = request.user;
-    await usersDal.addFriendRequest(user, friendToAdd);
+    const { matchedCount } = await usersDal.addFriendRequest(user, friendToAdd);
+
+    if (matchedCount === 0) {
+      throw new BadRequestError("cant ask friendship from not existing user");
+    }
 
     response.sendStatus(StatusCodes.CREATED);
   });
@@ -42,6 +47,13 @@ export const answerFriendRequest = (usersDal: UsersDal) =>
   validateAnswerFriendRequestRequest(async (request, response) => {
     const { accepted, friendRequester } = request.body;
     const { id: userId } = request.user;
+    
+    const user = await usersDal.findById(userId).lean();
+    if (isNil(user) || !user.friendRequests?.includes(friendRequester)) {
+      throw new BadRequestError(
+        "cant accept or decline someone who isnt requested friendship"
+      );
+    }
 
     if (accepted) {
       await usersDal.acceptFriendship(userId, friendRequester);
