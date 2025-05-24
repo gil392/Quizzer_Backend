@@ -1,6 +1,6 @@
 import { Types } from "mongoose";
 
-export const quizCheckTypes = ["onSubmit", "onSelectAnswer"] as const;
+export const quizFeedbacks = ["onSubmit", "onSelectAnswer"] as const;
 
 export interface Quiz {
   title: string;
@@ -11,7 +11,7 @@ export interface Quiz {
 }
 
 export type QuizSettings = {
-  checkType: (typeof quizCheckTypes)[number];
+  feedbackType: (typeof quizFeedbacks)[number];
   isRandomOrder: boolean;
   maxQuestionCount: number;
   solvingTimeMs: number;

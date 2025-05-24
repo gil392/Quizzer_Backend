@@ -1,5 +1,5 @@
 import { Model, model, Schema } from "mongoose";
-import { Question, Quiz, quizCheckTypes, QuizSettings } from "./types";
+import { Question, Quiz, quizFeedbacks, QuizSettings } from "./types";
 
 const questionSchema = new Schema<Question>(
   {
@@ -12,7 +12,7 @@ const questionSchema = new Schema<Question>(
 
 const quizSettingsSchema = new Schema<QuizSettings>(
   {
-    checkType: { type: String, enum: quizCheckTypes, required: true },
+    feedbackType: { type: String, enum: quizFeedbacks, required: true },
     isRandomOrder: { type: Boolean, default: false },
     maxQuestionCount: { type: Number, required: true },
     solvingTimeMs: { type: Number, required: true },
@@ -64,13 +64,13 @@ export const quizModel = model("quizzes", quizSchema);
  *     QuizSettings:
  *       type: object
  *       required:
- *         - checkType
+ *         - feedbackType
  *         - maxQuestionCount
  *         - solvingTimeMs
  *       properties:
- *         checkType:
+ *         feedbackType:
  *           type: string
- *           enum: [auto, manual]  # Update based on your `quizCheckTypes` array
+ *           enum: [auto, manual]  # Update based on your `quizFeedbacks` array
  *           description: The method used to check the quiz
  *         isRandomOrder:
  *           type: boolean
@@ -83,7 +83,7 @@ export const quizModel = model("quizzes", quizSchema);
  *           type: integer
  *           description: Time allowed to solve the quiz in milliseconds
  *       example:
- *         checkType: auto
+ *         feedbackType: auto
  *         isRandomOrder: true
  *         maxQuestionCount: 10
  *         solvingTimeMs: 600000
@@ -120,7 +120,7 @@ export const quizModel = model("quizzes", quizSchema);
  *             incorrectAnswers: [Berlin, Madrid, Rome]
  *         grade: 90
  *         settings:
- *           checkType: auto
+ *           feedbackType: auto
  *           isRandomOrder: true
  *           maxQuestionCount: 10
  *           solvingTimeMs: 600000

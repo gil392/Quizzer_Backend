@@ -25,17 +25,17 @@ const createRouterController = ({
   lessonsDal,
   questionsGenerator,
   quizzesRatingDal,
-}: QuizRouterDependencies) =>  ({
-    getQuizById: handlers.getQuizById(quizzesDal),
-    generateQuiz: handlers.generateQuiz(
-        quizzesDal,
-        lessonsDal,
-        questionsGenerator
-    ),
-    getQuizzes: handlers.getQuizzes(quizzesDal),
-    deleteQuiz: handlers.deleteQuiz(quizzesDal, quizzesRatingDal),
-    updateQuiz: handlers.updateQuiz(quizzesDal),
-    rateQuiz: rateQuiz(quizzesDal, quizzesRatingDal),
+}: QuizRouterDependencies) => ({
+  getQuizById: handlers.getQuizById(quizzesDal),
+  generateQuiz: handlers.generateQuiz(
+    quizzesDal,
+    lessonsDal,
+    questionsGenerator
+  ),
+  getQuizzes: handlers.getQuizzes(quizzesDal),
+  deleteQuiz: handlers.deleteQuiz(quizzesDal, quizzesRatingDal),
+  updateQuiz: handlers.updateQuiz(quizzesDal),
+  rateQuiz: rateQuiz(quizzesDal, quizzesRatingDal),
 });
 
 export const createQuizRouter = (
@@ -98,7 +98,7 @@ export const createQuizRouter = (
    *           example:
    *             lessonId: "lesson123"
    *             settings:
-   *               checkType: auto
+   *               feedbackType: auto
    *               isRandomOrder: true
    *               maxQuestionCount: 5
    *               solvingTimeMs: 600000
@@ -139,7 +139,7 @@ export const createQuizRouter = (
    *           example:
    *             lessonId: "lesson123"
    *             settings:
-   *               checkType: auto
+   *               feedbackType: auto
    *               isRandomOrder: true
    *               maxQuestionCount: 5
    *               solvingTimeMs: 600000
@@ -200,7 +200,6 @@ export const createQuizRouter = (
    *         description: Server error
    */
   router.get("/", authMiddleware, controller.getQuizzes);
-
 
   /**
    * @swagger
