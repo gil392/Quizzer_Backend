@@ -155,4 +155,13 @@ describe("user router", () => {
       expect(response.status).toBe(StatusCodes.BAD_REQUEST);
     });
   });
+
+  describe("messages", () => {
+    const requestMessages = () => request(app).get('/messages');
+
+    test("not implemented route", async () => {
+      const response = await setAuthHeaderToRequest(requestMessages());
+      expect(response.status).toBe(StatusCodes.NOT_IMPLEMENTED)
+    })
+  })
 });
