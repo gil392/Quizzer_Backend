@@ -272,6 +272,8 @@ export const createLessonRouter = (
    *   post:
    *     summary: Create a new lesson by merging the summaries of multiple lessons
    *     tags: [Lesson]
+   *     security:
+   *       - bearerAuth: []
    *     requestBody:
    *       required: true
    *       content:
