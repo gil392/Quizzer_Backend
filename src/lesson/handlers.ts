@@ -35,9 +35,9 @@ export const createLesson = (
 ) =>
   createLessonRequstValidator(async (req, res) => {
     const { videoUrl } = req.body;
-    console.log("Creating lesson for video URL:", videoUrl);
+    const { id: userId } = req.user;
     const videoId = extractVideoId(videoUrl);
-    await createLessonFunc(videoId, videoSummeraizer, lessonsDal, res);
+    await createLessonFunc(userId, videoId, videoSummeraizer, lessonsDal, res);
   });
 
 export const createRelatedLesson = (
@@ -46,7 +46,9 @@ export const createRelatedLesson = (
 ) =>
   createRelatedLessonRequestValidator(async (req, res) => {
     const { videoId, relatedLessonId } = req.body;
+    const { id: userId } = req.user;
     await createLessonFunc(
+      userId,
       videoId,
       videoSummeraizer,
       lessonsDal,
@@ -145,6 +147,7 @@ export const getRelatedVideosForLesson = (lessonsDal: LessonsDal) =>
   });
 
 async function createLessonFunc(
+  userId: string,
   videoId: string,
   videoSummeraizer: VideoSummeraizer,
   lessonsDal: LessonsDal,
@@ -156,7 +159,7 @@ async function createLessonFunc(
   const summary = await videoSummeraizer.summerizeVideo(videoId);
 
   const item: Partial<Lesson> = {
-    owner: "owner Mock", // TODO: use logged user after auth
+    owner: userId, // TODO: use logged user after auth
     sharedUsers: [],
     title: videoDetails.title ?? "Untitled",
     summary,

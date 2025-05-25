@@ -15,7 +15,7 @@ const createLessonRequstZodSchema = z.object({
   body: z.object({
     videoUrl: z.string().url(),
   }),
-});
+}).merge(authenticatedRequestZodSchema);
 
 export type CreateLessonRequst = z.infer<typeof createLessonRequstZodSchema>;
 export const createLessonRequstValidator = validateHandlerRequest(
@@ -27,7 +27,7 @@ const createRelatedLessonRequstZodSchema = z.object({
     videoId: z.string(),
     relatedLessonId: z.string().optional(),
   }),
-});
+}).merge(authenticatedRequestZodSchema);
 
 export const createRelatedLessonRequestValidator = validateHandlerRequest(
   createRelatedLessonRequstZodSchema

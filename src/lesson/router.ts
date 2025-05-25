@@ -139,6 +139,8 @@ export const createLessonRouter = (
    *   post:
    *     summary: Create a lesson from a video URL
    *     tags: [Lesson]
+   *     security:
+   *       - bearerAuth: []
    *     requestBody:
    *       required: true
    *       content:
@@ -166,7 +168,7 @@ export const createLessonRouter = (
    *       500:
    *         description: Server error during lesson creation
    */
-  router.post("/", controller.createLesson);
+  router.post("/", authMiddleware, controller.createLesson);
 
   /**
    * @swagger
@@ -316,6 +318,8 @@ export const createLessonRouter = (
    *   post:
    *     summary: Create a lesson related to another lesson from a video ID
    *     tags: [Lesson]
+   *     security:
+   *       - bearerAuth: []
    *     requestBody:
    *       required: true
    *       content:
@@ -346,6 +350,6 @@ export const createLessonRouter = (
    *       500:
    *         description: Server error during lesson creation
    */
-  router.post("/related", controller.createRelatedLesson);
+  router.post("/related", authMiddleware, controller.createRelatedLesson);
   return router;
 };
