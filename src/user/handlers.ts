@@ -37,7 +37,7 @@ export const createFriendRequest = (usersDal: UsersDal) =>
     const { matchedCount } = await usersDal.addFriendRequest(user, friendToAdd);
 
     if (matchedCount === 0) {
-      throw new BadRequestError("cant ask friendship from not existing user");
+      throw new BadRequestError("cant ask friendship from non-existing user");
     }
 
     response.sendStatus(StatusCodes.CREATED);
@@ -51,7 +51,7 @@ export const answerFriendRequest = (usersDal: UsersDal) =>
     const user = await usersDal.findById(userId).lean();
     if (isNil(user) || !user.friendRequests?.includes(friendRequester)) {
       throw new BadRequestError(
-        "cant accept or decline someone who isnt requested friendship"
+        "cant accept or decline someone who isn't requested friendship"
       );
     }
 
