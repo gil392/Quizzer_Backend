@@ -2,7 +2,11 @@ import { isNil } from "ramda";
 import { LeanDocument } from "../../services/database/types";
 import { BadRequestError } from "../../services/server/exceptions";
 import { PublicUser } from "../../user/model";
-import { Achievement, AchievementsProccesorDependancies } from "../types";
+import {
+  Achievement,
+  AchievementProgress,
+  AchievementsProccesorDependancies,
+} from "../types";
 import { checkLessonRequirement, checkUserRequirement } from "./utils";
 
 export class AchivementsProccesor {
@@ -13,7 +17,7 @@ export class AchivementsProccesor {
   private getAchievmentProgress = async (
     user: LeanDocument<PublicUser>,
     achievment: LeanDocument<Achievement>
-  ) => {
+  ): Promise<LeanDocument<AchievementProgress>> => {
     const { lessonsDal } = this.dependancies;
     const { requirements } = achievment;
 
@@ -29,24 +33,21 @@ export class AchivementsProccesor {
 
       return { count: condition.count, progress };
     });
+    const requirementsProgresses = await Promise.all(progressesPromises);
 
-    return await Promise.all(progressesPromises);
+    return { ...achievment, requirements: requirementsProgresses };
   };
 
-  getUserAchievementsProgress = async (user: LeanDocument<PublicUser>) => {
+  getUserAchievementsProgress = async (
+    user: LeanDocument<PublicUser>
+  ): Promise<LeanDocument<AchievementProgress>[]> => {
     const { achievmentsDal } = this.dependancies;
 
-    if (isNil(user)) {
-      throw new BadRequestError("user in not find to check his achievments");
-    }
-
-    const achievments = await achievmentsDal.getAvaliableAchievments([]);
+    const achievments = await achievmentsDal.getAvaliableAchievments([]).lean();
     const achievmentsWithProgress = await Promise.all(
-      achievments.map(async (achievment) => {
-        const progress = await this.getAchievmentProgress(user, achievment);
-
-        return { ...achievment, requirements: progress };
-      })
+      achievments.map((achievment) =>
+        this.getAchievmentProgress(user, achievment)
+      )
     );
 
     return achievmentsWithProgress;

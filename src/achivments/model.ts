@@ -130,4 +130,38 @@ export const achievementsModel = model("achievement", achievementSchema);
  *               values:
  *                 grade: 90
  *               count: 5
+ * 
+ *     RequirmentProgress:
+ *       type: object
+ *       properties:
+ *         count:
+ *           type: integer
+ *           description: Total required count for the requirement.
+ *           example: 10
+ *         progress:
+ *           type: integer
+ *           description: Current progress made towards the requirement.
+ *           example: 5
+ * 
+ *     AchievementProgress:
+ *       type: object
+ *       required:
+ *         - description
+ *         - rewards
+ *         - requirements
+ *       properties:
+ *         description:
+ *           type: string
+ *           description: Description of the achievement.
+ *         rewards:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/Reward'
+ *         achievementLock:
+ *           type: string
+ *           description: Optional lock ID that must be unlocked first.
+ *         requirements:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/RequirmentProgress'
  */

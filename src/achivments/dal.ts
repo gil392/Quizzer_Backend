@@ -1,7 +1,7 @@
 import { BasicDal } from "../services/database/base.dal";
 import { Achievement, Requirment } from "./types";
 
-export class AchivmentsDal extends BasicDal<Achievement> {
+export class AchievementsDal extends BasicDal<Achievement> {
   getAvaliableAchievments = (completedAchievements: string[]) =>
     this.model.find({
       _id: { $nin: completedAchievements },

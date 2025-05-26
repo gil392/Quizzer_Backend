@@ -23,3 +23,9 @@ export class NotFoundError extends RequestHandlingError {
         super(StatusCodes.NOT_FOUND, message, cause);
     }
 }
+
+export class UnauthorizedError extends RequestHandlingError {
+    constructor(message?: string, public cause?: Error) {
+        super(StatusCodes.UNAUTHORIZED, message, cause);
+    }
+}

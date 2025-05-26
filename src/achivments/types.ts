@@ -3,7 +3,7 @@ import { Lesson } from "../lesson/model";
 import { QuizzesDal } from "../quiz/dal";
 import { UsersDal } from "../user/dal";
 import { PublicUser } from "../user/model";
-import { AchivmentsDal } from "./dal";
+import { AchievementsDal } from "./dal";
 
 export type Condition<T extends {}> = {
   values: Partial<Record<keyof T, number>>;
@@ -40,9 +40,14 @@ export type Achievement = {
   achivmentLock?: string;
 };
 
+export type RequirmentProgress = { count: number; progress: number };
+export type AchievementProgress = Omit<Achievement, "requirements"> & {
+  requirements: RequirmentProgress[];
+};
+
 export type AchievementsProccesorDependancies = {
   quizzesDal: QuizzesDal;
   usersDal: UsersDal;
-  achievmentsDal: AchivmentsDal;
+  achievmentsDal: AchievementsDal;
   lessonsDal: LessonsDal;
 };
