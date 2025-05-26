@@ -28,7 +28,7 @@ export const createUsersRouter = (
 
   /**
    * @swagger
-   * /api/user/me:
+   * /user/me:
    *   get:
    *     summary: get logged user attributes
    *     description: get logged user attributes
@@ -54,7 +54,7 @@ export const createUsersRouter = (
 
   /**
    * @swagger
-   * /api/user:
+   * /user:
    *   put:
    *     summary: Update user attributes
    *     description: Update an existing user
