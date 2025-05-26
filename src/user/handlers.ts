@@ -11,6 +11,7 @@ import {
   validateEditUserRequest,
   validateSearchUsersRequest,
 } from "./validators";
+import { differenceInCalendarDays } from "date-fns";
 
 export const getLoggedUser = (usersDal: UsersDal) =>
   validateAuthenticatedRequest(async (request, response) => {
@@ -47,7 +48,7 @@ export const answerFriendRequest = (usersDal: UsersDal) =>
   validateAnswerFriendRequestRequest(async (request, response) => {
     const { accepted, friendRequester } = request.body;
     const { id: userId } = request.user;
-    
+
     const user = await usersDal.findById(userId).lean();
     if (isNil(user) || !user.friendRequests?.includes(friendRequester)) {
       throw new BadRequestError(

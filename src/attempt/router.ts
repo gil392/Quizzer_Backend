@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { RequestHandler, Router } from "express";
 import * as handlers from "./handlers";
 import { AttemptDal } from "./dal";
 import { QuizzesDal } from "../quiz/dal";
@@ -22,11 +22,12 @@ const createRouterController = ({
   quizzesDal,
   usersDal,
 }: AttemptRouterDependencies) => ({
-  CreateAttempt: handlers.createAttempt(quizzesDal, attemptDal),
+  CreateAttempt: handlers.createAttempt(quizzesDal, attemptDal, usersDal),
   GetAttemptsByQuizId: handlers.GetAttemptsByQuizId(attemptDal),
 });
 
 export const createAttemptRouter = (
+  authMiddleware: RequestHandler,
   dependencies: AttemptRouterDependencies
 ): Router => {
   const router = Router();
@@ -141,7 +142,7 @@ export const createAttemptRouter = (
    *       500:
    *         description: Server error
    */
-  router.post("/", controller.CreateAttempt);
+  router.post("/", authMiddleware, controller.CreateAttempt);
 
   return router;
 };
