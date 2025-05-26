@@ -47,7 +47,6 @@ export const answerFriendRequest = (usersDal: UsersDal) =>
   validateAnswerFriendRequestRequest(async (request, response) => {
     const { accepted, friendRequester } = request.body;
     const { id: userId } = request.user;
-
     const user = await usersDal.findById(userId).lean();
     if (isNil(user) || !user.friendRequests?.includes(friendRequester)) {
       throw new BadRequestError(
