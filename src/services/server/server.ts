@@ -1,6 +1,6 @@
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import express, { Express } from "express";
+import express, { Express, Router } from "express";
 import * as http from "http";
 import swaggerUI from "swagger-ui-express";
 import { injectUserToRequest } from "../../authentication/middlewares";
@@ -9,16 +9,21 @@ import {
   createAuthRouter,
 } from "../../authentication/router";
 import {
-    createLessonRouter,
-    LessonRouterDependencies
-} from '../../lesson/router';
-import { createQuizRouter, QuizRouterDependencies } from '../../quiz/router';
-import { createUsersRouter, UsersRouterDependencies } from '../../user/router';
-import { Service } from '../service';
-import { ServerConfig } from './config';
-import { createSwaggerSpecs } from './swagger';
-import { requestErrorHandler } from './utils';
-import { AttemptRouterDependencies, createAttemptRouter } from '../../attempt/router';
+  createLessonRouter,
+  LessonRouterDependencies,
+} from "../../lesson/router";
+import { createQuizRouter, QuizRouterDependencies } from "../../quiz/router";
+import { createUsersRouter, UsersRouterDependencies } from "../../user/router";
+import { Service } from "../service";
+import { ServerConfig } from "./config";
+import { createSwaggerSpecs } from "./swagger";
+import { requestErrorHandler } from "./utils";
+import {
+  AttemptRouterDependencies,
+  createAttemptRouter,
+} from "../../attempt/router";
+import { createFilesRouter } from "../../files/router";
+import { createFileRouterConfig } from "../../files/config";
 
 export const createBasicApp = (corsOrigin?: string): Express => {
   const app = express();
@@ -31,10 +36,10 @@ export const createBasicApp = (corsOrigin?: string): Express => {
 };
 
 export type ServerDependencies = AttemptRouterDependencies &
-    QuizRouterDependencies &
-    LessonRouterDependencies &
-    AuthRouterDependencies &
-    UsersRouterDependencies;
+  QuizRouterDependencies &
+  LessonRouterDependencies &
+  AuthRouterDependencies &
+  UsersRouterDependencies;
 
 export class Server extends Service {
   app: Express;
@@ -57,15 +62,18 @@ export class Server extends Service {
     const { authConfig } = this.config;
     const authMiddleware = injectUserToRequest(authConfig.tokenSecret);
 
-        this.app.use('/auth', createAuthRouter(authConfig, this.dependencies));
-        this.app.use('/lesson', createLessonRouter(this.dependencies));
-        this.app.use('/quiz', createQuizRouter(authMiddleware, this.dependencies));
-        this.app.use('/attempt', createAttemptRouter(this.dependencies));
-        this.app.use(
-            '/user',
-            createUsersRouter(authMiddleware, this.dependencies)
-        );
-    };
+    this.app.use("/auth", createAuthRouter(authConfig, this.dependencies));
+    this.app.use("/lesson", createLessonRouter(this.dependencies));
+    this.app.use("/quiz", createQuizRouter(authMiddleware, this.dependencies));
+    this.app.use("/attempt", createAttemptRouter(this.dependencies));
+    this.app.use("/user", createUsersRouter(authMiddleware, this.dependencies));
+
+    const apiRouter = Router();
+    const filesRouterConfig = createFileRouterConfig(this.config);
+    apiRouter.use("/files", createFilesRouter(filesRouterConfig));
+
+    this.app.use("/api", apiRouter);
+  };
 
   private useErrorHandler = () => {
     this.app.use(requestErrorHandler);
