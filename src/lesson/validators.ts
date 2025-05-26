@@ -11,23 +11,27 @@ export const getLessonByIdRequstValidator = validateHandlerRequest(
   getLessonByIdRequstZodSchema
 );
 
-const createLessonRequstZodSchema = z.object({
-  body: z.object({
-    videoUrl: z.string().url(),
-  }),
-}).merge(authenticatedRequestZodSchema);
+const createLessonRequstZodSchema = z
+  .object({
+    body: z.object({
+      videoUrl: z.string().url(),
+    }),
+  })
+  .merge(authenticatedRequestZodSchema);
 
 export type CreateLessonRequst = z.infer<typeof createLessonRequstZodSchema>;
 export const createLessonRequstValidator = validateHandlerRequest(
   createLessonRequstZodSchema
 );
 
-const createRelatedLessonRequstZodSchema = z.object({
-  body: z.object({
-    videoId: z.string(),
-    relatedLessonId: z.string().optional(),
-  }),
-}).merge(authenticatedRequestZodSchema);
+const createRelatedLessonRequstZodSchema = z
+  .object({
+    body: z.object({
+      videoId: z.string(),
+      relatedLessonId: z.string(),
+    }),
+  })
+  .merge(authenticatedRequestZodSchema);
 
 export const createRelatedLessonRequestValidator = validateHandlerRequest(
   createRelatedLessonRequstZodSchema
@@ -36,7 +40,9 @@ export const createRelatedLessonRequestValidator = validateHandlerRequest(
 const createMergedLessonRequstZodSchema = z
   .object({
     body: z.object({
-      lessonIds: z.array(z.string()).min(1, "At least one lesson ID is required"),
+      lessonIds: z
+        .array(z.string())
+        .min(1, "At least one lesson ID is required"),
       title: z.string().optional(),
     }),
   })

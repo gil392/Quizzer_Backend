@@ -67,7 +67,6 @@ export const createMergedLesson = (lessonsDal: LessonsDal) =>
     });
 
     if (lessons.length !== lessonIds.length) {
-      console.error("One or more lessons not found");
       throw new NotFoundError("One or more lessons not found");
     }
 
@@ -79,8 +78,9 @@ export const createMergedLesson = (lessonsDal: LessonsDal) =>
       title:
         title ?? "Merged Lessons: " + lessons.map((l) => l.title).join(", "),
       summary: mergedSummary,
-      videoDetails: lessons[0].videoDetails, // todo: remove this line
     });
+
+    console.log("New merged lesson created:", newLesson);
 
     res.status(StatusCodes.CREATED).json(newLesson.toObject());
   });
@@ -154,16 +154,22 @@ async function createLessonFunc(
   res: Response,
   relatedLessonId?: string
 ) {
-  const videoDetails = { ...(await getVideoDetails(videoId)), videoId };
+  const videoDetails = await getVideoDetails(videoId);
+
+  if (isNil(videoDetails)) {
+    throw new BadRequestError(
+      `Could not find video details with id ${videoId}`
+    );
+  }
 
   const summary = await videoSummeraizer.summerizeVideo(videoId);
 
   const item: Partial<Lesson> = {
-    owner: userId, // TODO: use logged user after auth
+    owner: userId,
     sharedUsers: [],
     title: videoDetails.title ?? "Untitled",
     summary,
-    videoDetails: videoDetails as VideoDetails,
+    videoDetails: { ...videoDetails, videoId },
   };
 
   if (relatedLessonId) {

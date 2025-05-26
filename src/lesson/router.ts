@@ -328,13 +328,14 @@ export const createLessonRouter = (
    *             type: object
    *             required:
    *               - videoId
+   *               - relatedLessonId
    *             properties:
    *               videoId:
    *                 type: string
    *                 description: The ID of the video to summarize into a lesson
    *               relatedLessonId:
    *                 type: string
-   *                 description: The ID of the lesson this new lesson is related to (optional; defaults to the new lesson's own ID if not provided)
+   *                 description: The ID of the lesson this new lesson is related to
    *           example:
    *             videoId: "abc123"
    *             relatedLessonId: "64f1c2a1e8b1a2b3c4d5e6f7"

@@ -1,15 +1,13 @@
 import { BasicDal } from "../services/database/base.dal";
 import { Lesson } from "./model";
+import { Types } from "mongoose";
 
 export class LessonsDal extends BasicDal<Lesson> {
   override create = async (data: Partial<Lesson>) => {
-    const lesson = await this.model.create(data);
-
-    if (!lesson.relatedLessonId) {
-      lesson.relatedLessonId = lesson._id.toString();
-      await lesson.save();
+    if (!data.relatedLessonId) {
+      data.relatedLessonId = new Types.ObjectId().toString();
     }
 
-    return lesson;
+    return await this.model.create(data);
   };
 }

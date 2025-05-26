@@ -16,7 +16,7 @@ export interface Lesson {
   title: string;
   sharedUsers: string[];
   summary: string;
-  videoDetails: VideoDetails;
+  videoDetails?: VideoDetails;
   relatedLessonId?: string;
 }
 
@@ -40,7 +40,7 @@ const lessonSchema = new Schema<Lesson>(
     title: { type: String, required: true },
     sharedUsers: { type: [String], default: [] },
     summary: { type: String, required: true },
-    videoDetails: { type: videoDetailsSchema, required: true },
+    videoDetails: { type: videoDetailsSchema },
     relatedLessonId: String,
   },
   { timestamps: true }

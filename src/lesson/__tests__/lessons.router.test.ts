@@ -136,24 +136,6 @@ describe("lessons routes", () => {
         })
       );
     });
-
-    test("valid related lesson without relatedLessonId should default to its own id", async () => {
-      const response = await createRelatedLessonRequest().send({
-        videoId: videoIdMock,
-      });
-      expect(response.status).toBe(StatusCodes.CREATED);
-      expect(response.body).toStrictEqual(
-        expect.objectContaining({
-          summary: summaryMock,
-          title: titleMock,
-          videoDetails: expect.objectContaining({
-            videoId: videoIdMock,
-          }),
-        })
-      );
-      // relatedLessonId should equal the lesson's own _id
-      expect(response.body.relatedLessonId).toBe(response.body._id);
-    });
   });
 
   describe("get lesson by id", () => {
