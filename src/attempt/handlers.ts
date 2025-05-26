@@ -10,7 +10,7 @@ import { getQuestionResultInQuiz } from "./utils";
 import { QuizzesDal } from "../quiz/dal";
 import { QuestionAttempt, QuizAttempt } from "./types";
 import { UsersDal } from "../user/dal";
-import { updateUserStreak } from "../user/utils";
+import { updateUserStreak } from "../user/handlers";
 
 export const GetAttemptsByQuizId = (AttemptDal: AttemptDal) =>
   getAttemptsByQuizIdRequestValidator(async (req, res) => {

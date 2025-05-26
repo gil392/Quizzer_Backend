@@ -11,6 +11,7 @@ import {
   validateEditUserRequest,
   validateSearchUsersRequest,
 } from "./validators";
+import { differenceInCalendarDays } from "date-fns";
 
 export const getLoggedUser = (usersDal: UsersDal) =>
   validateAuthenticatedRequest(async (request, response) => {
@@ -123,4 +124,23 @@ const getSettings = async (
     isManualCount: partialSettings?.isManualCount ?? settings?.isManualCount,
     solvingTimeMs: partialSettings?.solvingTimeMs ?? settings?.solvingTimeMs,
   };
+};
+
+export const updateUserStreak = async (usersDal: UsersDal, userId: string) => {
+  const user = await usersDal.findPublicUserById(userId).lean();
+  if (!user) {
+    throw new NotFoundError("user not found");
+  }
+
+  const lastQuizDayDiff = differenceInCalendarDays(
+    new Date(),
+    user.lastQuizDate
+  );
+
+  if (lastQuizDayDiff > 0) {
+    const streak = lastQuizDayDiff === 1 ? user.streak + 1 : 1;
+    await usersDal
+      .updateById(userId, { streak, lastQuizDate: new Date() })
+      .lean();
+  }
 };
