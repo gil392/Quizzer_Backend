@@ -99,6 +99,9 @@ import { Settings, settingsSchema, settingsZodSchema } from "./settingsModel";
  *         streak:
  *           type: number
  *           description: Current streak count (e.g., days active in a row)
+ *         xp:
+ *           type: number
+ *           description: Current xp of the user (gained by achivments)
  *         settings:
  *           type: Settings
  *           description: User settings
@@ -121,10 +124,11 @@ export type PublicUser = {
   email: string;
   username: string;
   profileImage?: string;
-  streak: number;
   friendRequests?: string[];
   friends?: string[];
   favoriteLessons?: string[];
+  streak: number;
+  xp: number;
   settings?: Partial<Settings>;
 };
 
@@ -138,11 +142,12 @@ export const userZodSchema: z.ZodType<User> = z.object({
   hashedPassword: z.string(),
   username: z.string(),
   profileImage: z.string().optional(),
-  streak: z.coerce.number(),
   refreshToken: z.array(z.string()).default([]),
   friendRequests: z.array(z.string()).default([]),
   friends: z.array(z.string()).default([]),
   favoriteLessons: z.array(z.string()).default([]),
+  streak: z.coerce.number(),
+  xp: z.coerce.number(),
   settings: settingsZodSchema.optional(),
 });
 
@@ -156,8 +161,10 @@ const userSchema = new Schema<User>({
   friendRequests: { type: [String], default: [] },
   friends: { type: [String], default: [] },
   favoriteLessons: { type: [String], default: [] },
+  xp: { type: Number, default: 0 },
   settings: { type: settingsSchema, required: false },
 });
+userSchema.index({ username: "text", email: "text" });
 
 export type UserModel = Model<User>;
 export const userModel = model<User>("users", userSchema);
