@@ -11,7 +11,6 @@ import {
   validateEditUserRequest,
   validateSearchUsersRequest,
 } from "./validators";
-import { differenceInCalendarDays } from "date-fns";
 
 export const getLoggedUser = (usersDal: UsersDal) =>
   validateAuthenticatedRequest(async (request, response) => {
