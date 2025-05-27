@@ -20,3 +20,9 @@ export function extractVideoId(youtubeUrl: string): string {
 
     throw new BadRequestError("Could not extract video ID from URL");
 }
+
+export function parseISODurationToSeconds(isoDuration: string): number {
+    const regex = /PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/;
+    const [, h = "0", m = "0", s = "0"] = regex.exec(isoDuration) || [];
+    return parseInt(h) * 3600 + parseInt(m) * 60 + parseInt(s);
+}
