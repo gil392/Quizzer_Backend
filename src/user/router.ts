@@ -12,9 +12,7 @@ export type UsersRouterDependencies = {
   usersDal: UsersDal;
 };
 
-const buildRouteHandlers = (
-  dependencies: UsersRouterDependencies
-): Record<keyof typeof handlers, RequestHandler> => ({
+const buildRouteHandlers = (dependencies: UsersRouterDependencies) => ({
   getLoggedUser: handlers.getLoggedUser(dependencies.usersDal),
   searchUsers: handlers.searchUsers(dependencies.usersDal),
   answerFriendRequest: handlers.answerFriendRequest(dependencies.usersDal),

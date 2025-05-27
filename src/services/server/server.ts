@@ -22,7 +22,6 @@ import {
   AttemptRouterDependencies,
   createAttemptRouter,
 } from "../../attempt/router";
-import { createFilesRouter } from "../../files/router";
 import { createFileRouterConfig } from "../../files/config";
 
 export const createBasicApp = (corsOrigin?: string): Express => {
@@ -65,9 +64,13 @@ export class Server extends Service {
     this.app.use("/auth", createAuthRouter(authConfig, this.dependencies));
     this.app.use("/lesson", createLessonRouter(this.dependencies));
     this.app.use("/quiz", createQuizRouter(authMiddleware, this.dependencies));
-    this.app.use("/attempt", createAttemptRouter(this.dependencies));
+    this.app.use(
+      "/attempt",
+      createAttemptRouter(authMiddleware, this.dependencies)
+    );
     this.app.use("/user", createUsersRouter(authMiddleware, this.dependencies));
-
+  };
+    
     const apiRouter = Router();
     const filesRouterConfig = createFileRouterConfig(this.config);
     apiRouter.use("/files", createFilesRouter(filesRouterConfig));

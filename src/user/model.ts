@@ -128,6 +128,7 @@ export type PublicUser = {
   friends?: string[];
   favoriteLessons?: string[];
   streak: number;
+  lastQuizDate: Date;
   xp: number;
   settings?: Partial<Settings>;
 };
@@ -147,6 +148,7 @@ export const userZodSchema: z.ZodType<User> = z.object({
   friends: z.array(z.string()).default([]),
   favoriteLessons: z.array(z.string()).default([]),
   streak: z.coerce.number(),
+  lastQuizDate: z.coerce.date(),
   xp: z.coerce.number(),
   settings: settingsZodSchema.optional(),
 });
@@ -156,11 +158,12 @@ const userSchema = new Schema<User>({
   hashedPassword: { type: String, required: true },
   username: { type: String, required: true },
   profileImage: String,
-  streak: { type: Number, default: 0 },
   refreshToken: { type: [String], default: [] },
   friendRequests: { type: [String], default: [] },
   friends: { type: [String], default: [] },
   favoriteLessons: { type: [String], default: [] },
+  streak: { type: Number, default: 0 },
+  lastQuizDate: { type: Date, default: new Date() },
   xp: { type: Number, default: 0 },
   settings: { type: settingsSchema, required: false },
 });
