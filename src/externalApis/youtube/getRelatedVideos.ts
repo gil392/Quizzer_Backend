@@ -3,9 +3,13 @@ import OpenAI from 'openai';
 import { OpenAiConfig } from '../openAiConfig';
 import { authenticate } from './authentication';
 import { VideoDetails } from './getVideoDetails';
+import { parseISODurationToSeconds } from './utils';
 
 const enableRelatedVideos = process.env.ENABLE_RELATED_VIDEOS === 'true';
-const MAX_RELATED_VIDEOS = 10;
+const MAX_RELATED_VIDEOS = 20;
+const SECONDS_IN_MINUTE = 60;
+const MIN_VIDEOS_DURATION_MINUTES = 5;
+
 const openAiConfig: OpenAiConfig = { apiKey: process.env.OPENAI_API_KEY! };
 
 export type RelatedVideo = {
@@ -113,7 +117,6 @@ export async function searchYouTube(
         }
 
         return results
-            .slice(0, MAX_RELATED_VIDEOS)
             .map(item => {
                 const videoId = item.id!.videoId as string;
                 const details = videoDetailsMap.get(videoId) || {};
@@ -136,7 +139,9 @@ export async function searchYouTube(
                     duration: details.duration ?? '',
                     views: details.views ?? '',
                 };
-            });
+            })
+            .filter(video => parseISODurationToSeconds(video.duration) >= MIN_VIDEOS_DURATION_MINUTES * SECONDS_IN_MINUTE)
+            .slice(0, MAX_RELATED_VIDEOS);
     } catch (error) {
         console.error('Error searching YouTube:', error);
         throw new Error('Failed to search YouTube.');
