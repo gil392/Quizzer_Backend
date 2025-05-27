@@ -10,6 +10,8 @@ const openAiConfig: OpenAiConfig = { apiKey: process.env.OPENAI_API_KEY! };
 
 export type RelatedVideo = {
     videoId: string | undefined;
+    duration: string;
+    views: string;
     snippet: {
         title: string;
         description: string;
@@ -89,25 +91,52 @@ export async function searchYouTube(
             );
         }) || [];
 
+        const videoIds = results
+            .map(item => item.id?.videoId)
+            .filter((id): id is string => !!id);
+
+        const videoDetailsMap = new Map<string, { duration?: string; views?: string }>();
+        if (videoIds.length > 0) {
+            const videosRes = await youtube.videos.list({
+                part: ['contentDetails', 'statistics'],
+                id: videoIds,
+            });
+
+            for (const item of videosRes.data.items || []) {
+                if (item.id) {
+                    videoDetailsMap.set(item.id, {
+                        duration: item.contentDetails?.duration ?? undefined,
+                        views: item.statistics?.viewCount ?? undefined,
+                    });
+                }
+            }
+        }
+
         return results
             .slice(0, MAX_RELATED_VIDEOS)
-            .map(item => ({
-                videoId: item.id!.videoId as string,
-                snippet: {
-                    title: item.snippet?.title ?? '',
-                    description: item.snippet?.description ?? '',
-                    publishTime: item.snippet?.publishedAt ?? '',
-                    channelTitle: item.snippet?.channelTitle ?? '',
-                    channelId: item.snippet?.channelId ?? '',
-                    thumbnail: item.snippet?.thumbnails?.default
-                        ? {
-                            url: item.snippet.thumbnails.default.url ?? '',
-                            width: item.snippet.thumbnails.default.width ?? 0,
-                            height: item.snippet.thumbnails.default.height ?? 0,
-                        }
-                        : { url: '', width: 0, height: 0 }
-                }
-            }));
+            .map(item => {
+                const videoId = item.id!.videoId as string;
+                const details = videoDetailsMap.get(videoId) || {};
+                return {
+                    videoId,
+                    snippet: {
+                        title: item.snippet?.title ?? '',
+                        description: item.snippet?.description ?? '',
+                        publishTime: item.snippet?.publishedAt ?? '',
+                        channelTitle: item.snippet?.channelTitle ?? '',
+                        channelId: item.snippet?.channelId ?? '',
+                        thumbnail: item.snippet?.thumbnails?.default
+                            ? {
+                                url: item.snippet.thumbnails.default.url ?? '',
+                                width: item.snippet.thumbnails.default.width ?? 0,
+                                height: item.snippet.thumbnails.default.height ?? 0,
+                            }
+                            : { url: '', width: 0, height: 0 }
+                    },
+                    duration: details.duration ?? '',
+                    views: details.views ?? '',
+                };
+            });
     } catch (error) {
         console.error('Error searching YouTube:', error);
         throw new Error('Failed to search YouTube.');
