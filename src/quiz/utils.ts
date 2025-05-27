@@ -13,7 +13,7 @@ export const createQuizResponseQuestion = ({
 }: Question): QuizResponseQuestion => ({
     _id: _id?.toString() ?? '',
     text: question,
-    answers: incorrectAnswers.concat(correctAnswer),
+    answers: incorrectAnswers.concat(correctAnswer), //TODO: This is a problem. once fixed in the other PR, There will be no more duplucate answers
 });
 
 export const createQuizResponse = (quiz: Quiz): QuizResponse => ({
