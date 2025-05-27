@@ -67,6 +67,4 @@ export const injectUserToRequest =
         done(err, null); 
       }
     });
-
-    console.log("Google strategy configured");
   };

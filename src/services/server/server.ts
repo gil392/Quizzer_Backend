@@ -75,7 +75,6 @@ export class Server extends Service {
       })
     );
     
-    console.log("Configuring Google Passport with authConfig:", authConfig);
     configureGooglePassport(this.dependencies.usersDal, authConfig);
 
     this.app.use(passport.initialize());
