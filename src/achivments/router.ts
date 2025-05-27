@@ -2,6 +2,7 @@ import { RequestHandler, Router } from "express";
 import { UsersDal } from "../user/dal";
 import { AchivementsProccesor } from "./achivmentsProccesor/achivmentsProccesor";
 import * as handlers from "./handlers";
+import { AchievementsDal } from "./dal";
 
 /**
  * @swagger
@@ -12,11 +13,13 @@ import * as handlers from "./handlers";
 
 export type AchievementRouterDependencies = {
   usersDal: UsersDal;
+  achievementsDal: AchievementsDal;
   achievementsProccesor: AchivementsProccesor;
 };
 
 const createRouterController = ({
   usersDal,
+  achievementsDal,
   achievementsProccesor,
 }: AchievementRouterDependencies): Record<
   keyof typeof handlers,
@@ -24,6 +27,7 @@ const createRouterController = ({
 > => ({
   getAchievementProgress: handlers.getAchievementProgress(
     usersDal,
+    achievementsDal,
     achievementsProccesor
   ),
 });

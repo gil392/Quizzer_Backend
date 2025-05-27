@@ -91,6 +91,11 @@ import { Settings, settingsSchema, settingsZodSchema } from "./settingsModel";
  *           description: List of user IDs who are friends
  *           items:
  *             type: string
+ *         achievements:
+ *           type: array
+ *           description: List of achievements IDs the user completed
+ *           items:
+ *             type: string
  *         favoriteLessons:
  *           type: array
  *           description: List of lesson IDs favorited by the user
@@ -107,6 +112,7 @@ import { Settings, settingsSchema, settingsZodSchema } from "./settingsModel";
  *         username: "jane_doe"
  *         friendRequests: ["user456", "user789"]
  *         friends: ["user123", "user321"]
+ *         achievements: ["user123", "user321"]
  *         favoriteLessons: ["lesson1", "lesson2"]
  *         streak: 5
  *         settings: { feedbackType: "onSubmit",
@@ -123,6 +129,7 @@ export type PublicUser = {
   streak: number;
   friendRequests?: string[];
   friends?: string[];
+  achievements?: string[];
   favoriteLessons?: string[];
   settings?: Settings;
 };
@@ -152,6 +159,7 @@ const userSchema = new Schema<User>({
   refreshToken: { type: [String], default: [] },
   friendRequests: { type: [String], default: [] },
   friends: { type: [String], default: [] },
+  achievements: { type: [String], default: [] },
   favoriteLessons: { type: [String], default: [] },
   settings: { type: settingsSchema, required: false },
 });

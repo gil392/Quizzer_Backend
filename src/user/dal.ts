@@ -10,4 +10,10 @@ export class UsersDal extends BasicDal<User> {
     id: string
   ): Promise<LeanDocument<PublicUser> | null> =>
     await this.findById(id, EXCLUDE_USER_PRIVATE_PROPERTIES_PROJECTION).lean();
+
+  addCompletedAchievments = (userId: string, achievements: string[]) =>
+    this.model.updateOne(
+      { _id: userId },
+      { $addToSet: { achievements: { $each: achievements } } }
+    );
 }

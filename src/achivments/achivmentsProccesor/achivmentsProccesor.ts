@@ -1,6 +1,4 @@
-import { isNil } from "ramda";
 import { LeanDocument } from "../../services/database/types";
-import { BadRequestError } from "../../services/server/exceptions";
 import { PublicUser } from "../../user/model";
 import {
   Achievement,
@@ -43,7 +41,9 @@ export class AchivementsProccesor {
   ): Promise<LeanDocument<AchievementProgress>[]> => {
     const { achievmentsDal } = this.dependancies;
 
-    const achievments = await achievmentsDal.getAvaliableAchievments([]).lean();
+    const achievments = await achievmentsDal
+      .getAvaliableAchievments(user.achievements ?? [])
+      .lean();
     const achievmentsWithProgress = await Promise.all(
       achievments.map((achievment) =>
         this.getAchievmentProgress(user, achievment)
