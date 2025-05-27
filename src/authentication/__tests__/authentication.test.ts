@@ -5,7 +5,7 @@ import { createDatabaseConfig } from '../../services/database/config';
 import { Database } from '../../services/database/database';
 import { createBasicApp } from '../../services/server/server';
 import { UsersDal } from '../../user/dal';
-import { createTestEnv } from '../../utils/tests';
+import { createTestEnv } from '../../utils/tests/utils';
 import { createAuthConfig, REFRESH_TOKEN_COOKIE_NAME } from '../config';
 import { injectUserToRequest } from '../middlewares';
 import { createAuthRouter } from '../router';

@@ -115,6 +115,9 @@ import { Settings, settingsSchema } from "./settingsModel";
  *         streak:
  *           type: number
  *           description: Current streak count (e.g., days active in a row)
+ *         xp:
+ *           type: number
+ *           description: Current xp of the user (gained by achivments)
  *         settings:
  *           type: Settings
  *           description: User settings
@@ -138,12 +141,14 @@ import { Settings, settingsSchema } from "./settingsModel";
 export type User = LeanDocument<{
   email: string;
   username: string;
-  streak: number;
   friendRequests?: string[];
   friends?: string[];
   achievements?: string[];
   favoriteLessons?: string[];
-  settings?: Settings;
+  streak: number;
+  lastQuizDate: Date;
+  xp: number;
+  settings?: Partial<Settings>;
 }>;
 
 export type UserWithAuthentication = User & {
@@ -155,14 +160,17 @@ const userSchema = new Schema<UserWithAuthentication>({
   email: { type: String, required: true, unique: true },
   hashedPassword: { type: String, required: true },
   username: { type: String, required: true },
-  streak: { type: Number, default: 0 },
   refreshToken: { type: [String], default: [] },
   friendRequests: { type: [String], default: [] },
   friends: { type: [String], default: [] },
   achievements: { type: [String], default: [] },
   favoriteLessons: { type: [String], default: [] },
+  streak: { type: Number, default: 0 },
+  lastQuizDate: { type: Date, default: new Date() },
+  xp: { type: Number, default: 0 },
   settings: { type: settingsSchema, required: false },
 });
+userSchema.index({ username: "text", email: "text" });
 
 export type UserModel = Model<UserWithAuthentication>;
 export const userModel = model<UserWithAuthentication>("users", userSchema);

@@ -8,7 +8,7 @@ import * as youtubeGetVideoDetails from '../../externalApis/youtube/getVideoDeta
 import { DatabaseConfig } from '../../services/database/config';
 import { Database } from '../../services/database/database';
 import { createBasicApp } from '../../services/server/server';
-import { asMockOf, createTestEnv } from '../../utils/tests';
+import { asMockOf, createTestEnv } from '../../utils/tests/utils';
 import { LessonsDal } from '../dal';
 import { Lesson } from '../model';
 import { createLessonRouter } from '../router';
@@ -23,7 +23,18 @@ describe('lessons routes', () => {
     const { lessonModel } = database.getModels();
     const lessonsDal = new LessonsDal(lessonModel);
     const summaryMock = 'summary mock';
-    const videoUrlMock = 'https://www.youtube.com/watch?v=d56mG7DezGs';
+    const videoUrlMock = 'https://www.youtube.com/watch?v=xvFZjo5PgG0';
+    const videoIdMock = 'xvFZjo5PgG0';
+    const videoDetailsMock = {
+        channel: 'channel',
+        channelId: 'channelId',
+        description: 'description',
+        duration: '10000',
+        tags: ['tag1'],
+        title: 'video title',
+        views: '0',
+        videoId: videoIdMock
+    };
     const titleMock = 'lesson title';
 
     const videoSummeraizerMock = asMockOf<VideoSummeraizer>({
@@ -31,8 +42,10 @@ describe('lessons routes', () => {
     });
     jest.spyOn(youtubeGetVideoDetails, 'getVideoDetails').mockResolvedValue({
         channel: 'channel',
+        description: 'description',
+        channelId: 'channelId',
         duration: '10000',
-        title: 'video title',
+        title: titleMock,
         views: '0'
     });
 
@@ -76,12 +89,14 @@ describe('lessons routes', () => {
                 videoUrl: videoUrlMock
             };
             const response = await createLessonRequest().send(lessonToCreate);
-
             expect(response.status).toBe(StatusCodes.CREATED);
             expect(response.body).toStrictEqual(
                 expect.objectContaining({
-                    ...lessonToCreate,
-                    summary: summaryMock
+                    summary: summaryMock,
+                    title: titleMock,
+                    videoDetails: expect.objectContaining({
+                        videoId: videoIdMock,
+                    })
                 })
             );
         });
@@ -96,7 +111,7 @@ describe('lessons routes', () => {
             sharedUsers: [],
             summary: summaryMock,
             title: titleMock,
-            videoUrl: videoUrlMock
+            videoDetails: videoDetailsMock,
         };
 
         beforeEach(async () => {
