@@ -4,14 +4,18 @@ import {
   ObjectId,
   ProjectionType,
   RootFilterQuery,
+  Types,
 } from "mongoose";
+import { OmitLeanDocument } from "./types";
 
-export class BasicDal<T> {
+export class BasicDal<T extends {}> {
   constructor(protected readonly model: Model<T>) {}
 
-  create = (data: T) => this.model.create(data);
+  create = (
+    data: OmitLeanDocument<T> & { _id?: Types.ObjectId | string }
+  ) => this.model.create(data);
 
-  findById = (id: string | ObjectId, projection?: ProjectionType<T>) =>
+  findById = (id: string | Types.ObjectId, projection?: ProjectionType<T>) =>
     this.model.findById(id, projection);
 
   find = (filter: RootFilterQuery<T>, projection?: ProjectionType<T>) =>

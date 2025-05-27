@@ -1,6 +1,6 @@
 import { Model, Schema, model } from "mongoose";
-import { z } from "zod";
-import { Settings, settingsSchema, settingsZodSchema } from "./settingsModel";
+import { LeanDocument } from "../services/database/types";
+import { Settings, settingsSchema } from "./settingsModel";
 
 /**
  * @swagger
@@ -9,11 +9,16 @@ import { Settings, settingsSchema, settingsZodSchema } from "./settingsModel";
  *     UserWithAuthentication:
  *       type: object
  *       required:
+ *         - _id
  *         - email
  *         - hashedPassword
  *         - username
  *         - streak
  *       properties:
+ *         _id:
+ *           type: string
+ *           format: mongoose.Types.ObjectId
+ *           description: User's ids
  *         email:
  *           type: string
  *           format: email
@@ -51,6 +56,7 @@ import { Settings, settingsSchema, settingsZodSchema } from "./settingsModel";
  *           type: Settings
  *           description: User settings for lesson
  *       example:
+ *         _id: "681cd953115ca90e9f94a9d2"
  *         email: "jane.doe@example.com"
  *         hashedPassword: "$2b$10$E8xKkF..."
  *         username: "jane_doe"
@@ -69,11 +75,16 @@ import { Settings, settingsSchema, settingsZodSchema } from "./settingsModel";
  *     User:
  *       type: object
  *       required:
+ *         - _id
  *         - email
  *         - hashedPassword
  *         - username
  *         - streak
  *       properties:
+ *         _id:
+ *           type: string
+ *           format: mongoose.Types.ObjectId
+ *           description: User's ids
  *         email:
  *           type: string
  *           format: email
@@ -108,6 +119,7 @@ import { Settings, settingsSchema, settingsZodSchema } from "./settingsModel";
  *           type: Settings
  *           description: User settings
  *       example:
+ *         _id: "681cd953115ca90e9f94a9d2"
  *         email: "jane.doe@example.com"
  *         username: "jane_doe"
  *         friendRequests: ["user456", "user789"]
@@ -123,7 +135,7 @@ import { Settings, settingsSchema, settingsZodSchema } from "./settingsModel";
  *                     solvingTimeMs: 6000 , }
  */
 
-export type User = {
+export type User = LeanDocument<{
   email: string;
   username: string;
   streak: number;
@@ -132,7 +144,7 @@ export type User = {
   achievements?: string[];
   favoriteLessons?: string[];
   settings?: Settings;
-};
+}>;
 
 export type UserWithAuthentication = User & {
   hashedPassword: string;

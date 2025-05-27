@@ -101,10 +101,15 @@ export const achievementsModel = model("achievement", achievementSchema);
  *     Achievement:
  *       type: object
  *       required:
+ *         - _id
  *         - description
  *         - rewards
  *         - requirements
  *       properties:
+ *         _id:
+ *           type: string
+ *           format: mongoose.Types.ObjectId
+ *           description: User's ids
  *         description:
  *           type: string
  *           description: Description of the achievement
@@ -146,10 +151,15 @@ export const achievementsModel = model("achievement", achievementSchema);
  *     AchievementProgress:
  *       type: object
  *       required:
+ *         - _id
  *         - description
  *         - rewards
  *         - requirements
  *       properties:
+ *         _id:
+ *           type: string
+ *           format: mongoose.Types.ObjectId
+ *           description: User's ids
  *         description:
  *           type: string
  *           description: Description of the achievement.

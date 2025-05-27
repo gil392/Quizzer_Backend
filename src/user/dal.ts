@@ -1,6 +1,6 @@
+import { Types } from "mongoose";
 import { BasicDal } from "../services/database/base.dal";
-import { LeanDocument } from "../services/database/types";
-import { EXCLUDE_USER_AUTHENTICATION_PROPERTIES_PROJECTION } from "./consts";
+import { EXCLUDE_USER_AUTH_PROPERTIES_PROJECTION } from "./consts";
 import { User, UserWithAuthentication } from "./model";
 
 export class UsersDal extends BasicDal<UserWithAuthentication> {
@@ -8,8 +8,8 @@ export class UsersDal extends BasicDal<UserWithAuthentication> {
 
   findUserWithoutAuthById = async (
     id: string
-  ): Promise<LeanDocument<User> | null> =>
-    await this.findById(id, EXCLUDE_USER_AUTHENTICATION_PROPERTIES_PROJECTION).lean();
+  ): Promise<User | null> =>
+    await this.findById(id, EXCLUDE_USER_AUTH_PROPERTIES_PROJECTION).lean();
 
   addCompletedAchievments = (userId: string, achievements: string[]) =>
     this.model.updateOne(

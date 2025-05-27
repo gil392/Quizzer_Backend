@@ -1,6 +1,5 @@
 import { isNil } from "ramda";
 import { validateAuthenticatedRequest } from "../authentication/validators";
-import { LeanDocument } from "../services/database/types";
 import { UnauthorizedError } from "../services/server/exceptions";
 import { UsersDal } from "../user/dal";
 import { AchivementsProccesor } from "./achivmentsProccesor/achivmentsProccesor";
@@ -32,10 +31,10 @@ export const getAchievementProgress = (
       .map(({ _id }) => _id.toString());
     await usersDal.addCompletedAchievments(userId, newCompletedAchievments);
 
-    const userAchievements: LeanDocument<Achievement>[] = user.achievements
+    const userAchievements: Achievement[] = user.achievements
       ? await achievmentsDal.getAchievementsByIds(user.achievements).lean()
       : [];
-      
+
     const achievmentsWithProgress = userAchievements
       .map(injectCompletedAchievmentItsProgress)
       .concat(achievements);

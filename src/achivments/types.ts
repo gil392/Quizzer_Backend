@@ -1,6 +1,7 @@
 import { LessonsDal } from "../lesson/dal";
 import { Lesson } from "../lesson/model";
 import { QuizzesDal } from "../quiz/dal";
+import { LeanDocument } from "../services/database/types";
 import { UsersDal } from "../user/dal";
 import { User } from "../user/model";
 import { AchievementsDal } from "./dal";
@@ -33,12 +34,12 @@ type XpReward = {
 
 type Reward = IconReward | XpReward;
 
-export type Achievement = {
+export type Achievement = LeanDocument<{
   description: string;
   rewards: Reward[];
   requirements: Requirment[];
   achivmentLock?: string;
-};
+}>;
 
 export type RequirmentProgress = { count: number; progress: number };
 export type AchievementProgress = Omit<Achievement, "requirements"> & {
