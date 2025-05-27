@@ -2,7 +2,7 @@ import { LessonsDal } from "../lesson/dal";
 import { Lesson } from "../lesson/model";
 import { QuizzesDal } from "../quiz/dal";
 import { UsersDal } from "../user/dal";
-import { PublicUser } from "../user/model";
+import { User } from "../user/model";
 import { AchievementsDal } from "./dal";
 
 export type Condition<T extends {}> = {
@@ -17,7 +17,7 @@ type RequirmentOf<Type, ConditionOf extends {}> = {
 
 export type LessonRequirement = RequirmentOf<"lesson", Lesson>;
 // export type AttempsReuirements = RequirmentOf<'attempt', Attempt>;
-export type UserRequirement = RequirmentOf<"user", PublicUser>;
+export type UserRequirement = RequirmentOf<"user", User>;
 
 export type Requirment = UserRequirement | LessonRequirement;
 

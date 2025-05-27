@@ -1,7 +1,7 @@
 import { RootFilterQuery } from "mongoose";
 import { mapObjIndexed, values as ramdaValues } from "ramda";
 import { LessonsDal } from "../../lesson/dal";
-import { PublicUser } from "../../user/model";
+import { User } from "../../user/model";
 import { LessonRequirement, UserRequirement } from "../types";
 import { Lesson } from "../../lesson/model";
 
@@ -43,7 +43,7 @@ export const createMongooseFindQueryToRequirementCondition = <
 });
 
 export const checkUserRequirement = async (
-  user: PublicUser,
+  user: User,
   condition: UserRequirement["condition"]
 ) => {
   const { count, values } = condition;

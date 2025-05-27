@@ -42,7 +42,7 @@ export const createUsersRouter = (
    *         content:
    *           application/json:
    *             schema:
-   *               $ref: '#/components/schemas/PublicUser'
+   *               $ref: '#/components/schemas/User'
    *       401:
    *         description: User is unauthorized
    *       404:

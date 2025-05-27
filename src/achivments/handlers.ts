@@ -16,7 +16,7 @@ export const getAchievementProgress = (
   validateAuthenticatedRequest(async (req, res) => {
     const { id: userId } = req.user;
 
-    const user = await usersDal.findPublicUserById(userId);
+    const user = await usersDal.findUserWithoutAuthById(userId);
     if (isNil(user)) {
       throw new UnauthorizedError(`user ${userId} not found`);
     }

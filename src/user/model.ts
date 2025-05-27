@@ -6,7 +6,7 @@ import { Settings, settingsSchema, settingsZodSchema } from "./settingsModel";
  * @swagger
  * components:
  *   schemas:
- *     User:
+ *     UserWithAuthentication:
  *       type: object
  *       required:
  *         - email
@@ -66,7 +66,7 @@ import { Settings, settingsSchema, settingsZodSchema } from "./settingsModel";
  *                     isManualCount: false,
  *                     solvingTimeMs: 6000 , }
  *
- *     PublicUser:
+ *     User:
  *       type: object
  *       required:
  *         - email
@@ -123,7 +123,7 @@ import { Settings, settingsSchema, settingsZodSchema } from "./settingsModel";
  *                     solvingTimeMs: 6000 , }
  */
 
-export type PublicUser = {
+export type User = {
   email: string;
   username: string;
   streak: number;
@@ -134,24 +134,12 @@ export type PublicUser = {
   settings?: Settings;
 };
 
-export type User = PublicUser & {
+export type UserWithAuthentication = User & {
   hashedPassword: string;
   refreshToken?: string[];
 };
 
-export const userZodSchema: z.ZodType<User> = z.object({
-  email: z.string().email(),
-  hashedPassword: z.string(),
-  username: z.string(),
-  streak: z.coerce.number(),
-  refreshToken: z.array(z.string()).default([]),
-  friendRequests: z.array(z.string()).default([]),
-  friends: z.array(z.string()).default([]),
-  favoriteLessons: z.array(z.string()).default([]),
-  settings: settingsZodSchema.optional(),
-});
-
-const userSchema = new Schema<User>({
+const userSchema = new Schema<UserWithAuthentication>({
   email: { type: String, required: true, unique: true },
   hashedPassword: { type: String, required: true },
   username: { type: String, required: true },
@@ -164,5 +152,5 @@ const userSchema = new Schema<User>({
   settings: { type: settingsSchema, required: false },
 });
 
-export type UserModel = Model<User>;
-export const userModel = model<User>("users", userSchema);
+export type UserModel = Model<UserWithAuthentication>;
+export const userModel = model<UserWithAuthentication>("users", userSchema);

@@ -1,5 +1,5 @@
 import { LeanDocument } from "../../services/database/types";
-import { PublicUser } from "../../user/model";
+import { User } from "../../user/model";
 import {
   Achievement,
   AchievementProgress,
@@ -13,7 +13,7 @@ export class AchivementsProccesor {
   ) {}
 
   private getAchievmentProgress = async (
-    user: LeanDocument<PublicUser>,
+    user: LeanDocument<User>,
     achievment: LeanDocument<Achievement>
   ): Promise<LeanDocument<AchievementProgress>> => {
     const { lessonsDal } = this.dependancies;
@@ -37,7 +37,7 @@ export class AchivementsProccesor {
   };
 
   getUserAchievementsProgress = async (
-    user: LeanDocument<PublicUser>
+    user: LeanDocument<User>
   ): Promise<LeanDocument<AchievementProgress>[]> => {
     const { achievmentsDal } = this.dependancies;
 
