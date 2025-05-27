@@ -198,11 +198,46 @@ export const createAuthRouter = (
      */
     router.post('/logout', handlers.logout);
 
+    /**
+     * @swagger
+     * /auth/google:
+     *   get:
+     *     summary: Initiate Google login
+     *     description: Redirects the user to Google's OAuth 2.0 login page.
+     *     tags:
+     *       - Auth
+     *     responses:
+     *       302:
+     *         description: Redirects to Google's OAuth 2.0 login page.
+     */
     router.get(
         "/google",
         passport.authenticate("google", { scope: ["profile", "email"] }) 
       );
-      
+
+    /**
+     * @swagger
+     * /auth/google/callback:
+     *   get:
+     *     summary: Google OAuth callback
+     *     description: Handles the callback from Google after the user has authenticated.
+     *     tags:
+     *       - Auth
+     *     parameters:
+     *       - in: query
+     *         name: code
+     *         schema:
+     *           type: string
+     *         required: true
+     *         description: Authorization code returned by Google.
+     *     responses:
+     *       302:
+     *         description: Redirects to the frontend with the access token.
+     *       401:
+     *         description: Unauthorized if the user is not authenticated.
+     *       500:
+     *         description: Server error.
+     */
     router.get(
         "/google/callback",
         passport.authenticate("google", { failureRedirect: "/login" }),

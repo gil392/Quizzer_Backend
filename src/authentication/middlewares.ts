@@ -6,7 +6,6 @@ import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { AuthConfig } from "./config";
 import { UsersDal } from "../user/dal";
-import { auth } from "google-auth-library";
 
 
 
