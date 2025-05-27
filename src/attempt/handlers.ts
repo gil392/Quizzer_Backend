@@ -5,6 +5,7 @@ import { AttemptDal } from "./dal";
 import {
     getAttemptsByQuizIdRequestValidator,
     createAttemptRequestValidator,
+    getQuestionResultRequestValidator,
 } from "./validators";
 import { getQuestionResultInQuiz } from "./utils";
 import { QuizzesDal } from "../quiz/dal";
@@ -45,3 +46,23 @@ export const createAttempt = (quizzesDal: QuizzesDal, AttemptDal: AttemptDal) =>
 
         res.status(StatusCodes.CREATED).send(savedAttempt);
     });
+
+
+    export const getQuestionResult = (quizzesDal: QuizzesDal) =>
+        getQuestionResultRequestValidator(async (req, res) => {
+            const { questionId } = req.params;
+            const { selectedAnswer } = req.query;
+    
+            const { question } = await quizzesDal.findQuestionById(questionId);
+
+            if (isNil(question)) {
+                throw new BadRequestError("Question not found");
+            }
+    
+            res.status(StatusCodes.OK).send({
+                questionId,
+                selectedAnswer,
+                correctAnswer: question.correctAnswer,
+                isCorrect: question.correctAnswer === selectedAnswer,
+            });
+        });

@@ -21,6 +21,7 @@ const createRouterController = ({
 }: AttemptRouterDependencies) => ({
     CreateAttempt: handlers.createAttempt(quizzesDal, attemptDal),
     GetAttemptsByQuizId: handlers.GetAttemptsByQuizId(attemptDal),
+    getQuestionResult: handlers.getQuestionResult(quizzesDal),
 });
 
 export const createAttemptRouter = (
@@ -139,6 +140,56 @@ export const createAttemptRouter = (
      *         description: Server error
      */
     router.post('/', controller.CreateAttempt);
+
+
+    /**
+     * @swagger
+     * /attempt/question/{questionId}:
+     *   get:
+     *     summary: Get the result of a specific question attempt
+     *     tags: [Attempt]
+     *     parameters:
+     *       - in: path
+     *         name: questionId
+     *         required: true
+     *         schema:
+     *           type: string
+     *         description: The ID of the question
+     *       - in: query
+     *         name: selectedAnswer
+     *         required: true
+     *         schema:
+     *           type: string
+     *         description: The selected answer for the question
+     *     responses:
+     *       200:
+     *         description: The result of the question attempt
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: object
+     *               properties:
+     *                 questionId:
+     *                   type: string
+     *                 selectedAnswer:
+     *                   type: string
+     *                 correctAnswer:
+     *                   type: string
+     *                 isCorrect:
+     *                   type: boolean
+     *               example:
+     *                 questionId: "q1"
+     *                 selectedAnswer: "A"
+     *                 correctAnswer: "B"
+     *                 isCorrect: false
+     *       400:
+     *         description: Invalid input
+     *       404:
+     *         description: Question not found
+     *       500:
+     *         description: Server error
+     */
+    router.get('/question/:questionId', controller.getQuestionResult);
 
 
     return router;

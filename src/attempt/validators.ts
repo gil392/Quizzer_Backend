@@ -19,10 +19,23 @@ export const createAttemptRequestSchema = z.object({
     }),
 });
 
+export const getQuestionResultRequestSchema = z.object({
+    params: z.object({
+        questionId: z.string(),
+    }),
+    query: z.object({
+        selectedAnswer: z.string(),
+    }),
+});
+
 export const getAttemptsByQuizIdRequestValidator = validateHandlerRequest(
     getAttemptsByQuizIdRequestSchema
 );
 
 export const createAttemptRequestValidator = validateHandlerRequest(
     createAttemptRequestSchema
+);
+
+export const getQuestionResultRequestValidator = validateHandlerRequest(
+    getQuestionResultRequestSchema
 );
