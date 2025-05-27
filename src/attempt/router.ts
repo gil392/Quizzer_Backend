@@ -1,7 +1,8 @@
-import { Router } from "express";
+import { RequestHandler, Router } from "express";
 import * as handlers from "./handlers";
 import { AttemptDal } from "./dal";
 import { QuizzesDal } from "../quiz/dal";
+import { UsersDal } from "../user/dal";
 
 /**
  * @swagger
@@ -11,24 +12,27 @@ import { QuizzesDal } from "../quiz/dal";
  */
 
 export type AttemptRouterDependencies = {
-    attemptDal: AttemptDal;
-    quizzesDal: QuizzesDal;
+  attemptDal: AttemptDal;
+  quizzesDal: QuizzesDal;
+  usersDal: UsersDal;
 };
 
 const createRouterController = ({
-    attemptDal,
-    quizzesDal
+  attemptDal,
+  quizzesDal,
+  usersDal,
 }: AttemptRouterDependencies) => ({
-    CreateAttempt: handlers.createAttempt(quizzesDal, attemptDal),
+    CreateAttempt: handlers.createAttempt(quizzesDal, attemptDal, usersDal),
     GetAttemptsByQuizId: handlers.GetAttemptsByQuizId(attemptDal),
     getQuestionResult: handlers.getQuestionResult(quizzesDal),
 });
 
 export const createAttemptRouter = (
-    dependencies: AttemptRouterDependencies
+  authMiddleware: RequestHandler,
+  dependencies: AttemptRouterDependencies
 ): Router => {
-    const router = Router();
-    const controller = createRouterController(dependencies);
+  const router = Router();
+  const controller = createRouterController(dependencies);
 
     /**
      * @swagger
@@ -78,7 +82,7 @@ export const createAttemptRouter = (
      *       500:
      *         description: Server error
      */
-    router.get('/', controller.GetAttemptsByQuizId);
+    router.get("/", controller.GetAttemptsByQuizId);
 
     /**
      * @swagger
@@ -139,7 +143,7 @@ export const createAttemptRouter = (
      *       500:
      *         description: Server error
      */
-    router.post('/', controller.CreateAttempt);
+    router.post("/", authMiddleware, controller.CreateAttempt);
 
 
     /**
