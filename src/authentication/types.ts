@@ -4,6 +4,7 @@ import {
     loginRequestZodSchema,
     registerRequestZodSchema
 } from './validators';
+import { User } from '../user/model';
 
 export type AuthenticationTokens = {
     accessToken: string;
@@ -21,3 +22,8 @@ export type AuthenticatedRequest = z.infer<
 
 export type RegisterRequest = z.infer<typeof registerRequestZodSchema>;
 export type LoginRequest = z.infer<typeof loginRequestZodSchema>;
+
+
+export interface AuthenticatedRequestWithUser extends Request {
+    user?: User; 
+}
