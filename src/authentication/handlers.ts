@@ -16,6 +16,7 @@ import {
   validateRegisterRequest,
   validateRequestWithRefreshToken,
 } from "./validators";
+import { auth } from "google-auth-library";
 
 const responseSendTokensAndUserId = (
   response: Response,
@@ -57,21 +58,32 @@ export const login = (authConfig: AuthConfig, usersDal: UsersDal) =>
     const { username, password } = request.body;
     try {
       const user = await usersDal.findByUsername(username);
+
       if (!user) {
         throw new BadRequestError("wrong username or password");
       }
+
+      if (!user.hashedPassword) {
+        throw new BadRequestError("user has no password");
+      }
+
       const validPassword = await bcrypt.compare(password, user.hashedPassword);
+
       if (!validPassword) {
         throw new BadRequestError("wrong username or password");
       }
+
       const userId = user._id.toString();
       const tokens = generateTokens(authConfig, userId);
+
       if (!tokens) {
         throw new InternalServerError();
       }
+
       if (!user.refreshToken) {
         user.refreshToken = [];
       }
+
       user.refreshToken.push(tokens.refreshToken);
       await user.save();
       responseSendTokensAndUserId(response, userId, tokens);
@@ -81,6 +93,7 @@ export const login = (authConfig: AuthConfig, usersDal: UsersDal) =>
         : new BadRequestError("failed to login", err as Error);
     }
   });
+
 
 export const logout = (tokenSecret: string) =>
   validateRequestWithRefreshToken(async (request, response) => {
@@ -122,3 +135,24 @@ export const refresh = (authConfig: AuthConfig) =>
       response.status(StatusCodes.BAD_REQUEST).send(err);
     }
   });
+
+export const googleLoginCallback =
+  (config: AuthConfig) => async (req: any, res: Response): Promise<void> => {
+    const user = req.user;
+
+    if (!user) {
+      res.status(StatusCodes.UNAUTHORIZED).send("User not authenticated");
+      return;
+    }
+
+    const tokens = generateTokens(config, user._id.toString());
+
+    user.refreshToken = user.refreshToken || [];
+    user.refreshToken.push(tokens.refreshToken);
+    await user.save();
+
+    res.cookie("refresh-token", tokens.refreshToken, { httpOnly: true });
+    res.redirect(
+      `${config.frontendRedirectUrl}`
+    );
+  };

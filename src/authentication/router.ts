@@ -1,8 +1,8 @@
 import { RequestHandler, Router } from 'express';
 import { AuthConfig } from './config';
 import * as handlers from './handlers';
-import { UserModel } from '../user/model';
 import { UsersDal } from '../user/dal';
+import passport from 'passport';
 
 /**
  * @swagger
@@ -32,7 +32,8 @@ const buildRouteHandlers = (
     login: handlers.login(config, dependencies.usersDal),
     logout: handlers.logout(config.tokenSecret),
     refresh: handlers.refresh(config),
-    register: handlers.register(dependencies.usersDal)
+    register: handlers.register(dependencies.usersDal),
+    googleLoginCallback: handlers.googleLoginCallback(config),
 });
 
 export const createAuthRouter = (
@@ -196,6 +197,17 @@ export const createAuthRouter = (
      *         description: Server error
      */
     router.post('/logout', handlers.logout);
+
+    router.get(
+        "/google",
+        passport.authenticate("google", { scope: ["profile", "email"] }) 
+      );
+      
+    router.get(
+        "/google/callback",
+        passport.authenticate("google", { failureRedirect: "/login" }),
+        handlers.googleLoginCallback
+    );
 
     return router;
 };

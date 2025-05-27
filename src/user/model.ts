@@ -121,6 +121,7 @@ import { Settings, settingsSchema, settingsZodSchema } from "./settingsModel";
  */
 
 export type PublicUser = {
+  googleId?: string;
   email: string;
   username: string;
   friendRequests?: string[];
@@ -133,7 +134,7 @@ export type PublicUser = {
 };
 
 export type User = PublicUser & {
-  hashedPassword: string;
+  hashedPassword?: string;
   refreshToken?: string[];
 };
 
@@ -153,7 +154,7 @@ export const userZodSchema: z.ZodType<User> = z.object({
 
 const userSchema = new Schema<User>({
   email: { type: String, required: true, unique: true },
-  hashedPassword: { type: String, required: true },
+  hashedPassword: { type: String },
   username: { type: String, required: true },
   refreshToken: { type: [String], default: [] },
   friendRequests: { type: [String], default: [] },

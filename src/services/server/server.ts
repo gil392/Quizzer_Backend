@@ -3,7 +3,7 @@ import cors from "cors";
 import express, { Express } from "express";
 import * as http from "http";
 import swaggerUI from "swagger-ui-express";
-import { injectUserToRequest } from "../../authentication/middlewares";
+import { configureGooglePassport, injectUserToRequest } from "../../authentication/middlewares";
 import {
   AuthRouterDependencies,
   createAuthRouter,
@@ -22,6 +22,8 @@ import {
   AttemptRouterDependencies,
   createAttemptRouter,
 } from "../../attempt/router";
+import session from "express-session";
+import passport from "passport";
 
 export const createBasicApp = (corsOrigin?: string): Express => {
   const app = express();
@@ -59,6 +61,25 @@ export class Server extends Service {
   private useRouters = () => {
     const { authConfig } = this.config;
     const authMiddleware = injectUserToRequest(authConfig.tokenSecret);
+    
+    this.app.use(
+      session({
+        secret: authConfig.tokenSecret, 
+        resave: false, 
+        saveUninitialized: false, 
+        cookie: {
+          httpOnly: true, 
+          secure: process.env.NODE_ENV === "production", 
+          sameSite: "strict", 
+        },
+      })
+    );
+    
+    console.log("Configuring Google Passport with authConfig:", authConfig);
+    configureGooglePassport(this.dependencies.usersDal, authConfig);
+
+    this.app.use(passport.initialize());
+    this.app.use(passport.session());
 
     this.app.use("/auth", createAuthRouter(authConfig, this.dependencies));
     this.app.use("/lesson", createLessonRouter(this.dependencies));
