@@ -1,5 +1,5 @@
 import { BasicDal } from "../services/database/base.dal";
-import { Quiz } from "./types";
+import { Question, Quiz } from "./types";
 
 export class QuizzesDal extends BasicDal<Quiz> {
   findQuizzesWithUserRatingByLesson = (
@@ -27,5 +27,18 @@ export class QuizzesDal extends BasicDal<Quiz> {
         },
       },
     ]);
+  };
+
+  findQuestionById = async (questionId: string): Promise<{ question: Question | null } > => {
+    const result = await this.model.findOne(
+      { "questions._id": questionId },
+      { "questions.$": 1 } 
+    );
+  
+    if (!result || !result.questions || result.questions.length === 0) {
+      return { question: null}; 
+    }
+  
+    return { question: result.questions[0] }; 
   };
 }
