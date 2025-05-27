@@ -16,7 +16,6 @@ import {
   validateRegisterRequest,
   validateRequestWithRefreshToken,
 } from "./validators";
-import { auth } from "google-auth-library";
 
 const responseSendTokensAndUserId = (
   response: Response,
@@ -151,8 +150,8 @@ export const googleLoginCallback =
     user.refreshToken.push(tokens.refreshToken);
     await user.save();
 
-    res.cookie("refresh-token", tokens.refreshToken, { httpOnly: true });
+    res.cookie(REFRESH_TOKEN_COOKIE_NAME, tokens.refreshToken);
     res.redirect(
-      `${config.frontendRedirectUrl}`
+      `${config.frontendRedirectUrl}/auth/callback?token=${tokens.accessToken}`
     );
   };
