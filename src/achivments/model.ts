@@ -27,6 +27,7 @@ const rewardSchema = new Schema(
 );
 
 const achievementSchema = new Schema({
+  title: { type: String, required: true },
   description: { type: String, required: true },
   rewards: [rewardSchema],
   requirements: [requirementSchema],
@@ -102,6 +103,7 @@ export const achievementsModel = model("achievement", achievementSchema);
  *       type: object
  *       required:
  *         - _id
+ *         - title
  *         - description
  *         - rewards
  *         - requirements
@@ -110,6 +112,9 @@ export const achievementsModel = model("achievement", achievementSchema);
  *           type: string
  *           format: mongoose.Types.ObjectId
  *           description: User's ids
+ *         title:
+ *           type: string
+ *           description: Title of the achievement
  *         description:
  *           type: string
  *           description: Description of the achievement
@@ -125,6 +130,7 @@ export const achievementsModel = model("achievement", achievementSchema);
  *           type: string
  *           description: id of achievment that must be completed before
  *       example:
+ *         title: "A Student"
  *         description: "Complete 5 quizzes with at least 90% grade"
  *         rewards:
  *           - type: "xp"
@@ -160,6 +166,9 @@ export const achievementsModel = model("achievement", achievementSchema);
  *           type: string
  *           format: mongoose.Types.ObjectId
  *           description: User's ids
+ *         title:
+ *           type: string
+ *           description: Title of the achievement
  *         description:
  *           type: string
  *           description: Description of the achievement.

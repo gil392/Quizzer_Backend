@@ -35,6 +35,7 @@ type XpReward = {
 type Reward = IconReward | XpReward;
 
 export type Achievement = LeanDocument<{
+  title: string;
   description: string;
   rewards: Reward[];
   requirements: Requirment[];
