@@ -1,3 +1,5 @@
+import { AchivementsProccesor } from "../../achivments/achivmentsProccesor/achivmentsProccesor";
+import { AchievementsDal } from "../../achivments/dal";
 import { AttemptDal } from "../../attempt/dal";
 import { quizAttemptModel } from "../../attempt/model";
 import { QuestionsGenerator } from "../../externalApis/quizGenerator";
@@ -23,20 +25,29 @@ export class System extends Service {
     const dals = this.createDals();
     const questionsGenerator = new QuestionsGenerator(openAiConfig);
     const videoSummeraizer = new VideoSummeraizer(openAiConfig);
+    const achievementsProccesor = new AchivementsProccesor({...dals});
+    
     this.server = new Server(
-      { ...dals, questionsGenerator, videoSummeraizer },
+      { ...dals, questionsGenerator, videoSummeraizer, achievementsProccesor },
       serverConfig
     );
   }
 
   private createDals = () => {
-    const { quizModel, lessonModel, userModel, quizRatingModel } =
-      this.database.getModels();
+    const {
+      quizModel,
+      lessonModel,
+      userModel,
+      quizRatingModel,
+      achievementModel,
+    } = this.database.getModels();
+
     const quizzesDal = new QuizzesDal(quizModel);
     const lessonsDal = new LessonsDal(lessonModel);
     const usersDal = new UsersDal(userModel);
     const attemptDal = new AttemptDal(quizAttemptModel);
     const quizzesRatingDal = new QuizzesRatingDal(quizRatingModel);
+    const achievementsDal = new AchievementsDal(achievementModel);
 
     return {
       quizzesDal,
@@ -44,6 +55,7 @@ export class System extends Service {
       usersDal,
       attemptDal,
       quizzesRatingDal,
+      achievementsDal,
     };
   };
 

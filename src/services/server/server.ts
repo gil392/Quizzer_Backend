@@ -22,6 +22,7 @@ import {
   AttemptRouterDependencies,
   createAttemptRouter,
 } from "../../attempt/router";
+import { AchievementRouterDependencies, createAchievementsRouter } from "../../achivments/router";
 
 export const createBasicApp = (corsOrigin?: string): Express => {
   const app = express();
@@ -33,7 +34,8 @@ export const createBasicApp = (corsOrigin?: string): Express => {
   return app;
 };
 
-export type ServerDependencies = AttemptRouterDependencies &
+export type ServerDependencies = AchievementRouterDependencies &
+AttemptRouterDependencies &
   QuizRouterDependencies &
   LessonRouterDependencies &
   AuthRouterDependencies &
@@ -68,6 +70,7 @@ export class Server extends Service {
       createAttemptRouter(authMiddleware, this.dependencies)
     );
     this.app.use("/user", createUsersRouter(authMiddleware, this.dependencies));
+    this.app.use("/achievement", createAchievementsRouter(authMiddleware, this.dependencies));
   };
 
   private useErrorHandler = () => {

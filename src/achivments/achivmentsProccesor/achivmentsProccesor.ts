@@ -38,9 +38,9 @@ export class AchivementsProccesor {
   getUserAchievementsProgress = async (
     user: User
   ): Promise<AchievementProgress[]> => {
-    const { achievmentsDal } = this.dependancies;
+    const { achievementsDal } = this.dependancies;
 
-    const achievments = await achievmentsDal
+    const achievments = await achievementsDal
       .getAvaliableAchievments(user.achievements ?? [])
       .lean();
     const achievmentsWithProgress = await Promise.all(

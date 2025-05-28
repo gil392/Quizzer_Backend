@@ -35,7 +35,10 @@ const achievementSchema = new Schema({
 });
 
 export type AchievementsModel = Model<Achievement>;
-export const achievementsModel = model("achievement", achievementSchema);
+export const achievementModel = model<Achievement>(
+  "achievement",
+  achievementSchema
+);
 
 /**
  * @swagger
@@ -141,7 +144,7 @@ export const achievementsModel = model("achievement", achievementSchema);
  *               values:
  *                 grade: 90
  *               count: 5
- * 
+ *
  *     RequirmentProgress:
  *       type: object
  *       properties:
@@ -153,7 +156,7 @@ export const achievementsModel = model("achievement", achievementSchema);
  *           type: integer
  *           description: Current progress made towards the requirement.
  *           example: 5
- * 
+ *
  *     AchievementProgress:
  *       type: object
  *       required:

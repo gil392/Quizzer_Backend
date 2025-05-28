@@ -48,8 +48,6 @@ export type AchievementProgress = Omit<Achievement, "requirements"> & {
 };
 
 export type AchievementsProccesorDependancies = {
-  quizzesDal: QuizzesDal;
-  usersDal: UsersDal;
-  achievmentsDal: AchievementsDal;
+  achievementsDal: AchievementsDal;
   lessonsDal: LessonsDal;
 };

@@ -5,12 +5,14 @@ import { UserModel, userModel } from '../../user/model';
 import { quizRatingModel, QuizRatingModel } from '../../quizRating/model';
 import { Service } from '../service';
 import { DatabaseConfig } from './config';
+import { AchievementsModel, achievementModel } from '../../achivments/model';
 
 type DatabaseModels = {
     quizModel: QuizModel;
     lessonModel: LessonModel;
     userModel: UserModel;
     quizRatingModel: QuizRatingModel;
+    achievementModel: AchievementsModel
 };
 
 export class Database extends Service {
@@ -26,7 +28,8 @@ export class Database extends Service {
             quizModel,
             lessonModel,
             userModel,
-            quizRatingModel
+            quizRatingModel,
+            achievementModel
         };
     }
 
