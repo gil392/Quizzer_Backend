@@ -5,7 +5,7 @@ import { UsersDal } from "../user/dal";
 import { AchivementsProccesor } from "./achivmentsProccesor/achivmentsProccesor";
 import { AchievementsDal } from "./dal";
 import { Achievement } from "./types";
-import { injectCompletedAchievmentItsProgress } from "./utils";
+import { injectCompletedAchievmentItsProgress, isRequirementNotCompleted } from "./utils";
 
 export const getAchievementProgress = (
   usersDal: UsersDal,
@@ -26,7 +26,7 @@ export const getAchievementProgress = (
     const newCompletedAchievments = achievements
       .filter(
         (achievement) =>
-          !achievement.requirements.some(({ progress }) => progress !== 1)
+          !achievement.requirements.some(isRequirementNotCompleted)
       )
       .map(({ _id }) => _id.toString());
     await usersDal.addCompletedAchievments(userId, newCompletedAchievments);

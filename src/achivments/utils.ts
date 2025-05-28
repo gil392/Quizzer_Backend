@@ -5,8 +5,11 @@ export const injectCompletedAchievmentItsProgress = (
 ): AchievementProgress => {
   const { requirements } = achievment;
   const requirementsProgress: RequirmentProgress[] = requirements.map(
-    ({ condition: { count } }) => ({ count, progress: 1 })
+    ({ condition: { count } }) => ({ count, value: count })
   );
 
   return { ...achievment, requirements: requirementsProgress };
 };
+
+export const isRequirementNotCompleted = ({ value, count }: RequirmentProgress) =>
+  value !== count;

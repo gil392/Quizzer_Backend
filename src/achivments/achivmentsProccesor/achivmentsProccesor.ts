@@ -28,7 +28,7 @@ export class AchivementsProccesor {
               condition
             );
 
-      return { count: condition.count, progress };
+      return { count: condition.count, value: progress };
     });
     const requirementsProgresses = await Promise.all(progressesPromises);
 

@@ -152,7 +152,7 @@ export const achievementModel = model<Achievement>(
  *           type: integer
  *           description: Total required count for the requirement.
  *           example: 10
- *         progress:
+ *         value:
  *           type: integer
  *           description: Current progress made towards the requirement.
  *           example: 5

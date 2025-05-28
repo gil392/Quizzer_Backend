@@ -59,7 +59,7 @@ export const checkUserRequirement = async (
     }, values)
   );
 
-  return count / results.filter((result) => result).length;
+  return results.filter((result) => result).length;
 };
 
 export const checkLessonRequirement = async (
@@ -67,12 +67,12 @@ export const checkLessonRequirement = async (
   userId: string,
   condition: LessonRequirement["condition"]
 ) => {
-  const { values, count } = condition;
+  const { values } = condition;
   const filter: RootFilterQuery<Lesson> = {
     owner: userId,
     ...createMongooseFindQueryToRequirementCondition(values),
   };
-  const results = await lessonsDal.find(filter).countDocuments();
+  const progress = await lessonsDal.find(filter).countDocuments();
 
-  return count / results;
+  return progress;
 };
