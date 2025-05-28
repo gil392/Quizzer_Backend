@@ -1,4 +1,4 @@
-import { keys, omit, pick } from "ramda";
+import { keys, omit, pick, pipe } from "ramda";
 import { WithStringId } from "../../utils/tests/types";
 import {
   EXCLUDE_USER_AUTH_PROPERTIES_PROJECTION,
@@ -6,7 +6,7 @@ import {
 } from "../consts";
 import { User, UserWithAuthentication } from "../model";
 
-export const castUserToPublicUser = (
+export const omitAuthFromUser = (
   user: WithStringId<UserWithAuthentication>
 ): WithStringId<User> =>
   omit(keys(EXCLUDE_USER_AUTH_PROPERTIES_PROJECTION), user);
@@ -17,3 +17,5 @@ export const castUserToSearchUserResult = (
   WithStringId<UserWithAuthentication>,
   (typeof SEARCH_USER_SELECT_KEYS)[number]
 > => pick(SEARCH_USER_SELECT_KEYS, user);
+
+export const castObjectToResponseBody = pipe(JSON.stringify, JSON.parse);

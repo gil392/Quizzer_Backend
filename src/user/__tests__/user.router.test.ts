@@ -11,7 +11,11 @@ import { createTestEnv } from "../../utils/tests/utils";
 import { UsersDal } from "../dal";
 import { createUsersRouter } from "../router";
 import { loggedUser, otherUser } from "./mocks";
-import { castUserToPublicUser, castUserToSearchUserResult } from "./utils";
+import {
+  castObjectToResponseBody,
+  castUserToSearchUserResult,
+  omitAuthFromUser,
+} from "./utils";
 
 describe("user router", () => {
   const config = createTestEnv();
@@ -56,7 +60,9 @@ describe("user router", () => {
 
     test("logged in user should get user public details", async () => {
       const response = await setAuthHeaderToRequest(requestLoggedUser());
-      expect(response.body).toMatchObject(castUserToPublicUser(loggedUser));
+      expect(response.body).toMatchObject(
+        castObjectToResponseBody(omitAuthFromUser(loggedUser))
+      );
     });
   });
 
