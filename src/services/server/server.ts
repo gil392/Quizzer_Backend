@@ -61,12 +61,12 @@ export class Server extends Service {
     const authMiddleware = injectUserToRequest(authConfig.tokenSecret);
 
     this.app.use("/auth", createAuthRouter(authConfig, this.dependencies));
-    this.app.use(
-      "/lesson",
-      createLessonRouter(authMiddleware, this.dependencies)
-    );
+    this.app.use("/lesson", createLessonRouter(authMiddleware, this.dependencies));
     this.app.use("/quiz", createQuizRouter(authMiddleware, this.dependencies));
-    this.app.use("/attempt", createAttemptRouter(this.dependencies));
+    this.app.use(
+      "/attempt",
+      createAttemptRouter(authMiddleware, this.dependencies)
+    );
     this.app.use("/user", createUsersRouter(authMiddleware, this.dependencies));
   };
 

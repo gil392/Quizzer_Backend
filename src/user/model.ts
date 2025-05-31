@@ -99,6 +99,9 @@ import { Settings, settingsSchema, settingsZodSchema } from "./settingsModel";
  *         streak:
  *           type: number
  *           description: Current streak count (e.g., days active in a row)
+ *         xp:
+ *           type: number
+ *           description: Current xp of the user (gained by achivments)
  *         settings:
  *           type: Settings
  *           description: User settings
@@ -120,10 +123,12 @@ import { Settings, settingsSchema, settingsZodSchema } from "./settingsModel";
 export type PublicUser = {
   email: string;
   username: string;
-  streak: number;
   friendRequests?: string[];
   friends?: string[];
   favoriteLessons?: string[];
+  streak: number;
+  lastQuizDate: Date;
+  xp: number;
   settings?: Partial<Settings>;
 };
 
@@ -136,11 +141,13 @@ export const userZodSchema: z.ZodType<User> = z.object({
   email: z.string().email(),
   hashedPassword: z.string(),
   username: z.string(),
-  streak: z.coerce.number(),
   refreshToken: z.array(z.string()).default([]),
   friendRequests: z.array(z.string()).default([]),
   friends: z.array(z.string()).default([]),
   favoriteLessons: z.array(z.string()).default([]),
+  streak: z.coerce.number(),
+  lastQuizDate: z.coerce.date(),
+  xp: z.coerce.number(),
   settings: settingsZodSchema.optional(),
 });
 
@@ -148,13 +155,16 @@ const userSchema = new Schema<User>({
   email: { type: String, required: true, unique: true },
   hashedPassword: { type: String, required: true },
   username: { type: String, required: true },
-  streak: { type: Number, default: 0 },
   refreshToken: { type: [String], default: [] },
   friendRequests: { type: [String], default: [] },
   friends: { type: [String], default: [] },
   favoriteLessons: { type: [String], default: [] },
+  streak: { type: Number, default: 0 },
+  lastQuizDate: { type: Date, default: new Date() },
+  xp: { type: Number, default: 0 },
   settings: { type: settingsSchema, required: false },
 });
+userSchema.index({ username: "text", email: "text" });
 
 export type UserModel = Model<User>;
 export const userModel = model<User>("users", userSchema);

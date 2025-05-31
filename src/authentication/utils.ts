@@ -17,7 +17,7 @@ export const hashPassword = async (password: string) => {
 export const generateTokens = (
     authConfig: AuthConfig,
     userId: string
-): AuthenticationTokens | null => {
+): AuthenticationTokens => {
     const random = Math.random().toString();
     const payload: AuthenticationTokenPayload = {
         _id: userId,
