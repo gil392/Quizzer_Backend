@@ -1,51 +1,53 @@
-import { Model, model, Schema } from 'mongoose';
+import { Model, model, Schema } from "mongoose";
 
 export interface VideoDetails {
-    title: string;
-    channel: string;
-    channelId: string;
-    description: string;
-    tags?: string[];
-    views: string;
-    duration: string;
-    videoId: string;
+  title: string;
+  channel: string;
+  channelId: string;
+  description: string;
+  tags?: string[];
+  views: string;
+  duration: string;
+  videoId: string;
 }
 
 export interface Lesson {
-    owner: string;
-    title: string;
-    sharedUsers: string[];
-    summary: string;
-    videoDetails: VideoDetails;
+  owner: string;
+  title: string;
+  sharedUsers: string[];
+  summary: string;
+  videoDetails?: VideoDetails;
+  relatedLessonId?: string;
 }
 
 const videoDetailsSchema = new Schema<VideoDetails>(
-    {
-        title: { type: String, required: true },
-        channel: { type: String, required: true },
-        channelId: { type: String, required: true },
-        description: { type: String, required: true },
-        tags: { type: [String], default: [] },
-        views: { type: String, required: true },
-        duration: { type: String, required: true },
-        videoId: { type: String, required: true },
-    },
-    { _id: false } // Prevents creating a separate `_id` for the sub-document
+  {
+    title: { type: String, required: true },
+    channel: { type: String, required: true },
+    channelId: { type: String, required: true },
+    description: { type: String, required: true },
+    tags: { type: [String], default: [] },
+    views: { type: String, required: true },
+    duration: { type: String, required: true },
+    videoId: { type: String, required: true },
+  },
+  { _id: false } // Prevents creating a separate `_id` for the sub-document
 );
 
 const lessonSchema = new Schema<Lesson>(
-    {
-        owner: { type: String, required: true },
-        title: { type: String, required: true },
-        sharedUsers: { type: [String], default: [] },
-        summary: { type: String, required: true },
-        videoDetails: { type: videoDetailsSchema, required: true },
-    },
-    { timestamps: true }
+  {
+    owner: { type: String, required: true },
+    title: { type: String, required: true },
+    sharedUsers: { type: [String], default: [] },
+    summary: { type: String, required: true },
+    videoDetails: { type: videoDetailsSchema },
+    relatedLessonId: String,
+  },
+  { timestamps: true }
 );
 
 export type LessonModel = Model<Lesson>;
-export const lessonModel = model('lessons', lessonSchema);
+export const lessonModel = model("lessons", lessonSchema);
 
 /**
  * @swagger
