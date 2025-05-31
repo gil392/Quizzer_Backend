@@ -62,9 +62,7 @@ export const createMergedLesson = (lessonsDal: LessonsDal) =>
     const { lessonIds, title } = req.body;
     const { id: userId } = req.user;
 
-    const lessons = await lessonsDal.findAll({
-      _id: { $in: lessonIds },
-    });
+    const lessons = await lessonsDal.findByIds(lessonIds);
 
     if (lessons.length !== lessonIds.length) {
       throw new NotFoundError("One or more lessons not found");
@@ -79,8 +77,6 @@ export const createMergedLesson = (lessonsDal: LessonsDal) =>
         title ?? "Merged Lessons: " + lessons.map((l) => l.title).join(", "),
       summary: mergedSummary,
     });
-
-    console.log("New merged lesson created:", newLesson);
 
     res.status(StatusCodes.CREATED).json(newLesson.toObject());
   });
