@@ -1,8 +1,6 @@
 import { LessonsDal } from "../lesson/dal";
 import { Lesson } from "../lesson/model";
-import { QuizzesDal } from "../quiz/dal";
 import { LeanDocument } from "../services/database/types";
-import { UsersDal } from "../user/dal";
 import { User } from "../user/model";
 import { AchievementsDal } from "./dal";
 
@@ -22,22 +20,15 @@ export type UserRequirement = RequirmentOf<"user", User>;
 
 export type Requirment = UserRequirement | LessonRequirement;
 
-type IconReward = {
-  type: "icon";
+type Reward = {
   icon: string;
-};
-
-type XpReward = {
-  type: "xp";
   xp: number;
 };
-
-type Reward = IconReward | XpReward;
 
 export type Achievement = LeanDocument<{
   title: string;
   description: string;
-  rewards: Reward[];
+  reward: Reward;
   requirements: Requirment[];
   achivmentLock?: string;
 }>;

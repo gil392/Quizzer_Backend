@@ -19,9 +19,8 @@ const requirementSchema = new Schema(
 
 const rewardSchema = new Schema(
   {
-    type: { type: String, required: true, enum: ["icon", "xp"] },
-    icon: { type: String },
-    xp: { type: Number },
+    icon: { type: String, required: true },
+    xp: { type: Number, default: 0 },
   },
   { _id: false }
 );
@@ -29,7 +28,7 @@ const rewardSchema = new Schema(
 const achievementSchema = new Schema({
   title: { type: String, required: true },
   description: { type: String, required: true },
-  rewards: [rewardSchema],
+  reward: rewardSchema,
   requirements: [requirementSchema],
   achivmentLock: { type: String },
 });
@@ -86,20 +85,17 @@ export const achievementModel = model<Achievement>(
  *     Reward:
  *       type: object
  *       required:
- *         - type
+ *         - icon
+ *         - xp
  *       properties:
- *         type:
- *           type: string
- *           enum: [icon, xp]
- *           description: Type of reward
  *         icon:
  *           type: string
- *           description: Icon name (only if type is "icon")
+ *           description: Icon url (image path)
  *         xp:
  *           type: number
- *           description: XP amount (only if type is "xp")
+ *           description: XP amount
  *       example:
- *         type: "xp"
+ *         icon: "/images/achievements1.png"
  *         xp: 100
  *
  *     Achievement:
@@ -108,7 +104,7 @@ export const achievementModel = model<Achievement>(
  *         - _id
  *         - title
  *         - description
- *         - rewards
+ *         - reward
  *         - requirements
  *       properties:
  *         _id:
@@ -121,10 +117,8 @@ export const achievementModel = model<Achievement>(
  *         description:
  *           type: string
  *           description: Description of the achievement
- *         rewards:
- *           type: array
- *           items:
- *             $ref: '#/components/schemas/Reward'
+ *         reward:
+ *           $ref: '#/components/schemas/Reward'
  *         requirements:
  *           type: array
  *           items:
