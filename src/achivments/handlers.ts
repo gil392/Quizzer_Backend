@@ -5,7 +5,10 @@ import { UsersDal } from "../user/dal";
 import { AchivementsProccesor } from "./achivmentsProccesor/achivmentsProccesor";
 import { AchievementsDal } from "./dal";
 import { Achievement } from "./types";
-import { injectCompletedAchievmentItsProgress, isRequirementNotCompleted } from "./utils";
+import {
+  injectCompletedAchievmentItsProgress,
+  isRequirementNotCompleted,
+} from "./utils";
 
 export const getAchievementProgress = (
   usersDal: UsersDal,
@@ -35,9 +38,9 @@ export const getAchievementProgress = (
       ? await achievmentsDal.getAchievementsByIds(user.achievements).lean()
       : [];
 
-    const achievmentsWithProgress = userAchievements
-      .map(injectCompletedAchievmentItsProgress)
-      .concat(achievements);
+    const achievmentsWithProgress = achievements.concat(
+      userAchievements.map(injectCompletedAchievmentItsProgress)
+    );
 
     res.send(achievmentsWithProgress);
   });
