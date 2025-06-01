@@ -1,6 +1,6 @@
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import express, { Express } from "express";
+import express, { Express, Router } from "express";
 import * as http from "http";
 import swaggerUI from "swagger-ui-express";
 import { injectUserToRequest } from "../../authentication/middlewares";
@@ -22,6 +22,8 @@ import {
   AttemptRouterDependencies,
   createAttemptRouter,
 } from "../../attempt/router";
+import { createFileRouterConfig } from "../../files/config";
+import { createFilesRouter } from "../../files/router";
 
 export const createBasicApp = (corsOrigin?: string): Express => {
   const app = express();
@@ -67,6 +69,12 @@ export class Server extends Service {
       createAttemptRouter(authMiddleware, this.dependencies)
     );
     this.app.use("/user", createUsersRouter(authMiddleware, this.dependencies));
+
+    const apiRouter = Router();
+    const filesRouterConfig = createFileRouterConfig(this.config);
+    apiRouter.use("/files", createFilesRouter(filesRouterConfig));
+
+    this.app.use("/api", apiRouter);
   };
 
   private useErrorHandler = () => {

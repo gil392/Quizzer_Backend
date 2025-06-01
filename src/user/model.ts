@@ -123,6 +123,7 @@ import { Settings, settingsSchema, settingsZodSchema } from "./settingsModel";
 export type PublicUser = {
   email: string;
   username: string;
+  profileImage?: string;
   friendRequests?: string[];
   friends?: string[];
   favoriteLessons?: string[];
@@ -141,6 +142,7 @@ export const userZodSchema: z.ZodType<User> = z.object({
   email: z.string().email(),
   hashedPassword: z.string(),
   username: z.string(),
+  profileImage: z.string().optional(),
   refreshToken: z.array(z.string()).default([]),
   friendRequests: z.array(z.string()).default([]),
   friends: z.array(z.string()).default([]),
@@ -155,6 +157,7 @@ const userSchema = new Schema<User>({
   email: { type: String, required: true, unique: true },
   hashedPassword: { type: String, required: true },
   username: { type: String, required: true },
+  profileImage: String,
   refreshToken: { type: [String], default: [] },
   friendRequests: { type: [String], default: [] },
   friends: { type: [String], default: [] },
