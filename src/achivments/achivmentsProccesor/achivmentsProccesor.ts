@@ -4,6 +4,7 @@ import {
   AchievementProgress,
   AchievementsProccesorDependancies,
 } from "../types";
+import { isAllRequirementsCompleted, isRequirementNotCompleted } from "../utils";
 import { checkLessonRequirement, checkUserRequirement } from "./utils";
 
 export class AchivementsProccesor {
@@ -32,7 +33,11 @@ export class AchivementsProccesor {
     });
     const requirementsProgresses = await Promise.all(progressesPromises);
 
-    return { ...achievment, requirements: requirementsProgresses };
+    return {
+      ...achievment,
+      requirements: requirementsProgresses,
+      isCompleted: isAllRequirementsCompleted(requirementsProgresses),
+    };
   };
 
   getUserAchievementsProgress = async (

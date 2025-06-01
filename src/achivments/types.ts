@@ -36,6 +36,7 @@ export type Achievement = LeanDocument<{
 export type RequirmentProgress = { count: number; value: number };
 export type AchievementProgress = Omit<Achievement, "requirements"> & {
   requirements: RequirmentProgress[];
+  isCompleted: boolean;
 };
 
 export type AchievementsProccesorDependancies = {

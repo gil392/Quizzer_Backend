@@ -8,8 +8,18 @@ export const injectCompletedAchievmentItsProgress = (
     ({ condition: { count } }) => ({ count, value: count })
   );
 
-  return { ...achievment, requirements: requirementsProgress };
+  return {
+    ...achievment,
+    requirements: requirementsProgress,
+    isCompleted: true,
+  };
 };
 
-export const isRequirementNotCompleted = ({ value, count }: RequirmentProgress) =>
-  value !== count;
+export const isRequirementNotCompleted = ({
+  value,
+  count,
+}: RequirmentProgress) => value !== count;
+
+export const isAllRequirementsCompleted = (
+  requiremens: RequirmentProgress[]
+): boolean => !requiremens.some(isRequirementNotCompleted);
