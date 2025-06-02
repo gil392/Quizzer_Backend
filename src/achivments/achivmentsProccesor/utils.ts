@@ -1,9 +1,13 @@
 import { RootFilterQuery } from "mongoose";
-import { mapObjIndexed, values as ramdaValues } from "ramda";
+import { keys, mapObjIndexed, values as ramdaValues } from "ramda";
 import { LessonsDal } from "../../lesson/dal";
-import { User } from "../../user/model";
-import { LessonRequirement, UserRequirement } from "../types";
 import { Lesson } from "../../lesson/model";
+import { User } from "../../user/model";
+import {
+  LessonRequirement,
+  RequirementProgress,
+  UserRequirement,
+} from "../types";
 
 const createIsFieldGreaterThanOrEqualQuery = (
   value: number,
@@ -42,37 +46,51 @@ export const createMongooseFindQueryToRequirementCondition = <
   ),
 });
 
+const getFieldNumberValue = (field: unknown): number =>
+  field instanceof Array
+    ? field.length
+    : typeof field === "number"
+    ? field
+    : -Infinity;
+
 export const checkUserRequirement = async (
   user: User,
   condition: UserRequirement["condition"]
-) => {
+): Promise<RequirementProgress> => {
   const { count, values } = condition;
+
+  const valuesKeys = keys(values);
+  if (valuesKeys.length === 1) {
+    const key = valuesKeys[0];
+
+    return {
+      value: getFieldNumberValue(user[key]),
+      count: values[key] ?? 0,
+    };
+  }
+
   const results = ramdaValues(
-    mapObjIndexed((value, field) => {
-      const fieldValue = user[field];
-
-      return fieldValue instanceof Array
-        ? fieldValue.length >= value
-        : typeof fieldValue === "number"
-        ? fieldValue >= value
-        : false;
-    }, values)
+    mapObjIndexed(
+      (value, field) => getFieldNumberValue(user[field]) >= value,
+      values
+    )
   );
+  const value = results.filter((result) => result).length;
 
-  return results.filter((result) => result).length;
+  return { value, count };
 };
 
 export const checkLessonRequirement = async (
   lessonsDal: LessonsDal,
   userId: string,
   condition: LessonRequirement["condition"]
-) => {
-  const { values } = condition;
+): Promise<RequirementProgress> => {
+  const { values, count } = condition;
   const filter: RootFilterQuery<Lesson> = {
     owner: userId,
     ...createMongooseFindQueryToRequirementCondition(values),
   };
   const progress = await lessonsDal.find(filter).countDocuments();
 
-  return progress;
+  return { value: progress, count };
 };

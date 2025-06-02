@@ -33,9 +33,9 @@ export type Achievement = LeanDocument<{
   achivmentLock?: string;
 }>;
 
-export type RequirmentProgress = { count: number; value: number };
+export type RequirementProgress = { count: number; value: number };
 export type AchievementProgress = Omit<Achievement, "requirements"> & {
-  requirements: RequirmentProgress[];
+  requirements: RequirementProgress[];
   isCompleted: boolean;
 };
 

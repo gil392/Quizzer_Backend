@@ -1,10 +1,12 @@
+import { min } from "ramda";
 import { User } from "../../user/model";
 import {
   Achievement,
   AchievementProgress,
   AchievementsProccesorDependancies,
+  RequirementProgress,
 } from "../types";
-import { isAllRequirementsCompleted, isRequirementNotCompleted } from "../utils";
+import { isAllRequirementsCompleted } from "../utils";
 import { checkLessonRequirement, checkUserRequirement } from "./utils";
 
 export class AchivementsProccesor {
@@ -12,27 +14,21 @@ export class AchivementsProccesor {
     private readonly dependancies: AchievementsProccesorDependancies
   ) {}
 
-  private getAchievmentProgress = async (
+  getAchievmentProgress = async (
     user: User,
     achievment: Achievement
   ): Promise<AchievementProgress> => {
     const { lessonsDal } = this.dependancies;
     const { requirements } = achievment;
 
-    const progressesPromises = requirements.map(async ({ type, condition }) => {
-      const progress =
+    const progressesPromises = requirements.map(
+      ({ type, condition }): Promise<RequirementProgress> =>
         type === "user"
-          ? await checkUserRequirement(user, condition)
-          : await checkLessonRequirement(
-              lessonsDal,
-              user._id.toString(),
-              condition
-            );
-
-      return { count: condition.count, value: progress };
-    });
+          ? checkUserRequirement(user, condition)
+          : checkLessonRequirement(lessonsDal, user._id.toString(), condition)
+    );
     const requirementsProgresses = await Promise.all(progressesPromises);
-
+    
     return {
       ...achievment,
       requirements: requirementsProgresses,

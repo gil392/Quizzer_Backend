@@ -1,10 +1,10 @@
-import { Achievement, AchievementProgress, RequirmentProgress } from "./types";
+import { Achievement, AchievementProgress, RequirementProgress } from "./types";
 
 export const injectCompletedAchievmentItsProgress = (
   achievment: Achievement
 ): AchievementProgress => {
   const { requirements } = achievment;
-  const requirementsProgress: RequirmentProgress[] = requirements.map(
+  const requirementsProgress: RequirementProgress[] = requirements.map(
     ({ condition: { count } }) => ({ count, value: count })
   );
 
@@ -18,8 +18,8 @@ export const injectCompletedAchievmentItsProgress = (
 export const isRequirementNotCompleted = ({
   value,
   count,
-}: RequirmentProgress) => value !== count;
+}: RequirementProgress) => value < count;
 
 export const isAllRequirementsCompleted = (
-  requiremens: RequirmentProgress[]
+  requiremens: RequirementProgress[]
 ): boolean => !requiremens.some(isRequirementNotCompleted);
