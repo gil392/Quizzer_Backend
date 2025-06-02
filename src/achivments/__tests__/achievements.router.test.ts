@@ -1,6 +1,7 @@
 import { StatusCodes } from "http-status-codes";
 import { dissoc, prop, sortBy } from "ramda";
 import request, { Test as RequestTest } from "supertest";
+import { AttemptDal } from "../../attempt/dal";
 import { createAuthConfig } from "../../authentication/config";
 import { injectUserToRequest } from "../../authentication/middlewares";
 import { generateTokens } from "../../authentication/utils";
@@ -17,14 +18,14 @@ import { Database } from "./../../services/database/database";
 import { createTestEnv } from "./../../utils/tests/utils";
 import { AchievementsDal } from "./../dal";
 import {
-    lessonAchievementsMock,
-    loggedUserExpectedLessonsAchievementsProgresses,
-    loggedUserLessons,
+  lessonAchievementsMock,
+  loggedUserExpectedLessonsAchievementsProgresses,
+  loggedUserLessons,
 } from "./lesson.achievements.mock";
 import { loggedUser } from "./mocks";
 import {
-    loggedUserExpectedUserAchievementsProgresses,
-    userAchievementsMock,
+  loggedUserExpectedUserAchievementsProgresses,
+  userAchievementsMock,
 } from "./user.achievements.mock";
 
 describe("achievements router", () => {
@@ -32,13 +33,16 @@ describe("achievements router", () => {
   const authConfig = createAuthConfig(config);
 
   const database = new Database(createDatabaseConfig(config));
-  const { achievementModel, lessonModel, userModel } = database.getModels();
+  const { achievementModel, lessonModel, userModel, quizAttemptModel } =
+    database.getModels();
   const achievementsDal = new AchievementsDal(achievementModel);
   const lessonsDal = new LessonsDal(lessonModel);
   const usersDal = new UsersDal(userModel);
+  const attemptDal = new AttemptDal(quizAttemptModel);
   const achievementsProccesor = new AchivementsProccesor({
     achievementsDal,
     lessonsDal,
+    attemptDal,
   });
 
   const loggedUserExpectedAchievemetnsProgress: AchievementProgress[] = [
