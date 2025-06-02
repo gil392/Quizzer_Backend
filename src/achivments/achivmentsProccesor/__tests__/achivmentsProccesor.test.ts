@@ -5,17 +5,21 @@ import { createTestEnv } from "../../../utils/tests/utils";
 import { AchievementsDal } from "../../dal";
 import { AchivementsProccesor } from "../achivmentsProccesor";
 import {
-    lessonCompletedAchievement,
-    lessonCompletedCountGreaterThanOneAchievement,
-    lessonNotCompletedAchievement,
     loggedUser,
-    loggedUserLessons,
-    userCompletedAchievement,
-    userCompletedMultipleRequirementsAchievement,
-    userNotCompletedArrayPropertyAchievement,
-    userNotCompletedMultipleRequirementsAchievement,
-    userPartialCompletedMultipleRequirementsAchievement,
-} from "./mocks";
+} from "../../__tests__/mocks";
+import {
+  userCompletedAchievement,
+  userCompletedMultipleRequirementsAchievement,
+  userNotCompletedArrayPropertyAchievement,
+  userNotCompletedMultipleRequirementsAchievement,
+  userPartialCompletedMultipleRequirementsAchievement,
+} from '../../__tests__/user.achievements.mock'
+import {
+  lessonCompletedAchievement,
+lessonCompletedCountGreaterThanOneAchievement,
+lessonNotCompletedAchievement,
+loggedUserLessons,
+} from '../../__tests__/lesson.achievements.mock'
 
 describe("achivmentsProccesor", () => {
   const config = createTestEnv();

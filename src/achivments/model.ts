@@ -11,7 +11,7 @@ const conditionSchema = new Schema(
 
 const requirementSchema = new Schema(
   {
-    type: { type: String, enum: ["quiz", "user"], required: true },
+    type: { type: String, required: true },
     condition: { type: conditionSchema, required: true },
   },
   { _id: false }
@@ -71,7 +71,6 @@ export const achievementModel = model<Achievement>(
  *       properties:
  *         type:
  *           type: string
- *           enum: [quiz, user]
  *           description: Type of requirement
  *         condition:
  *           $ref: '#/components/schemas/Condition'
