@@ -1,5 +1,5 @@
 import { BasicDal } from "../services/database/base.dal";
-import { Achievement, Requirment } from "./types";
+import { Achievement } from "./types";
 
 export class AchievementsDal extends BasicDal<Achievement> {
   getAvaliableAchievments = (completedAchievements: string[]) =>

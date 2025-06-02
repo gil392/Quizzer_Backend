@@ -1,3 +1,5 @@
+import { AttemptDal } from "../attempt/dal";
+import { QuizAttempt } from "../attempt/types";
 import { LessonsDal } from "../lesson/dal";
 import { Lesson } from "../lesson/model";
 import { LeanDocument } from "../services/database/types";
@@ -15,10 +17,13 @@ type RequirmentOf<Type, ConditionOf extends {}> = {
 };
 
 export type LessonRequirement = RequirmentOf<"lesson", Lesson>;
-// export type AttempsReuirements = RequirmentOf<'attempt', Attempt>;
+export type QuizAttemptReuirement = RequirmentOf<"quizAttempt", QuizAttempt>;
 export type UserRequirement = RequirmentOf<"user", User>;
 
-export type Requirment = UserRequirement | LessonRequirement;
+export type Requirement =
+  | UserRequirement
+  | LessonRequirement
+  | QuizAttemptReuirement;
 
 type Reward = {
   icon: string;
@@ -29,7 +34,7 @@ export type Achievement = LeanDocument<{
   title: string;
   description: string;
   reward: Reward;
-  requirements: Requirment[];
+  requirements: Requirement[];
   achivmentLock?: string;
 }>;
 
@@ -41,5 +46,6 @@ export type AchievementProgress = Omit<Achievement, "requirements"> & {
 
 export type AchievementsProccesorDependancies = {
   achievementsDal: AchievementsDal;
+  attemptDal: AttemptDal;
   lessonsDal: LessonsDal;
 };

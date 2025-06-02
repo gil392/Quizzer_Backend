@@ -1,37 +1,38 @@
+import { AttemptDal } from "../../../attempt/dal";
 import { LessonsDal } from "../../../lesson/dal";
 import { createDatabaseConfig } from "../../../services/database/config";
 import { Database } from "../../../services/database/database";
 import { createTestEnv } from "../../../utils/tests/utils";
-import { AchievementsDal } from "../../dal";
-import { AchivementsProccesor } from "../achivmentsProccesor";
 import {
-    loggedUser,
-} from "../../__tests__/mocks";
+  lessonCompletedAchievement,
+  lessonCompletedCountGreaterThanOneAchievement,
+  lessonNotCompletedAchievement,
+  loggedUserLessons,
+} from "../../__tests__/lesson.achievements.mock";
+import { loggedUser } from "../../__tests__/mocks";
 import {
   userCompletedAchievement,
   userCompletedMultipleRequirementsAchievement,
   userNotCompletedArrayPropertyAchievement,
   userNotCompletedMultipleRequirementsAchievement,
   userPartialCompletedMultipleRequirementsAchievement,
-} from '../../__tests__/user.achievements.mock'
-import {
-  lessonCompletedAchievement,
-lessonCompletedCountGreaterThanOneAchievement,
-lessonNotCompletedAchievement,
-loggedUserLessons,
-} from '../../__tests__/lesson.achievements.mock'
+} from "../../__tests__/user.achievements.mock";
+import { AchievementsDal } from "../../dal";
+import { AchivementsProccesor } from "../achivmentsProccesor";
 
 describe("achivmentsProccesor", () => {
   const config = createTestEnv();
 
   const database = new Database(createDatabaseConfig(config));
-  const { achievementModel, lessonModel, userModel } = database.getModels();
+  const { achievementModel, lessonModel, userModel, quizAttemptModel } =
+    database.getModels();
   const achievementsDal = new AchievementsDal(achievementModel);
   const lessonsDal = new LessonsDal(lessonModel);
-
+  const attemptDal = new AttemptDal(quizAttemptModel);
   const achivmentsProccesor = new AchivementsProccesor({
     achievementsDal,
     lessonsDal,
+    attemptDal,
   });
 
   beforeAll(async () => {
@@ -46,6 +47,7 @@ describe("achivmentsProccesor", () => {
   });
   afterEach(async () => {
     await achievementModel.deleteMany();
+    await quizAttemptModel.deleteMany();
     await userModel.deleteMany();
   });
 

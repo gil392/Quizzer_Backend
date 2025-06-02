@@ -1,13 +1,10 @@
 import { RootFilterQuery } from "mongoose";
 import { keys, mapObjIndexed, values as ramdaValues } from "ramda";
-import { LessonsDal } from "../../lesson/dal";
+import { QuizAttempt } from "../../attempt/types";
 import { Lesson } from "../../lesson/model";
+import { BasicDal } from "../../services/database/base.dal";
 import { User } from "../../user/model";
-import {
-  LessonRequirement,
-  RequirementProgress,
-  UserRequirement,
-} from "../types";
+import { Condition, RequirementProgress, UserRequirement } from "../types";
 
 const createIsFieldGreaterThanOrEqualQuery = (
   value: number,
@@ -36,11 +33,12 @@ const createIsFieldGreaterThanOrEqualQuery = (
 export const createMongooseFindQueryToRequirementCondition = <
   T extends {} = {}
 >(
-  conditionValues: Record<string, number>
+  conditionValues: Condition<T>["values"]
 ): RootFilterQuery<T> => ({
   $and: ramdaValues(
     mapObjIndexed(
-      (value, field) => createIsFieldGreaterThanOrEqualQuery(value, field),
+      (value, field) =>
+        createIsFieldGreaterThanOrEqualQuery(value ?? Infinity, field),
       conditionValues
     )
   ),
@@ -80,17 +78,20 @@ export const checkUserRequirement = async (
   return { value, count };
 };
 
-export const checkLessonRequirement = async (
-  lessonsDal: LessonsDal,
+const checkRequirement = async <T extends {}>(
+  dal: BasicDal<T>,
   userId: string,
-  condition: LessonRequirement["condition"]
+  condition: Condition<T>
 ): Promise<RequirementProgress> => {
   const { values, count } = condition;
   const filter: RootFilterQuery<Lesson> = {
     owner: userId,
     ...createMongooseFindQueryToRequirementCondition(values),
   };
-  const progress = await lessonsDal.find(filter).countDocuments();
+  const progress = await dal.find(filter).countDocuments();
 
   return { value: progress, count };
 };
+
+export const checkLessonRequirement = checkRequirement<Lesson>;
+export const checkQuizAttemptRequirement = checkRequirement<QuizAttempt>;

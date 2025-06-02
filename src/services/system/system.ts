@@ -1,7 +1,6 @@
 import { AchivementsProccesor } from "../../achivments/achivmentsProccesor/achivmentsProccesor";
 import { AchievementsDal } from "../../achivments/dal";
 import { AttemptDal } from "../../attempt/dal";
-import { quizAttemptModel } from "../../attempt/model";
 import { QuestionsGenerator } from "../../externalApis/quizGenerator";
 import { VideoSummeraizer } from "../../externalApis/videoSummerizer";
 import { LessonsDal } from "../../lesson/dal";
@@ -40,6 +39,7 @@ export class System extends Service {
       userModel,
       quizRatingModel,
       achievementModel,
+      quizAttemptModel
     } = this.database.getModels();
 
     const quizzesDal = new QuizzesDal(quizModel);

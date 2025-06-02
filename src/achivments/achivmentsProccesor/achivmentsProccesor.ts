@@ -1,13 +1,19 @@
-import { min } from "ramda";
+import { InternalServerError } from "../../services/server/exceptions";
 import { User } from "../../user/model";
 import {
   Achievement,
   AchievementProgress,
   AchievementsProccesorDependancies,
+  Requirement,
   RequirementProgress,
+  UserRequirement,
 } from "../types";
 import { isAllRequirementsCompleted } from "../utils";
-import { checkLessonRequirement, checkUserRequirement } from "./utils";
+import {
+  checkLessonRequirement,
+  checkQuizAttemptRequirement,
+  checkUserRequirement,
+} from "./utils";
 
 export class AchivementsProccesor {
   constructor(
@@ -18,17 +24,35 @@ export class AchivementsProccesor {
     user: User,
     achievment: Achievement
   ): Promise<AchievementProgress> => {
-    const { lessonsDal } = this.dependancies;
+    const { lessonsDal, attemptDal: quizAttemptsDal } = this.dependancies;
     const { requirements } = achievment;
 
     const progressesPromises = requirements.map(
-      ({ type, condition }): Promise<RequirementProgress> =>
-        type === "user"
-          ? checkUserRequirement(user, condition)
-          : checkLessonRequirement(lessonsDal, user._id.toString(), condition)
+      ({ type, condition }): Promise<RequirementProgress> => {
+        switch (type) {
+          case "user":
+            return checkUserRequirement(user, condition);
+          case "lesson":
+            return checkLessonRequirement(
+              lessonsDal,
+              user._id.toString(),
+              condition
+            );
+          case "quizAttempt":
+            return checkQuizAttemptRequirement(
+              quizAttemptsDal,
+              user._id.toString(),
+              condition
+            );
+          default:
+            throw new InternalServerError(
+              `achievement requirement type is invalid: { requirement.type: ${type}, achievementId: ${achievment._id} }`
+            );
+        }
+      }
     );
     const requirementsProgresses = await Promise.all(progressesPromises);
-    
+
     return {
       ...achievment,
       requirements: requirementsProgresses,

@@ -13,7 +13,8 @@ import {
 } from "../../attempt/router";
 import { injectUserToRequest } from "../../authentication/middlewares";
 import {
-  AuthRouterDependencies
+  AuthRouterDependencies,
+  createAuthRouter
 } from "../../authentication/router";
 import { createFileRouterConfig } from "../../files/config";
 import { createFilesRouter } from "../../files/router";
@@ -66,6 +67,7 @@ export class Server extends Service {
     const { authConfig } = this.config;
     const authMiddleware = injectUserToRequest(authConfig.tokenSecret);
 
+    this.app.use("/auth", createAuthRouter(authConfig, this.dependencies));
     this.app.use(
       "/lesson",
       createLessonRouter(authMiddleware, this.dependencies)
