@@ -29,6 +29,9 @@ import { Settings, settingsSchema } from "./settingsModel";
  *         username:
  *           type: string
  *           description: The display name or handle of the user
+ *         profileImage:
+ *           type: string
+ *           description: url to the user profile image
  *         refreshToken:
  *           type: array
  *           description: List of refresh tokens issued to the user
@@ -92,6 +95,9 @@ import { Settings, settingsSchema } from "./settingsModel";
  *         username:
  *           type: string
  *           description: The display name or handle of the user
+ *         profileImage:
+ *           type: string
+ *           description: url to the user profile image
  *         friendRequests:
  *           type: array
  *           description: List of user IDs who sent friend requests
@@ -141,6 +147,7 @@ import { Settings, settingsSchema } from "./settingsModel";
 export type User = LeanDocument<{
   email: string;
   username: string;
+  profileImage?: string;
   friendRequests?: string[];
   friends?: string[];
   achievements?: string[];
@@ -160,6 +167,7 @@ const userSchema = new Schema<UserWithAuthentication>({
   email: { type: String, required: true, unique: true },
   hashedPassword: { type: String, required: true },
   username: { type: String, required: true },
+  profileImage: String,
   refreshToken: { type: [String], default: [] },
   friendRequests: { type: [String], default: [] },
   friends: { type: [String], default: [] },

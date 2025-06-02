@@ -1,13 +1,22 @@
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import express, { Express } from "express";
+import express, { Express, Router } from "express";
 import * as http from "http";
 import swaggerUI from "swagger-ui-express";
+import {
+  AchievementRouterDependencies,
+  createAchievementsRouter,
+} from "../../achivments/router";
+import {
+  AttemptRouterDependencies,
+  createAttemptRouter,
+} from "../../attempt/router";
 import { injectUserToRequest } from "../../authentication/middlewares";
 import {
-  AuthRouterDependencies,
-  createAuthRouter,
+  AuthRouterDependencies
 } from "../../authentication/router";
+import { createFileRouterConfig } from "../../files/config";
+import { createFilesRouter } from "../../files/router";
 import {
   createLessonRouter,
   LessonRouterDependencies,
@@ -18,11 +27,6 @@ import { Service } from "../service";
 import { ServerConfig } from "./config";
 import { createSwaggerSpecs } from "./swagger";
 import { requestErrorHandler } from "./utils";
-import {
-  AttemptRouterDependencies,
-  createAttemptRouter,
-} from "../../attempt/router";
-import { AchievementRouterDependencies, createAchievementsRouter } from "../../achivments/router";
 
 export const createBasicApp = (corsOrigin?: string): Express => {
   const app = express();
@@ -35,7 +39,7 @@ export const createBasicApp = (corsOrigin?: string): Express => {
 };
 
 export type ServerDependencies = AchievementRouterDependencies &
-AttemptRouterDependencies &
+  AttemptRouterDependencies &
   QuizRouterDependencies &
   LessonRouterDependencies &
   AuthRouterDependencies &
@@ -62,15 +66,26 @@ export class Server extends Service {
     const { authConfig } = this.config;
     const authMiddleware = injectUserToRequest(authConfig.tokenSecret);
 
-    this.app.use("/auth", createAuthRouter(authConfig, this.dependencies));
-    this.app.use("/lesson", createLessonRouter(this.dependencies));
+    this.app.use(
+      "/lesson",
+      createLessonRouter(authMiddleware, this.dependencies)
+    );
     this.app.use("/quiz", createQuizRouter(authMiddleware, this.dependencies));
     this.app.use(
       "/attempt",
       createAttemptRouter(authMiddleware, this.dependencies)
     );
     this.app.use("/user", createUsersRouter(authMiddleware, this.dependencies));
-    this.app.use("/achievement", createAchievementsRouter(authMiddleware, this.dependencies));
+    this.app.use(
+      "/achievement",
+      createAchievementsRouter(authMiddleware, this.dependencies)
+    );
+
+    const apiRouter = Router();
+    const filesRouterConfig = createFileRouterConfig(this.config);
+    apiRouter.use("/files", createFilesRouter(filesRouterConfig));
+
+    this.app.use("/api", apiRouter);
   };
 
   private useErrorHandler = () => {

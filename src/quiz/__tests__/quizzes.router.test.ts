@@ -2,10 +2,10 @@ import { Express } from "express";
 import { StatusCodes } from "http-status-codes";
 import { Types } from "mongoose";
 import request from "supertest";
-import { injectUserToRequest } from "../../authentication/middlewares";
 import { QuestionsGenerator } from "../../externalApis/quizGenerator";
 import { LessonsDal } from "../../lesson/dal";
 import { QuizzesRatingDal } from "../../quizRating/dal";
+import { quizRatingModel } from "../../quizRating/model";
 import { DatabaseConfig } from "../../services/database/config";
 import { Database } from "../../services/database/database";
 import { createBasicApp } from "../../services/server/server";
@@ -14,13 +14,13 @@ import { QuizzesDal } from "../dal";
 import { createQuizRouter } from "../router";
 import { createQuizResponseQuestion } from "../utils";
 import {
-    generatedQuestionsMock,
-    lessonMock,
-    questionAnswerSubmittionsMock,
-    questionAnswerSubmittionsMockResults,
-    questionAnswerSubmittionsMockScore,
-    quizMock,
-    quizSettings,
+  generatedQuestionsMock,
+  lessonMock,
+  questionAnswerSubmittionsMock,
+  questionAnswerSubmittionsMockResults,
+  questionAnswerSubmittionsMockScore,
+  quizMock,
+  quizSettings,
 } from "./mocks";
 
 describe("quizzes routes", () => {
@@ -29,10 +29,11 @@ describe("quizzes routes", () => {
     connectionString: config.DB_CONNECTION_STRING,
   };
   const database = new Database(databaseConfig);
-  const { quizModel, lessonModel, quizRatingModel } = database.getModels();
-  const quizzesRatingDal = new QuizzesRatingDal(quizRatingModel);
+  const authMiddlewareMock = (req: any, res: any, next: any) => next();
+  const { quizModel, lessonModel } = database.getModels();
   const quizzesDal = new QuizzesDal(quizModel);
   const lessonsDal = new LessonsDal(lessonModel);
+  const quizzesRatingDal = new QuizzesRatingDal(quizRatingModel);
   const questionsGenerator = asMockOf<QuestionsGenerator>({
     generateQuestionsFromLessonSummary: jest
       .fn()
@@ -40,15 +41,13 @@ describe("quizzes routes", () => {
     generateQuestions: jest.fn(),
   });
 
-  // TODO: fix tests
-  const authMiddleware = injectUserToRequest(config.AUTH_TOKEN_SECRET);
   const app: Express = createBasicApp();
   app.use(
     "/",
-    createQuizRouter(authMiddleware, {
+    createQuizRouter(authMiddlewareMock, {
       quizzesDal,
-      quizzesRatingDal,
       lessonsDal,
+      quizzesRatingDal,
       questionsGenerator,
     })
   );
