@@ -59,9 +59,13 @@ export class QuestionsGenerator {
     "correctAnswer": "string"
   }
   
-  Each question must have exactly ${optionsCount} options (1 correct answer and ${optionsCount - 1} incorrect answers).
+  Each question must have exactly ${optionsCount} options (1 correct answer and ${
+              optionsCount - 1
+            } incorrect answers).
   Use the summary below to create ${quizSettings.maxQuestionCount} questions.
-  If the summary is too short to generate ${quizSettings.maxQuestionCount} questions, generate as many as possible while maintaining the structure.
+  If the summary is too short to generate ${
+    quizSettings.maxQuestionCount
+  } questions, generate as many as possible while maintaining the structure.
   
   summary: ${summary}
   `,
@@ -76,7 +80,7 @@ export class QuestionsGenerator {
       }
       const questions: Question[] = JSON.parse(generatedText);
 
-      if (quizSettings.isRandomOrder) {
+      if (quizSettings.questionsOrder === "random") {
         return this.shuffleArray(questions);
       }
 

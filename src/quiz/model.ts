@@ -1,5 +1,11 @@
 import { Model, model, Schema } from "mongoose";
-import { Question, Quiz, quizFeedbacks, QuizSettings } from "./types";
+import {
+  Question,
+  Quiz,
+  quizFeedbacks,
+  quizQuestionsOrders,
+  QuizSettings,
+} from "./types";
 
 const questionSchema = new Schema<Question>(
   {
@@ -13,7 +19,7 @@ const questionSchema = new Schema<Question>(
 const quizSettingsSchema = new Schema<QuizSettings>(
   {
     feedbackType: { type: String, enum: quizFeedbacks, required: true },
-    isRandomOrder: { type: Boolean, default: false },
+    questionsOrder: { type: String, enum: quizQuestionsOrders, required: true },
     maxQuestionCount: { type: Number, required: true },
     solvingTimeMs: { type: Number, required: true },
   },
@@ -72,10 +78,10 @@ export const quizModel = model("quizzes", quizSchema);
  *           type: string
  *           enum: [auto, manual]  # Update based on your `quizFeedbacks` array
  *           description: The method used to check the quiz
- *         isRandomOrder:
- *           type: boolean
- *           default: false
- *           description: Whether questions are shuffled
+ *         questionsOrder:
+ *           type: string
+ *           enum: [chronological, random]
+ *           description: The questions order in the quiz
  *         maxQuestionCount:
  *           type: integer
  *           description: Maximum number of questions in the quiz
@@ -84,7 +90,7 @@ export const quizModel = model("quizzes", quizSchema);
  *           description: Time allowed to solve the quiz in milliseconds
  *       example:
  *         feedbackType: auto
- *         isRandomOrder: true
+ *         questionsOrder: chronological
  *         maxQuestionCount: 10
  *         solvingTimeMs: 600000
  *
@@ -121,7 +127,7 @@ export const quizModel = model("quizzes", quizSchema);
  *         grade: 90
  *         settings:
  *           feedbackType: auto
- *           isRandomOrder: true
+ *           questionsOrder: chronological
  *           maxQuestionCount: 10
  *           solvingTimeMs: 600000
  */
