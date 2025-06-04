@@ -65,6 +65,46 @@ Return a 2-5 word search string that captures the main subject of the video.`;
     }
 }
 
+function mapYouTubeResultsToRelatedVideos(
+    results: any[],
+    videoDetailsMap: Map<string, { duration?: string; views?: string }>,
+    minDurationMinutes: number,
+    maxResults: number,
+    secondsInMinute: number
+): RelatedVideo[] {
+    type ItemWithVideoId = Omit<typeof results[number], 'id'> & { id: { videoId: string } };
+    const filteredResults = results.filter(
+        (item): item is ItemWithVideoId => !!item.id?.videoId
+    );
+
+    return filteredResults
+        .map(item => {
+            const videoId = item.id.videoId;
+            const details = videoDetailsMap.get(videoId) || {};
+            return {
+                videoId,
+                snippet: {
+                    title: item.snippet?.title ?? '',
+                    description: item.snippet?.description ?? '',
+                    publishTime: item.snippet?.publishedAt ?? '',
+                    channelTitle: item.snippet?.channelTitle ?? '',
+                    channelId: item.snippet?.channelId ?? '',
+                    thumbnail: item.snippet?.thumbnails?.default
+                        ? {
+                            url: item.snippet.thumbnails.default.url ?? '',
+                            width: item.snippet.thumbnails.default.width ?? 0,
+                            height: item.snippet.thumbnails.default.height ?? 0,
+                        }
+                        : { url: '', width: 0, height: 0 }
+                },
+                duration: details.duration ?? '',
+                views: details.views ?? '',
+            };
+        })
+        .filter(video => parseISODurationToSeconds(video.duration) >= minDurationMinutes * secondsInMinute)
+        .slice(0, maxResults);
+}
+
 export async function searchYouTube(
     query: string,
     excludedVideoId: string,
@@ -116,32 +156,13 @@ export async function searchYouTube(
             }
         }
 
-        return results
-            .map(item => {
-                const videoId = item.id!.videoId as string;
-                const details = videoDetailsMap.get(videoId) || {};
-                return {
-                    videoId,
-                    snippet: {
-                        title: item.snippet?.title ?? '',
-                        description: item.snippet?.description ?? '',
-                        publishTime: item.snippet?.publishedAt ?? '',
-                        channelTitle: item.snippet?.channelTitle ?? '',
-                        channelId: item.snippet?.channelId ?? '',
-                        thumbnail: item.snippet?.thumbnails?.default
-                            ? {
-                                url: item.snippet.thumbnails.default.url ?? '',
-                                width: item.snippet.thumbnails.default.width ?? 0,
-                                height: item.snippet.thumbnails.default.height ?? 0,
-                            }
-                            : { url: '', width: 0, height: 0 }
-                    },
-                    duration: details.duration ?? '',
-                    views: details.views ?? '',
-                };
-            })
-            .filter(video => parseISODurationToSeconds(video.duration) >= MIN_VIDEOS_DURATION_MINUTES * SECONDS_IN_MINUTE)
-            .slice(0, MAX_RELATED_VIDEOS);
+        return mapYouTubeResultsToRelatedVideos(
+            results,
+            videoDetailsMap,
+            MIN_VIDEOS_DURATION_MINUTES,
+            MAX_RELATED_VIDEOS,
+            SECONDS_IN_MINUTE
+        )
     } catch (error) {
         console.error('Error searching YouTube:', error);
         throw new Error('Failed to search YouTube.');
