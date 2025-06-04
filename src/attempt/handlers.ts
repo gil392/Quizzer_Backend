@@ -3,9 +3,9 @@ import { isNil, prop } from "ramda";
 import { BadRequestError } from "../services/server/exceptions";
 import { AttemptDal } from "./dal";
 import {
-    getAttemptsByQuizIdRequestValidator,
-    createAttemptRequestValidator,
-    getQuestionResultRequestValidator,
+  getAttemptsByQuizIdRequestValidator,
+  createAttemptRequestValidator,
+  getQuestionResultRequestValidator,
 } from "./validators";
 import { getQuestionResultInQuiz } from "./utils";
 import { QuizzesDal } from "../quiz/dal";
@@ -42,7 +42,9 @@ export const createAttempt = (
     const correctAnswersCount = questionsResults.filter(
       prop("isCorrect")
     ).length;
-    const score = Math.ceil((correctAnswersCount / questions.length) * 100);
+    const score = Math.ceil(
+      (correctAnswersCount / quiz.questions.length) * 100
+    );
 
     const attempt: QuizAttempt = {
       quizId,
@@ -56,24 +58,23 @@ export const createAttempt = (
     await updateUserStreak(usersDal, userId);
 
     res.status(StatusCodes.CREATED).send(savedAttempt);
-    });
-
+  });
 
 export const getQuestionResult = (quizzesDal: QuizzesDal) =>
-    getQuestionResultRequestValidator(async (req, res) => {
-        const { questionId } = req.params;
-        const { selectedAnswer } = req.query;
+  getQuestionResultRequestValidator(async (req, res) => {
+    const { questionId } = req.params;
+    const { selectedAnswer } = req.query;
 
-        const { question } = await quizzesDal.findQuestionById(questionId);
+    const { question } = await quizzesDal.findQuestionById(questionId);
 
-        if (isNil(question)) {
-            throw new BadRequestError("Question not found");
-        }
+    if (isNil(question)) {
+      throw new BadRequestError("Question not found");
+    }
 
-        res.status(StatusCodes.OK).send({
-            questionId,
-            selectedAnswer,
-            correctAnswer: question.correctAnswer,
-            isCorrect: question.correctAnswer === selectedAnswer,
-        });
+    res.status(StatusCodes.OK).send({
+      questionId,
+      selectedAnswer,
+      correctAnswer: question.correctAnswer,
+      isCorrect: question.correctAnswer === selectedAnswer,
     });
+  });
