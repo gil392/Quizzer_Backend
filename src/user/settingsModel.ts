@@ -10,7 +10,7 @@ export type Settings = {
   solvingTimeMs: number;
 };
 
-export const settingsZodSchema: z.ZodType<Settings> = z.object({
+export const settingsZodSchema = z.object({
   feedbackType: z.enum(["onSubmit", "onSelectAnswer"]),
   questionsOrder: z.enum(["chronological", "random"]),
   displayMode: z.enum(["Light", "Dark"]),

@@ -117,7 +117,7 @@ export const createAuthRouter = (
      *             schema:
      *               type: object
      *               properties:
-     *                 accessToken:
+     *                 token:
      *                   type: string
      *                   example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
      *                   description: access token for the user

@@ -1,19 +1,24 @@
 import { Model, Schema, model } from "mongoose";
-import { z } from "zod";
-import { Settings, settingsSchema, settingsZodSchema } from "./settingsModel";
+import { LeanDocument } from "../services/database/types";
+import { Settings, settingsSchema } from "./settingsModel";
 
 /**
  * @swagger
  * components:
  *   schemas:
- *     User:
+ *     UserWithAuthentication:
  *       type: object
  *       required:
+ *         - _id
  *         - email
  *         - hashedPassword
  *         - username
  *         - streak
  *       properties:
+ *         _id:
+ *           type: string
+ *           format: mongoose.Types.ObjectId
+ *           description: User's ids
  *         email:
  *           type: string
  *           format: email
@@ -24,6 +29,9 @@ import { Settings, settingsSchema, settingsZodSchema } from "./settingsModel";
  *         username:
  *           type: string
  *           description: The display name or handle of the user
+ *         profileImage:
+ *           type: string
+ *           description: url to the user profile image
  *         refreshToken:
  *           type: array
  *           description: List of refresh tokens issued to the user
@@ -51,6 +59,7 @@ import { Settings, settingsSchema, settingsZodSchema } from "./settingsModel";
  *           type: Settings
  *           description: User settings for lesson
  *       example:
+ *         _id: "681cd953115ca90e9f94a9d2"
  *         email: "jane.doe@example.com"
  *         hashedPassword: "$2b$10$E8xKkF..."
  *         username: "jane_doe"
@@ -66,14 +75,19 @@ import { Settings, settingsSchema, settingsZodSchema } from "./settingsModel";
  *                     isManualCount: false,
  *                     solvingTimeMs: 6000 , }
  *
- *     PublicUser:
+ *     User:
  *       type: object
  *       required:
+ *         - _id
  *         - email
  *         - hashedPassword
  *         - username
  *         - streak
  *       properties:
+ *         _id:
+ *           type: string
+ *           format: mongoose.Types.ObjectId
+ *           description: User's ids
  *         email:
  *           type: string
  *           format: email
@@ -81,6 +95,9 @@ import { Settings, settingsSchema, settingsZodSchema } from "./settingsModel";
  *         username:
  *           type: string
  *           description: The display name or handle of the user
+ *         profileImage:
+ *           type: string
+ *           description: url to the user profile image
  *         friendRequests:
  *           type: array
  *           description: List of user IDs who sent friend requests
@@ -91,6 +108,11 @@ import { Settings, settingsSchema, settingsZodSchema } from "./settingsModel";
  *           description: List of user IDs who are friends
  *           items:
  *             type: string
+ *         achievements:
+ *           type: array
+ *           description: List of achievements IDs the user completed
+ *           items:
+ *             type: string
  *         favoriteLessons:
  *           type: array
  *           description: List of lesson IDs favorited by the user
@@ -99,14 +121,19 @@ import { Settings, settingsSchema, settingsZodSchema } from "./settingsModel";
  *         streak:
  *           type: number
  *           description: Current streak count (e.g., days active in a row)
+ *         xp:
+ *           type: number
+ *           description: Current xp of the user (gained by achivments)
  *         settings:
  *           type: Settings
  *           description: User settings
  *       example:
+ *         _id: "681cd953115ca90e9f94a9d2"
  *         email: "jane.doe@example.com"
  *         username: "jane_doe"
  *         friendRequests: ["user456", "user789"]
  *         friends: ["user123", "user321"]
+ *         achievements: ["user123", "user321"]
  *         favoriteLessons: ["lesson1", "lesson2"]
  *         streak: 5
  *         settings: { feedbackType: "onSubmit",
@@ -117,44 +144,41 @@ import { Settings, settingsSchema, settingsZodSchema } from "./settingsModel";
  *                     solvingTimeMs: 6000 , }
  */
 
-export type PublicUser = {
+export type User = LeanDocument<{
   email: string;
   username: string;
-  streak: number;
+  profileImage?: string;
   friendRequests?: string[];
   friends?: string[];
+  achievements?: string[];
   favoriteLessons?: string[];
-  settings?: Settings;
-};
+  streak: number;
+  lastQuizDate: Date;
+  xp: number;
+  settings?: Partial<Settings>;
+}>;
 
-export type User = PublicUser & {
+export type UserWithAuthentication = User & {
   hashedPassword: string;
   refreshToken?: string[];
 };
 
-export const userZodSchema: z.ZodType<User> = z.object({
-  email: z.string().email(),
-  hashedPassword: z.string(),
-  username: z.string(),
-  streak: z.coerce.number(),
-  refreshToken: z.array(z.string()).default([]),
-  friendRequests: z.array(z.string()).default([]),
-  friends: z.array(z.string()).default([]),
-  favoriteLessons: z.array(z.string()).default([]),
-  settings: settingsZodSchema.optional(),
-});
-
-const userSchema = new Schema<User>({
+const userSchema = new Schema<UserWithAuthentication>({
   email: { type: String, required: true, unique: true },
   hashedPassword: { type: String, required: true },
   username: { type: String, required: true },
-  streak: { type: Number, default: 0 },
+  profileImage: String,
   refreshToken: { type: [String], default: [] },
   friendRequests: { type: [String], default: [] },
   friends: { type: [String], default: [] },
+  achievements: { type: [String], default: [] },
   favoriteLessons: { type: [String], default: [] },
+  streak: { type: Number, default: 0 },
+  lastQuizDate: { type: Date, default: new Date() },
+  xp: { type: Number, default: 0 },
   settings: { type: settingsSchema, required: false },
 });
+userSchema.index({ username: "text", email: "text" });
 
-export type UserModel = Model<User>;
-export const userModel = model<User>("users", userSchema);
+export type UserModel = Model<UserWithAuthentication>;
+export const userModel = model<UserWithAuthentication>("users", userSchema);
