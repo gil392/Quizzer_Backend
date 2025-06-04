@@ -16,7 +16,7 @@ import { differenceInCalendarDays } from "date-fns";
 export const getLoggedUser = (usersDal: UsersDal) =>
   validateAuthenticatedRequest(async (request, response) => {
     const { id: userId } = request.user;
-    const user = await usersDal.findPublicUserById(userId).lean();
+    const user = await usersDal.findUserWithoutAuthById(userId);
     if (!user) {
       throw new NotFoundError("user not found");
     }
@@ -109,7 +109,7 @@ const getSettings = async (
     return undefined;
   }
 
-  const user = await usersDal.findPublicUserById(userId).lean();
+  const user = await usersDal.findUserWithoutAuthById(userId);
   if (!user) {
     throw new NotFoundError("user not found");
   }
@@ -127,7 +127,7 @@ const getSettings = async (
 };
 
 export const updateUserStreak = async (usersDal: UsersDal, userId: string) => {
-  const user = await usersDal.findPublicUserById(userId).lean();
+  const user = await usersDal.findUserWithoutAuthById(userId);
   if (!user) {
     throw new NotFoundError("user not found");
   }

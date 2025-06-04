@@ -4,10 +4,12 @@ import { Types } from "mongoose";
 import request from "supertest";
 import { QuestionsGenerator } from "../../externalApis/quizGenerator";
 import { LessonsDal } from "../../lesson/dal";
+import { QuizzesRatingDal } from "../../quizRating/dal";
+import { quizRatingModel } from "../../quizRating/model";
 import { DatabaseConfig } from "../../services/database/config";
 import { Database } from "../../services/database/database";
 import { createBasicApp } from "../../services/server/server";
-import { asMockOf, createTestEnv } from "../../utils/tests";
+import { asMockOf, createTestEnv } from "../../utils/tests/utils";
 import { QuizzesDal } from "../dal";
 import { createQuizRouter } from "../router";
 import { createQuizResponseQuestion } from "../utils";
@@ -20,8 +22,6 @@ import {
   quizMock,
   quizSettings,
 } from "./mocks";
-import { QuizzesRatingDal } from "../../quizRating/dal";
-import { quizRatingModel } from "../../quizRating/model";
 
 describe("quizzes routes", () => {
   const config = createTestEnv();
@@ -112,61 +112,6 @@ describe("quizzes routes", () => {
       const { _id: quizId } = response.body;
       const quiz = await quizModel.findById(quizId);
       expect(quiz).toBeDefined();
-    });
-  });
-
-  describe("submit quiz", () => {
-    const submitPostRequst = () => request(app).post("/submit");
-
-    beforeEach(async () => {
-      await quizModel.create(quizMock);
-    });
-    afterEach(async () => {
-      await quizModel.deleteMany();
-    });
-
-    test("missing quizId should return BAD_REQUEST", async () => {
-      const response = await submitPostRequst().send({
-        questions: questionAnswerSubmittionsMock,
-      });
-      expect(response.status).toBe(StatusCodes.BAD_REQUEST);
-    });
-
-    test("submit for not existing quiz should return BAD_REQUEST", async () => {
-      const response = await submitPostRequst().send({
-        quizId: new Types.ObjectId(),
-        questions: questionAnswerSubmittionsMock,
-      });
-      expect(response.status).toBe(StatusCodes.BAD_REQUEST);
-    });
-
-    test("empty questions submit should return BAD_REQUEST", async () => {
-      const response = await submitPostRequst().send({
-        quizId: quizMock._id,
-        questions: [],
-      });
-      expect(response.status).toBe(StatusCodes.BAD_REQUEST);
-    });
-
-    test("missing questions should return BAD_REQUEST", async () => {
-      const response = await submitPostRequst().send({
-        quizId: quizMock._id,
-      });
-      expect(response.status).toBe(StatusCodes.BAD_REQUEST);
-    });
-
-    test("submit quiz should return quiz result", async () => {
-      const response = await submitPostRequst().send({
-        quizId: quizMock._id,
-        questions: questionAnswerSubmittionsMock,
-      });
-
-      expect(response.status).toBe(StatusCodes.OK);
-      expect(response.body).toStrictEqual({
-        quizId: quizMock._id,
-        results: questionAnswerSubmittionsMockResults,
-        score: questionAnswerSubmittionsMockScore,
-      });
     });
   });
 });

@@ -1,18 +1,18 @@
-import { Express } from "express";
-import { StatusCodes } from "http-status-codes";
-import { Types } from "mongoose";
-import { dissoc } from "ramda";
-import request from "supertest";
-import { VideoSummeraizer } from "../../externalApis/videoSummerizer";
-import * as youtubeGetVideoDetails from "../../externalApis/youtube/getVideoDetails";
-import { DatabaseConfig } from "../../services/database/config";
-import { Database } from "../../services/database/database";
-import { createBasicApp } from "../../services/server/server";
-import { asMockOf, createTestEnv } from "../../utils/tests";
-import { LessonsDal } from "../dal";
-import { Lesson } from "../model";
-import { createLessonRouter } from "../router";
-import { CreateLessonRequst } from "../validators";
+import { Express } from 'express';
+import { StatusCodes } from 'http-status-codes';
+import { Types } from 'mongoose';
+import { dissoc } from 'ramda';
+import request from 'supertest';
+import { VideoSummeraizer } from '../../externalApis/videoSummerizer';
+import * as youtubeGetVideoDetails from '../../externalApis/youtube/getVideoDetails';
+import { DatabaseConfig } from '../../services/database/config';
+import { Database } from '../../services/database/database';
+import { createBasicApp } from '../../services/server/server';
+import { asMockOf, createTestEnv } from '../../utils/tests/utils';
+import { LessonsDal } from '../dal';
+import { Lesson } from '../model';
+import { createLessonRouter } from '../router';
+import { CreateLessonRequst } from '../validators';
 
 describe("lessons routes", () => {
   const config = createTestEnv();

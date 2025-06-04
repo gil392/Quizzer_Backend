@@ -1,18 +1,18 @@
-import { Document, Types } from "mongoose";
+import { Types } from "mongoose";
 import { isEmpty } from "ramda";
 import { BasicDal } from "../services/database/base.dal";
 import {
-  EXCLUDE_USER_PRIVATE_PROPERTIES_PROJECTION,
+  EXCLUDE_USER_AUTH_PROPERTIES_PROJECTION,
   SEARCH_USER_SELECT,
   USER_FRIENDS_PROJECTION,
 } from "./consts";
-import { PublicUser, User } from "./model";
+import { User, UserWithAuthentication } from "./model";
 
-export class UsersDal extends BasicDal<User> {
+export class UsersDal extends BasicDal<UserWithAuthentication> {
   findByUsername = (username: string) => this.model.findOne({ username });
 
-  findPublicUserById = (id: string) =>
-    this.findById(id, EXCLUDE_USER_PRIVATE_PROPERTIES_PROJECTION);
+  findUserWithoutAuthById = async (id: string): Promise<User | null> =>
+    await this.findById(id, EXCLUDE_USER_AUTH_PROPERTIES_PROJECTION).lean();
 
   searchUsers = (searchTerm: string, limit: number = 10) => {
     const regex = new RegExp(searchTerm, "i");
@@ -28,7 +28,7 @@ export class UsersDal extends BasicDal<User> {
   private getUsersFromUser = async (
     userId: string,
     property: "friends" | "friendRequests"
-  ): Promise<(PublicUser & Document)[]> => {
+  ): Promise<User[]> => {
     const result = await this.model.aggregate([
       {
         $match: { _id: new Types.ObjectId(userId) },
@@ -97,4 +97,10 @@ export class UsersDal extends BasicDal<User> {
         },
       },
     ]);
+
+  addCompletedAchievments = (userId: string, achievements: string[]) =>
+    this.model.updateOne(
+      { _id: userId },
+      { $addToSet: { achievements: { $each: achievements } } }
+    );
 }

@@ -7,11 +7,15 @@ import { generateTokens } from "../../authentication/utils";
 import { DatabaseConfig } from "../../services/database/config";
 import { Database } from "../../services/database/database";
 import { createBasicApp } from "../../services/server/server";
-import { createTestEnv } from "../../utils/tests";
+import { createTestEnv } from "../../utils/tests/utils";
 import { UsersDal } from "../dal";
 import { createUsersRouter } from "../router";
 import { loggedUser, otherUser } from "./mocks";
-import { castUserToPublicUser, castUserToSearchUserResult } from "./utils";
+import {
+  castObjectToResponseBody,
+  castUserToSearchUserResult,
+  omitAuthFromUser,
+} from "./utils";
 
 describe("user router", () => {
   const config = createTestEnv();
@@ -56,7 +60,9 @@ describe("user router", () => {
 
     test("logged in user should get user public details", async () => {
       const response = await setAuthHeaderToRequest(requestLoggedUser());
-      expect(response.body).toMatchObject(castUserToPublicUser(loggedUser));
+      expect(response.body).toMatchObject(
+        castObjectToResponseBody(omitAuthFromUser(loggedUser))
+      );
     });
   });
 
@@ -157,11 +163,11 @@ describe("user router", () => {
   });
 
   describe("messages", () => {
-    const requestMessages = () => request(app).get('/messages');
+    const requestMessages = () => request(app).get("/messages");
 
     test("not implemented route", async () => {
       const response = await setAuthHeaderToRequest(requestMessages());
-      expect(response.status).toBe(StatusCodes.NOT_IMPLEMENTED)
-    })
-  })
+      expect(response.status).toBe(StatusCodes.NOT_IMPLEMENTED);
+    });
+  });
 });
