@@ -48,7 +48,7 @@ export const createUsersRouter = (
    *         content:
    *           application/json:
    *             schema:
-   *               $ref: '#/components/schemas/PublicUser'
+   *               $ref: '#/components/schemas/User'
    *       401:
    *         description: User is unauthorized
    *       404:
@@ -60,7 +60,7 @@ export const createUsersRouter = (
 
   /**
    * @swagger
-   * /user/me:
+   * /user/messages:
    *   get:
    *     summary: get logged user messages since timestamp
    *     description: get logged user messages since timestamp
