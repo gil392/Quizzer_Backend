@@ -15,6 +15,7 @@ const createLessonRequstZodSchema = z
   .object({
     body: z.object({
       videoUrl: z.string().url(),
+      relatedLessonId: z.string().optional().nullable(),
     }),
   })
   .merge(authenticatedRequestZodSchema);

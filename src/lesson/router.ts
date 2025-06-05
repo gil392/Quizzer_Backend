@@ -20,10 +20,6 @@ const createRouterController = ({
   videoSummeraizer,
 }: LessonRouterDependencies) => ({
   createLesson: handlers.createLesson(lessonsDal, videoSummeraizer),
-  createRelatedLesson: handlers.createRelatedLesson(
-    lessonsDal,
-    videoSummeraizer
-  ),
   createMergedLesson: handlers.createMergedLesson(lessonsDal),
   getLessonById: handlers.getLessonById(lessonsDal),
   getLessons: handlers.getLessons(lessonsDal),
@@ -154,8 +150,12 @@ export const createLessonRouter = (
    *                 type: string
    *                 format: uri
    *                 description: The URL of the video to summarize into a lesson
+   *               relatedLessonId:
+   *                 type: string
+   *                 description: (Optional) The ID of the lesson this new lesson is related to
    *           example:
    *             videoUrl: "https://example.com/video.mp4"
+   *             relatedLessonId: "64f1c2a1e8b1a2b3c4d5e6f7"
    *     responses:
    *       201:
    *         description: Lesson successfully created
@@ -312,45 +312,5 @@ export const createLessonRouter = (
    */
   router.post("/merge", authMiddleware, controller.createMergedLesson);
 
-  /**
-   * @swagger
-   * /lesson/related:
-   *   post:
-   *     summary: Create a lesson related to another lesson from a video ID
-   *     tags: [Lesson]
-   *     security:
-   *       - bearerAuth: []
-   *     requestBody:
-   *       required: true
-   *       content:
-   *         application/json:
-   *           schema:
-   *             type: object
-   *             required:
-   *               - videoId
-   *               - relatedLessonId
-   *             properties:
-   *               videoId:
-   *                 type: string
-   *                 description: The ID of the video to summarize into a lesson
-   *               relatedLessonId:
-   *                 type: string
-   *                 description: The ID of the lesson this new lesson is related to
-   *           example:
-   *             videoId: "abc123"
-   *             relatedLessonId: "64f1c2a1e8b1a2b3c4d5e6f7"
-   *     responses:
-   *       201:
-   *         description: Related lesson successfully created
-   *         content:
-   *           application/json:
-   *             schema:
-   *               $ref: '#/components/schemas/Lesson'
-   *       400:
-   *         description: Invalid video ID or related lesson ID
-   *       500:
-   *         description: Server error during lesson creation
-   */
-  router.post("/related", authMiddleware, controller.createRelatedLesson);
   return router;
 };

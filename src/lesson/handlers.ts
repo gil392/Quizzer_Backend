@@ -34,26 +34,16 @@ export const createLesson = (
   videoSummeraizer: VideoSummeraizer
 ) =>
   createLessonRequstValidator(async (req, res) => {
-    const { videoUrl } = req.body;
+    const { videoUrl, relatedLessonId } = req.body;
     const { id: userId } = req.user;
     const videoId = extractVideoId(videoUrl);
-    await createLessonFunc(userId, videoId, videoSummeraizer, lessonsDal, res);
-  });
-
-export const createRelatedLesson = (
-  lessonsDal: LessonsDal,
-  videoSummeraizer: VideoSummeraizer
-) =>
-  createRelatedLessonRequestValidator(async (req, res) => {
-    const { videoId, relatedLessonId } = req.body;
-    const { id: userId } = req.user;
     await createLessonFunc(
       userId,
       videoId,
       videoSummeraizer,
       lessonsDal,
       res,
-      relatedLessonId
+      relatedLessonId ?? undefined
     );
   });
 
