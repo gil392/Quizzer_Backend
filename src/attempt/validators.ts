@@ -17,18 +17,26 @@ export const createAttemptRequestSchema = authenticatedRequestZodSchema.and(
   z.object({
     body: z.object({
       quizId: z.string(),
-      questions: z.array(questionAttemptZodSchema).min(1),
+      questions: z.array(questionAttemptZodSchema),
     }),
   })
 );
 
+export const addAnswerToAttemptRequestSchema = z.object({
+  body: z.object({
+    questionId: z.string().min(1, "questionId is required"),
+    attemptId: z.string().min(1, "attemptId is required"),
+    selectedAnswer: z.string().min(1, "selectedAnswer is required"),
+  }),
+});
+
 export const getQuestionResultRequestSchema = z.object({
-    params: z.object({
-        questionId: z.string(),
-    }),
-    query: z.object({
-        selectedAnswer: z.string(),
-    }),
+  params: z.object({
+    questionId: z.string(),
+  }),
+  query: z.object({
+    selectedAnswer: z.string(),
+  }),
 });
 
 export const getAttemptsByQuizIdRequestValidator = validateHandlerRequest(
@@ -36,9 +44,13 @@ export const getAttemptsByQuizIdRequestValidator = validateHandlerRequest(
 );
 
 export const createAttemptRequestValidator = validateHandlerRequest(
-    createAttemptRequestSchema
+  createAttemptRequestSchema
 );
 
 export const getQuestionResultRequestValidator = validateHandlerRequest(
-    getQuestionResultRequestSchema
+  getQuestionResultRequestSchema
+);
+
+export const addAnswerToAttemptRequestValidator = validateHandlerRequest(
+  addAnswerToAttemptRequestSchema
 );
