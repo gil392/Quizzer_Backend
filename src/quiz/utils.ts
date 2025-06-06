@@ -9,11 +9,11 @@ export const createQuizResponseQuestion = ({
     _id,
     question,
     correctAnswer,
-    incorrectAnswers
+    answers
 }: Question): QuizResponseQuestion => ({
     _id: _id?.toString() ?? '',
     text: question,
-    answers: incorrectAnswers.concat(correctAnswer), //TODO: This is a problem. once fixed in the other PR, There will be no more duplucate answers
+    answers: answers
 });
 
 export const createQuizResponse = (quiz: Quiz): QuizResponse => ({

@@ -10,13 +10,15 @@ import {
   updateLessonRequstValidator,
   relatedVideosLessonRequstValidator,
   createMergedLessonRequstValidator,
-  createRelatedLessonRequestValidator,
+
 } from "./validators";
 import { extractVideoId } from "../externalApis/youtube/utils";
 import { getVideoDetails } from "../externalApis/youtube/getVideoDetails";
 import { Lesson, VideoDetails } from "./model";
 import { getRelatedVideos } from "../externalApis/youtube/getRelatedVideos";
 import { Response } from "express";
+import { AttemptDal } from "../attempt/dal";
+import { QuizzesDal } from "../quiz/dal";
 
 export const getLessonById = (lessonsDal: LessonsDal) =>
   getLessonByIdRequstValidator(async (req, res) => {
@@ -131,6 +133,46 @@ export const getRelatedVideosForLesson = (lessonsDal: LessonsDal) =>
 
     res.status(StatusCodes.OK).json(relatedVideos);
   });
+
+export const getLessonSuccessRate = (
+    lessonsDal: LessonsDal,
+    quizzesDal: QuizzesDal, 
+    attemptDal: AttemptDal
+  ) => async (req: any, res: any) => {
+    const { id: lessonId } = req.params;
+  
+    try {
+      const lesson = await lessonsDal.findById(lessonId).lean();
+      if (!lesson) {
+        throw new NotFoundError(`Lesson with id ${lessonId} not found.`);
+      }
+  
+      const quizzes = await quizzesDal.find({ lessonId }).lean();
+      if (quizzes.length === 0) {
+        console.log("No quizzes found for this lesson.");
+        return res.status(StatusCodes.OK).json({ successRate: 0 });
+      }
+  
+      const quizIds = quizzes.map((quiz) => quiz._id);
+      const attempts = await attemptDal.find({ quizId: { $in: quizIds } }).lean();
+  
+      if (attempts.length === 0) {
+        console.log("No attempts found for these quizzes.");
+        return res.status(StatusCodes.OK).json({ successRate: 0 });
+      }
+  
+      const passingAttempts = attempts.filter((attempt) => attempt.score >= 60);
+      const successRate = Math.floor((passingAttempts.length / attempts.length) * 100);
+  
+      res.status(StatusCodes.OK).json({ successRate });
+    } catch (error) {
+      console.error("Error calculating success rate:", error);
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        message: "Failed to calculate success rate.",
+        error: error instanceof Error ? error.message : "Unknown error",
+      });
+    }
+  };
 
 async function createLessonFunc(
   userId: string,

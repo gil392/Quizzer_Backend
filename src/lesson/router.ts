@@ -2,6 +2,8 @@ import { RequestHandler, Router } from "express";
 import { VideoSummeraizer } from "../externalApis/videoSummerizer";
 import { LessonsDal } from "../lesson/dal";
 import * as handlers from "./handlers";
+import { AttemptDal } from "../attempt/dal";
+import { QuizzesDal } from "../quiz/dal";
 
 /**
  * @swagger
@@ -12,11 +14,15 @@ import * as handlers from "./handlers";
 
 export type LessonRouterDependencies = {
   lessonsDal: LessonsDal;
+  attemptDal: AttemptDal;
+  quizzesDal: QuizzesDal;
   videoSummeraizer: VideoSummeraizer;
 };
 
 const createRouterController = ({
   lessonsDal,
+  attemptDal,
+  quizzesDal,
   videoSummeraizer,
 }: LessonRouterDependencies) => ({
   createLesson: handlers.createLesson(lessonsDal, videoSummeraizer),
@@ -26,6 +32,7 @@ const createRouterController = ({
   deleteLesson: handlers.deleteLesson(lessonsDal),
   updateLesson: handlers.updateLesson(lessonsDal),
   getRelatedVideos: handlers.getRelatedVideosForLesson(lessonsDal),
+  getLessonSuccessRate: handlers.getLessonSuccessRate(lessonsDal, quizzesDal, attemptDal),
 });
 
 export const createLessonRouter = (
@@ -311,6 +318,38 @@ export const createLessonRouter = (
    *         description: Server error
    */
   router.post("/merge", authMiddleware, controller.createMergedLesson);
+
+  /**
+   * @swagger
+   * /lesson/{id}/successRate:
+   *   get:
+   *     summary: Get the success rate of a lesson
+   *     tags: [Lesson]
+   *     parameters:
+   *       - in: path
+   *         name: id
+   *         required: true
+   *         schema:
+   *           type: string
+   *         description: ID of the lesson to calculate the success rate for
+   *     responses:
+   *       200:
+   *         description: The success rate of the lesson
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 successRate:
+   *                   type: number
+   *                   description: The success rate of the lesson as a percentage
+   *                   example: 75.0
+   *       404:
+   *         description: Lesson not found
+   *       500:
+   *         description: Server error
+   */
+  router.get("/:id/successRate", controller.getLessonSuccessRate);
 
   return router;
 };
