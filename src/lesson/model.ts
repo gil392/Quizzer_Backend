@@ -17,7 +17,7 @@ export interface Lesson {
   sharedUsers: string[];
   summary: string;
   videoDetails?: VideoDetails;
-  relatedLessonId?: string;
+  relatedLessonGroupId?: string;
 }
 
 const videoDetailsSchema = new Schema<VideoDetails>(
@@ -41,7 +41,7 @@ const lessonSchema = new Schema<Lesson>(
     sharedUsers: { type: [String], default: [] },
     summary: { type: String, required: true },
     videoDetails: { type: videoDetailsSchema },
-    relatedLessonId: String,
+    relatedLessonGroupId: String,
   },
   { timestamps: true }
 );
