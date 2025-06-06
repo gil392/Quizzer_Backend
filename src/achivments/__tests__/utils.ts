@@ -1,9 +1,9 @@
 import { Types } from "mongoose";
 import { mergeDeepRight } from "ramda";
-import { Achievement, Requirment } from "../types";
+import { Achievement, Requirement } from "../types";
 
 export const createAchievementMock = (
-  requirements: Requirment[],
+  requirements: Requirement[],
   achievement?: Partial<Achievement>
 ): Achievement =>
   mergeDeepRight(
