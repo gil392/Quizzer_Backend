@@ -40,12 +40,13 @@ export const createAttempt = (
       getQuestionResultInQuiz(quiz)
     );
 
-    const score = attemptScore(questionsResults, questions.length);
+    const score = attemptScore(questionsResults, quiz.questions.length);
 
     const attempt: QuizAttempt = {
       quizId,
       results: questionsResults,
       score,
+      expiryTime: new Date().getTime() + quiz.questions.length * 60 * 1000,
     };
 
     const savedAttempt = await AttemptDal.create(attempt);
