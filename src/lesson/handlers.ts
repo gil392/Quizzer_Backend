@@ -1,7 +1,7 @@
 import { StatusCodes } from "http-status-codes";
 import { isNil } from "ramda";
 import { VideoSummeraizer } from "../externalApis/videoSummerizer";
-import { BadRequestError, NotFoundError } from "../services/server/exceptions";
+import { BadRequestError, InternalServerError, NotFoundError } from "../services/server/exceptions";
 import { LessonsDal } from "./dal";
 import {
   createLessonRequstValidator,
@@ -34,7 +34,7 @@ export const createLesson = (
   videoSummeraizer: VideoSummeraizer
 ) =>
   createLessonRequstValidator(async (req, res) => {
-    const { videoUrl, relatedLessonId } = req.body;
+    const { videoUrl, relatedLessonGroupId } = req.body;
     const { id: userId } = req.user;
     const videoId = extractVideoId(videoUrl);
     await createLessonFunc(
@@ -43,7 +43,7 @@ export const createLesson = (
       videoSummeraizer,
       lessonsDal,
       res,
-      relatedLessonId ?? undefined
+      relatedLessonGroupId ?? undefined
     );
   });
 
@@ -138,7 +138,7 @@ async function createLessonFunc(
   videoSummeraizer: VideoSummeraizer,
   lessonsDal: LessonsDal,
   res: Response,
-  relatedLessonId?: string
+  relatedLessonGroupId?: string
 ) {
   const videoDetails = await getVideoDetails(videoId);
 
@@ -149,7 +149,9 @@ async function createLessonFunc(
   }
 
   const summary = await videoSummeraizer.summerizeVideo(videoId);
-
+  if (!summary) {
+    throw new InternalServerError("Failed to generate summary for the video.");
+  }
   const item: Partial<Lesson> = {
     owner: userId,
     sharedUsers: [],
@@ -158,8 +160,8 @@ async function createLessonFunc(
     videoDetails: { ...videoDetails, videoId },
   };
 
-  if (relatedLessonId) {
-    item.relatedLessonId = relatedLessonId;
+  if (relatedLessonGroupId) {
+    item.relatedLessonGroupId = relatedLessonGroupId;
   }
   const lesson = await lessonsDal.create(item);
   res.status(StatusCodes.CREATED).json(lesson.toObject());

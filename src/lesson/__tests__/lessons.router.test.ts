@@ -109,28 +109,28 @@ describe("lessons routes", () => {
   describe("create related lesson", () => {
     const createLessonRequest = () => request(app).post("/");
 
-    test("missing relatedLessonId is allowed (regular lesson)", async () => {
+    test("missing relatedLessonGroupId is allowed (regular lesson)", async () => {
       const response = await createLessonRequest().send({
         videoUrl: videoUrlMock,
       });
 
       expect(response.status).toBe(StatusCodes.CREATED);
-      expect(response.body).not.toHaveProperty("relatedLessonId");
+      expect(response.body).not.toHaveProperty("relatedLessonGroupId");
     });
 
-    test("relatedLessonId not a string should return BAD_REQUEST", async () => {
+    test("relatedLessonGroupId not a string should return BAD_REQUEST", async () => {
       const response = await createLessonRequest().send({
         videoUrl: videoUrlMock,
-        relatedLessonId: 123,
+        relatedLessonGroupId: 123,
       });
       expect(response.status).toBe(StatusCodes.BAD_REQUEST);
     });
 
-    test("valid related lesson should create lesson with relatedLessonId", async () => {
-      const relatedLessonId = new Types.ObjectId().toString();
+    test("valid related lesson should create lesson with relatedLessonGroupId", async () => {
+      const relatedLessonGroupId = new Types.ObjectId().toString();
       const response = await createLessonRequest().send({
         videoUrl: videoUrlMock,
-        relatedLessonId,
+        relatedLessonGroupId,
       });
       expect(response.status).toBe(StatusCodes.CREATED);
       expect(response.body).toStrictEqual(
@@ -140,7 +140,7 @@ describe("lessons routes", () => {
           videoDetails: expect.objectContaining({
             videoId: videoIdMock,
           }),
-          relatedLessonId,
+          relatedLessonGroupId,
         })
       );
     });

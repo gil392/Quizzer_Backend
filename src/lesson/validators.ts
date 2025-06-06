@@ -15,7 +15,7 @@ const createLessonRequstZodSchema = z
   .object({
     body: z.object({
       videoUrl: z.string().url(),
-      relatedLessonId: z.string().optional().nullable(),
+      relatedLessonGroupId: z.string().optional().nullable(),
     }),
   })
   .merge(authenticatedRequestZodSchema);
@@ -29,7 +29,7 @@ const createRelatedLessonRequstZodSchema = z
   .object({
     body: z.object({
       videoId: z.string(),
-      relatedLessonId: z.string(),
+      relatedLessonGroupId: z.string(),
     }),
   })
   .merge(authenticatedRequestZodSchema);

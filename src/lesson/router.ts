@@ -150,12 +150,12 @@ export const createLessonRouter = (
    *                 type: string
    *                 format: uri
    *                 description: The URL of the video to summarize into a lesson
-   *               relatedLessonId:
+   *               relatedLessonGroupId:
    *                 type: string
    *                 description: (Optional) The ID of the lesson this new lesson is related to
    *           example:
-   *             videoUrl: "https://example.com/video.mp4"
-   *             relatedLessonId: "64f1c2a1e8b1a2b3c4d5e6f7"
+   *             videoUrl: "https://www.youtube.com/watch?v=Qd1DUyjtIZ4&ab_channel=TEDxTalks"
+   *             relatedLessonGroupId: "64f1c2a1e8b1a2b3c4d5e6f7"
    *     responses:
    *       201:
    *         description: Lesson successfully created
