@@ -7,6 +7,7 @@ import {
   createAttemptRequestValidator,
   getQuestionResultRequestValidator,
   addAnswerToAttemptRequestValidator,
+  updateAttemptWithAnswersRequestValidator,
 } from "./validators";
 import { getQuestionResultInQuiz } from "./utils";
 import { QuizzesDal } from "../quiz/dal";
@@ -25,7 +26,7 @@ export const GetAttemptsByQuizId = (AttemptDal: AttemptDal) =>
 
 export const createAttempt = (
   quizzesDal: QuizzesDal,
-  AttemptDal: AttemptDal,
+  attemptDal: AttemptDal,
   usersDal: UsersDal
 ) =>
   createAttemptRequestValidator(async (req, res) => {
@@ -49,12 +50,43 @@ export const createAttempt = (
       expiryTime: new Date().getTime() + quiz.questions.length * 60 * 1000,
     };
 
-    const savedAttempt = await AttemptDal.create(attempt);
+    const savedAttempt = await attemptDal.create(attempt);
 
     const { id: userId } = req.user;
     await updateUserStreak(usersDal, userId);
 
     res.status(StatusCodes.CREATED).send(savedAttempt);
+  });
+
+export const updateAttemptWithAnswers = (
+  AttemptDal: AttemptDal,
+  quizzesDal: QuizzesDal
+) =>
+  updateAttemptWithAnswersRequestValidator(async (req, res) => {
+    const { attemptId, questions } = req.body;
+
+    const attempt = await AttemptDal.findById(attemptId);
+    if (!attempt) {
+      res.status(StatusCodes.NOT_FOUND).json({ message: "Attempt not found" });
+      return;
+    }
+
+    const quiz = await quizzesDal.findById(attempt.quizId).lean();
+    if (!quiz) {
+      res.status(StatusCodes.BAD_REQUEST).json({ message: "Quiz not found" });
+      return;
+    }
+
+    const questionsResults: QuestionAttempt[] = questions.map(
+      getQuestionResultInQuiz(quiz)
+    );
+
+    attempt.results = questionsResults;
+    attempt.score = attemptScore(questionsResults, quiz.questions.length);
+
+    const savedAttempt = await attempt.save();
+
+    res.status(StatusCodes.OK).json(savedAttempt);
   });
 
 export const getQuestionResult = (quizzesDal: QuizzesDal) =>

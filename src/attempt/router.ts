@@ -26,6 +26,10 @@ const createRouterController = ({
   GetAttemptsByQuizId: handlers.GetAttemptsByQuizId(attemptDal),
   getQuestionResult: handlers.getQuestionResult(quizzesDal),
   addAnswerToAttempt: handlers.addAnswerToAttempt(attemptDal, quizzesDal),
+  updateAttemptWithAnswers: handlers.updateAttemptWithAnswers(
+    attemptDal,
+    quizzesDal
+  ),
 });
 
 export const createAttemptRouter = (
@@ -242,6 +246,63 @@ export const createAttemptRouter = (
    *         description: Server error
    */
   router.post("/answer", authMiddleware, controller.addAnswerToAttempt);
+
+  /**
+   * @swagger
+   * /attempt/update:
+   *   post:
+   *     summary: Update an existing attempt with all answers at once
+   *     tags: [Attempt]
+   *     security:
+   *       - bearerAuth: []
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             required:
+   *               - attemptId
+   *               - questions
+   *             properties:
+   *               attemptId:
+   *                 type: string
+   *                 description: The ID of the attempt to update
+   *               questions:
+   *                 type: array
+   *                 minItems: 1
+   *                 items:
+   *                   type: object
+   *                   required:
+   *                     - questionId
+   *                     - selectedAnswer
+   *                   properties:
+   *                     questionId:
+   *                       type: string
+   *                     selectedAnswer:
+   *                       type: string
+   *           example:
+   *             attemptId: "attempt123"
+   *             questions:
+   *               - questionId: "q1"
+   *                 selectedAnswer: "A"
+   *               - questionId: "q2"
+   *                 selectedAnswer: "B"
+   *     responses:
+   *       200:
+   *         description: The updated attempt with all answers
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: '#/components/schemas/QuizAttempt'
+   *       400:
+   *         description: Invalid input or quiz not found
+   *       404:
+   *         description: Attempt not found
+   *       500:
+   *         description: Server error
+   */
+  router.post("/update", authMiddleware, controller.updateAttemptWithAnswers);
 
   return router;
 };
