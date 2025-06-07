@@ -11,6 +11,9 @@ export class VideoSummeraizer {
 
     summerizeVideo = async (videoId: string): Promise<string> => {
         const videoTranscript = await fetchVideoTranscript(videoId);
+        if (!videoTranscript) {
+            throw new Error(`No transcript found for video with id ${videoId}`);
+        }
         return videoTranscript ? this.summarizer.summarizeTranscript(videoTranscript) : '';
     }
 }
