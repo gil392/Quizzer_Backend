@@ -1,7 +1,7 @@
 import { StatusCodes } from "http-status-codes";
 import { isNil } from "ramda";
 import { VideoSummeraizer } from "../externalApis/videoSummerizer";
-import { BadRequestError, NotFoundError } from "../services/server/exceptions";
+import { BadRequestError, InternalServerError, NotFoundError } from "../services/server/exceptions";
 import { LessonsDal } from "./dal";
 import {
   createLessonRequstValidator,
@@ -34,26 +34,16 @@ export const createLesson = (
   videoSummeraizer: VideoSummeraizer
 ) =>
   createLessonRequstValidator(async (req, res) => {
-    const { videoUrl } = req.body;
+    const { videoUrl, relatedLessonGroupId } = req.body;
     const { id: userId } = req.user;
     const videoId = extractVideoId(videoUrl);
-    await createLessonFunc(userId, videoId, videoSummeraizer, lessonsDal, res);
-  });
-
-export const createRelatedLesson = (
-  lessonsDal: LessonsDal,
-  videoSummeraizer: VideoSummeraizer
-) =>
-  createRelatedLessonRequestValidator(async (req, res) => {
-    const { videoId, relatedLessonId } = req.body;
-    const { id: userId } = req.user;
     await createLessonFunc(
       userId,
       videoId,
       videoSummeraizer,
       lessonsDal,
       res,
-      relatedLessonId
+      relatedLessonGroupId ?? undefined
     );
   });
 
@@ -104,10 +94,11 @@ export const deleteLesson = (lessonsDal: LessonsDal) =>
 export const updateLesson = (lessonsDal: LessonsDal) =>
   updateLessonRequstValidator(async (req, res) => {
     const { id } = req.params;
-    const { title, summary } = req.body;
+    const { title, isFavorite, summary } = req.body;
 
     const updatedLesson = await lessonsDal.updateById(id, {
       title,
+      isFavorite,
       summary,
     });
 
@@ -148,7 +139,7 @@ async function createLessonFunc(
   videoSummeraizer: VideoSummeraizer,
   lessonsDal: LessonsDal,
   res: Response,
-  relatedLessonId?: string
+  relatedLessonGroupId?: string
 ) {
   const videoDetails = await getVideoDetails(videoId);
 
@@ -159,7 +150,9 @@ async function createLessonFunc(
   }
 
   const summary = await videoSummeraizer.summerizeVideo(videoId);
-
+  if (!summary) {
+    throw new InternalServerError("Failed to generate summary for the video.");
+  }
   const item: Partial<Lesson> = {
     owner: userId,
     sharedUsers: [],
@@ -168,8 +161,8 @@ async function createLessonFunc(
     videoDetails: { ...videoDetails, videoId },
   };
 
-  if (relatedLessonId) {
-    item.relatedLessonId = relatedLessonId;
+  if (relatedLessonGroupId) {
+    item.relatedLessonGroupId = relatedLessonGroupId;
   }
   const lesson = await lessonsDal.create(item);
   res.status(StatusCodes.CREATED).json(lesson.toObject());

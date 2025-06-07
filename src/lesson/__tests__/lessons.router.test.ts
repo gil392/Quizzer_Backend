@@ -22,7 +22,10 @@ describe("lessons routes", () => {
   const database = new Database(databaseConfig);
   const { lessonModel } = database.getModels();
   const lessonsDal = new LessonsDal(lessonModel);
-  const authMiddlewareMock = (req: any, res: any, next: any) => next();
+  const authMiddlewareMock = (req: any, res: any, next: any) => {
+    req.user = { id: "owner mock" };
+    next();
+  };
   const summaryMock = "summary mock";
   const videoUrlMock = "https://www.youtube.com/watch?v=xvFZjo5PgG0";
   const videoIdMock = "xvFZjo5PgG0";
@@ -104,25 +107,30 @@ describe("lessons routes", () => {
   });
 
   describe("create related lesson", () => {
-    const createRelatedLessonRequest = () => request(app).post("/related");
+    const createLessonRequest = () => request(app).post("/");
 
-    test("missing videoId should return BAD_REQUEST", async () => {
-      const response = await createRelatedLessonRequest().send({});
-      expect(response.status).toBe(StatusCodes.BAD_REQUEST);
+    test("missing relatedLessonGroupId is allowed (regular lesson)", async () => {
+      const response = await createLessonRequest().send({
+        videoUrl: videoUrlMock,
+      });
+
+      expect(response.status).toBe(StatusCodes.CREATED);
+      expect(response.body).not.toHaveProperty("relatedLessonGroupId");
     });
 
-    test("videoId not a string should return BAD_REQUEST", async () => {
-      const response = await createRelatedLessonRequest().send({
-        videoId: 123,
+    test("relatedLessonGroupId not a string should return BAD_REQUEST", async () => {
+      const response = await createLessonRequest().send({
+        videoUrl: videoUrlMock,
+        relatedLessonGroupId: 123,
       });
       expect(response.status).toBe(StatusCodes.BAD_REQUEST);
     });
 
-    test("valid related lesson should create lesson with relatedLessonId", async () => {
-      const relatedLessonId = new Types.ObjectId().toString();
-      const response = await createRelatedLessonRequest().send({
-        videoId: videoIdMock,
-        relatedLessonId,
+    test("valid related lesson should create lesson with relatedLessonGroupId", async () => {
+      const relatedLessonGroupId = new Types.ObjectId().toString();
+      const response = await createLessonRequest().send({
+        videoUrl: videoUrlMock,
+        relatedLessonGroupId,
       });
       expect(response.status).toBe(StatusCodes.CREATED);
       expect(response.body).toStrictEqual(
@@ -132,7 +140,7 @@ describe("lessons routes", () => {
           videoDetails: expect.objectContaining({
             videoId: videoIdMock,
           }),
-          relatedLessonId,
+          relatedLessonGroupId,
         })
       );
     });
