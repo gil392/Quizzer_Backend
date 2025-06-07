@@ -55,11 +55,11 @@ export class QuestionsGenerator {
   {
     "question": "string",
     "incorrectAnswers":
-      ["string", "string", ...],
+      ["string", "string", "string", ...],
     "correctAnswer": "string"
   }
   
-  Each question must have exactly ${optionsCount} options (1 correct answer and ${optionsCount - 1} incorrect answers).
+  Each question must have exactly ${optionsCount} answers (1 correct answer and ${optionsCount - 1} incorrect answers), all the answers must be different.
   Use the summary below to create ${quizSettings.maxQuestionCount} questions.
   If the summary is too short to generate ${quizSettings.maxQuestionCount} questions, generate as many as possible while maintaining the structure.
   
