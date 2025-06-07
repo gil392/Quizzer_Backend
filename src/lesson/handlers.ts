@@ -94,10 +94,11 @@ export const deleteLesson = (lessonsDal: LessonsDal) =>
 export const updateLesson = (lessonsDal: LessonsDal) =>
   updateLessonRequstValidator(async (req, res) => {
     const { id } = req.params;
-    const { title, summary } = req.body;
+    const { title, isFavorite, summary } = req.body;
 
     const updatedLesson = await lessonsDal.updateById(id, {
       title,
+      isFavorite,
       summary,
     });
 

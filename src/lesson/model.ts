@@ -14,6 +14,7 @@ export interface VideoDetails {
 export interface Lesson {
   owner: string;
   title: string;
+  isFavorite: boolean;
   sharedUsers: string[];
   summary: string;
   videoDetails?: VideoDetails;
@@ -38,6 +39,7 @@ const lessonSchema = new Schema<Lesson>(
   {
     owner: { type: String, required: true },
     title: { type: String, required: true },
+    isFavorite: { type: Boolean, default: false },
     sharedUsers: { type: [String], default: [] },
     summary: { type: String, required: true },
     videoDetails: { type: videoDetailsSchema },
@@ -58,6 +60,7 @@ export const lessonModel = model("lessons", lessonSchema);
  *       required:
  *         - owner
  *         - title
+ *         - isFavorite
  *         - summary
  *         - videoDetails
  *       properties:
@@ -67,6 +70,9 @@ export const lessonModel = model("lessons", lessonSchema);
  *         title:
  *           type: string
  *           description: The title of the lesson
+ *         isFavorite:
+ *           type: boolean
+ *           description: Indicates whether the lesson is marked as a favorite by the owner
  *         sharedUsers:
  *           type: array
  *           description: List of user IDs the lesson is shared with
