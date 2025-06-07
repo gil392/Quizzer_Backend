@@ -250,7 +250,7 @@ export const createAttemptRouter = (
   /**
    * @swagger
    * /attempt/update:
-   *   post:
+   *   put:
    *     summary: Update an existing attempt with all answers at once
    *     tags: [Attempt]
    *     security:
@@ -302,7 +302,7 @@ export const createAttemptRouter = (
    *       500:
    *         description: Server error
    */
-  router.post("/update", authMiddleware, controller.updateAttemptWithAnswers);
+  router.put("/update", authMiddleware, controller.updateAttemptWithAnswers);
 
   return router;
 };
