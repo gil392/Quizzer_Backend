@@ -1,6 +1,6 @@
 import { StatusCodes } from "http-status-codes";
 import { isNil, prop } from "ramda";
-import { BadRequestError } from "../services/server/exceptions";
+import { BadRequestError, NotFoundError } from "../services/server/exceptions";
 import { AttemptDal } from "./dal";
 import {
   getAttemptsByQuizIdRequestValidator,
@@ -67,8 +67,7 @@ export const updateAttemptWithAnswers = (
 
     const attempt = await attemptDal.findById(attemptId);
     if (!attempt) {
-      res.status(StatusCodes.NOT_FOUND).json({ message: "Attempt not found" });
-      return;
+      throw new NotFoundError("Attempt not found")
     }
 
     const quiz = await quizzesDal.findById(attempt.quizId).lean();
@@ -116,9 +115,7 @@ export const addAnswerToAttempt = (
 
     const attempt = await attemptDal.findById(attemptId);
     if (!attempt) {
-      console.warn("Attempt not found", attemptId);
-      res.status(StatusCodes.NOT_FOUND).json({ message: "Attempt not found" });
-      return;
+      throw new NotFoundError("Attempt not found, attempt " + attemptId);
     }
 
     const { question } = await quizzesDal.findQuestionById(questionId);
