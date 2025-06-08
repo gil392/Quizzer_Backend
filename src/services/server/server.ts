@@ -28,8 +28,8 @@ import { Service } from "../service";
 import { ServerConfig } from "./config";
 import { createSwaggerSpecs } from "./swagger";
 import { requestErrorHandler } from "./utils";
-import { createNotificationRouter } from "../../notifications/router";
-import { NotificationRouterDependencies } from "../../notifications/router";
+import { createNotificationRouter } from "../../notification/router";
+import { NotificationRouterDependencies } from "../../notification/router";
 
 export const createBasicApp = (corsOrigin?: string): Express => {
   const app = express();
