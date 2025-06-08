@@ -59,13 +59,13 @@ export const createAttempt = (
   });
 
 export const updateAttemptWithAnswers = (
-  AttemptDal: AttemptDal,
+  attemptDal: AttemptDal,
   quizzesDal: QuizzesDal
 ) =>
   updateAttemptWithAnswersRequestValidator(async (req, res) => {
     const { attemptId, questions } = req.body;
 
-    const attempt = await AttemptDal.findById(attemptId);
+    const attempt = await attemptDal.findById(attemptId);
     if (!attempt) {
       res.status(StatusCodes.NOT_FOUND).json({ message: "Attempt not found" });
       return;
@@ -73,8 +73,7 @@ export const updateAttemptWithAnswers = (
 
     const quiz = await quizzesDal.findById(attempt.quizId).lean();
     if (!quiz) {
-      res.status(StatusCodes.BAD_REQUEST).json({ message: "Quiz not found" });
-      return;
+      throw new BadRequestError("Quiz not found");
     }
 
     const questionsResults: QuestionAttempt[] = questions.map(
@@ -109,13 +108,13 @@ export const getQuestionResult = (quizzesDal: QuizzesDal) =>
   });
 
 export const addAnswerToAttempt = (
-  AttemptDal: AttemptDal,
+  attemptDal: AttemptDal,
   quizzesDal: QuizzesDal
 ) =>
   addAnswerToAttemptRequestValidator(async (req, res) => {
     const { attemptId, questionId, selectedAnswer } = req.body;
 
-    const attempt = await AttemptDal.findById(attemptId);
+    const attempt = await attemptDal.findById(attemptId);
     if (!attempt) {
       console.warn("Attempt not found", attemptId);
       res.status(StatusCodes.NOT_FOUND).json({ message: "Attempt not found" });
@@ -124,18 +123,12 @@ export const addAnswerToAttempt = (
 
     const { question } = await quizzesDal.findQuestionById(questionId);
     if (!question) {
-      console.warn("Question not found", questionId);
-      res
-        .status(StatusCodes.BAD_REQUEST)
-        .json({ message: "Question not found" });
-      return;
+      throw new BadRequestError("Question not found");
     }
 
     const quiz = await quizzesDal.findById(attempt.quizId).lean();
     if (!quiz) {
-      console.warn("Quiz not found", attempt.quizId);
-      res.status(StatusCodes.BAD_REQUEST).json({ message: "Quiz not found" });
-      return;
+      throw new BadRequestError("Quiz not found");
     }
 
     const questionResult = getQuestionResultInQuiz(quiz)({
