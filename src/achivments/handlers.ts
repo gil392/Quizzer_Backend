@@ -2,7 +2,7 @@ import { isNil } from "ramda";
 import { validateAuthenticatedRequest } from "../authentication/validators";
 import { UnauthorizedError } from "../services/server/exceptions";
 import { UsersDal } from "../user/dal";
-import { AchivementsProccesor } from "./achivmentsProccesor/achivmentsProccesor";
+import { AchivementsProccesor } from "./toolkit/proccesor";
 import { AchievementsDal } from "./dal";
 import { Achievement } from "./types";
 import {

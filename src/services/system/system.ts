@@ -1,4 +1,4 @@
-import { AchivementsProccesor } from "../../achivments/achivmentsProccesor/achivmentsProccesor";
+import { AchivementsProccesor } from "../../achivments/toolkit/proccesor";
 import { AchievementsDal } from "../../achivments/dal";
 import { AttemptDal } from "../../attempt/dal";
 import { QuestionsGenerator } from "../../externalApis/quizGenerator";
@@ -11,6 +11,7 @@ import { Database } from "../database/database";
 import { Server } from "../server/server";
 import { Service } from "../service";
 import { SystemConfig } from "./config";
+import { seedAchievements } from "../../achivments/toolkit/seeder";
 
 export class System extends Service {
   private readonly database: Database;
@@ -61,6 +62,7 @@ export class System extends Service {
 
   async start() {
     await this.database.start();
+    await seedAchievements();
     await this.server.start();
   }
 

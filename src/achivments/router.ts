@@ -1,6 +1,6 @@
 import { RequestHandler, Router } from "express";
 import { UsersDal } from "../user/dal";
-import { AchivementsProccesor } from "./achivmentsProccesor/achivmentsProccesor";
+import { AchivementsProccesor } from "./toolkit/proccesor";
 import * as handlers from "./handlers";
 import { AchievementsDal } from "./dal";
 
