@@ -25,7 +25,7 @@ const createNotificationController = ({
     deleteNotification: handlers.deleteNotification(notificationDal),
     notifyFriendsAboutAchievement: handlers.notifyFriendsAboutAchievement(notificationDal, usersDal),
     shareQuizOrSummary: handlers.shareQuizOrSummary(notificationDal, usersDal),
-
+    notifyFriendRequest: handlers.notifyFriendRequest(notificationDal, usersDal)
 });
 
 export const createNotificationRouter = (
@@ -117,9 +117,6 @@ export const createNotificationRouter = (
      *                 type: string
      *                 enum: [quiz, summary, user]
      *                 description: Type of the related entity
-     *               score:
-     *                 type: number
-     *                 description: Optional score for the achievement
      *     responses:
      *       201:
      *         description: Friends notified
@@ -162,6 +159,32 @@ export const createNotificationRouter = (
      *         description: Notifications sent
      */
     router.post("/share", authMiddleware, controller.shareQuizOrSummary);
+
+    /**
+     * @swagger
+     * /notifications/friend-request:
+     *   post:
+     *     summary: Notify a user about a friend request
+     *     tags: [Notification]
+     *     security:
+     *       - bearerAuth: []
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             required:
+     *               - toUserId
+     *             properties:
+     *               toUserId:
+     *                 type: string
+     *                 description: The user to notify
+     *     responses:
+     *       201:
+     *         description: Friend request notification sent
+     */
+    router.post("/friend-request", authMiddleware, controller.notifyFriendRequest);
 
     return router;
 };

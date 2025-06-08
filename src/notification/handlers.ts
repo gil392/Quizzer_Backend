@@ -6,7 +6,8 @@ import {
     markAsReadValidator,
     deleteNotificationValidator,
     notifyFriendsAboutAchievementValidator,
-    shareQuizOrSummaryValidator
+    shareQuizOrSummaryValidator,
+    friendRequestValidator
 } from "./validators";
 import { isNil } from "ramda";
 import { NotFoundError } from "../services/server/exceptions";
@@ -106,4 +107,35 @@ export const deleteNotification = (notificationDal: NotificationsDal) =>
         }
 
         res.status(StatusCodes.OK).send({ message: `Notification with id ${id} deleted successfully.` });
+    });
+
+export const notifyFriendRequest = (
+    notificationsDal: NotificationsDal,
+    usersDal: UsersDal
+) =>
+    friendRequestValidator(async (req, res) => {
+        const { id: fromUserId } = req.user;
+        const { toUserId } = req.body;
+
+        const sender = await usersDal.findById(fromUserId).lean();
+        if (!sender || !sender.username) {
+            res.status(StatusCodes.NOT_FOUND).send({ message: "Sender not found" });
+            return;
+        }
+
+        const message = `${sender.username} sent you a friend request!`;
+
+        const notification = {
+            toUserId,
+            fromUserId,
+            type: "friendRequest",
+            relatedEntityId: fromUserId,
+            entityType: "user",
+            message,
+            read: false,
+            createdAt: new Date(),
+        };
+
+        await notificationsDal.create(notification as any);
+        res.status(StatusCodes.CREATED).send({ message: "Friend request notification sent" });
     });

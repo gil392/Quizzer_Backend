@@ -4,7 +4,7 @@ import { Notification } from "./types";
 const notificationSchema = new Schema<Notification>({
     toUserId: { type: String, required: true },
     fromUserId: { type: String, required: true },
-    type: { type: String, enum: ["share", "achievement"], required: true },
+    type: { type: String, enum: ["share", "achievement", "friendRequest"], required: true },
     relatedEntityId: { type: String, required: true },
     entityType: { type: String, enum: ["quiz", "summary", "user"], required: true },
     message: { type: String, required: true },

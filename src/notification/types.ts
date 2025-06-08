@@ -1,4 +1,4 @@
-export type NotificationType = "share" | "achievement";
+export type NotificationType = "share" | "achievement" | "friendRequest";
 export type NotificationEntityType = "quiz" | "summary" | "user";
 
 export interface Notification extends Document {

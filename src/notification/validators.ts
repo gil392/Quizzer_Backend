@@ -3,11 +3,7 @@ import { validateHandlerRequest } from "../services/server/validators";
 import { authenticatedRequestZodSchema } from "../authentication/validators";
 
 const getNotificationsByUserIdRequestSchema = z
-    .object({
-        params: z.object({
-            id: z.string(),
-        }),
-    })
+    .object({})
     .merge(authenticatedRequestZodSchema);
 
 export const getNotificationsValidatorByUserId = validateHandlerRequest(getNotificationsByUserIdRequestSchema);
@@ -52,3 +48,13 @@ const shareQuizOrSummaryRequestSchema = z
     }).merge(authenticatedRequestZodSchema);
 
 export const shareQuizOrSummaryValidator = validateHandlerRequest(shareQuizOrSummaryRequestSchema);
+
+const friendRequestRequestSchema = z
+    .object({
+        body: z.object({
+            toUserId: z.string(),
+        }),
+    })
+    .merge(authenticatedRequestZodSchema);
+
+export const friendRequestValidator = validateHandlerRequest(friendRequestRequestSchema);
