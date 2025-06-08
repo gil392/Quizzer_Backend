@@ -1,4 +1,6 @@
 import { isNil } from "ramda";
+import * as path from "path";
+import * as fs from "fs/promises";
 import { validateAuthenticatedRequest } from "../authentication/validators";
 import { UnauthorizedError } from "../services/server/exceptions";
 import { UsersDal } from "../user/dal";
@@ -9,6 +11,7 @@ import {
   injectCompletedAchievmentItsProgress,
   isRequirementNotCompleted,
 } from "./utils";
+import { validateAchievementImageRequest } from "./validators";
 
 export const getAchievementProgress = (
   usersDal: UsersDal,
@@ -43,4 +46,40 @@ export const getAchievementProgress = (
     );
 
     res.send(achievmentsWithProgress);
+  });
+
+export const getAchievementImage = (
+  achievementsDal: AchievementsDal
+) =>
+  validateAchievementImageRequest(async (req, res) => {
+    const { id } = req.params;
+
+    try {
+      const achievement = await achievementsDal.getAchievementsByIds([id]);
+
+      if (!achievement || achievement.length === 0) {
+        res.status(404).json({ message: "Achievement not found" });
+        return; 
+      }
+
+      const iconPath = achievement[0].reward.icon;
+      console.log("Icon path from database:", iconPath);
+
+      // Resolve the full path relative to the project root
+      const baseDir = path.resolve(__dirname, "../../../Backend_Quizzer/src"); // Adjust this to your actual public directory
+      const fullPath = path.join(baseDir, iconPath);
+      console.log("Resolved full path to icon:", fullPath);
+
+      try {
+        await fs.access(fullPath); 
+      } catch {
+        res.status(404).json({ message: "Achievement image not found" });
+        return; 
+      }
+
+      res.sendFile(fullPath);
+    } catch (error) {
+      console.error("Error fetching achievement image:", error);
+      res.status(500).json({ message: "Server error" });
+    }
   });

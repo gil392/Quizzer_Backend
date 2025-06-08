@@ -30,6 +30,7 @@ const createRouterController = ({
     achievementsDal,
     achievementsProccesor
   ),
+  getAchievementImage: handlers.getAchievementImage(achievementsDal),
 });
 
 export const createAchievementsRouter = (
@@ -62,6 +63,36 @@ export const createAchievementsRouter = (
    *         description: Server error
    */
   router.get("/progress", authMiddleware, controller.getAchievementProgress);
+
+  /**
+   * @swagger
+   * /achievement/image/{id}:
+   *   get:
+   *     summary: Get the image of an achievement
+   *     description: Returns the image associated with an achievement
+   *     tags:
+   *       - Achievement
+   *     parameters:
+   *       - in: path
+   *         name: id
+   *         required: true
+   *         schema:
+   *           type: string
+   *           description: The ID of the achievement
+   *     responses:
+   *       200:
+   *         description: The image of the achievement
+   *         content:
+   *           image/png:
+   *             schema:
+   *               type: string
+   *               format: binary
+   *       404:
+   *         description: Achievement not found
+   *       500:
+   *         description: Server error
+   */
+    router.get("/image/:id", controller.getAchievementImage);
 
   return router;
 };
