@@ -99,7 +99,7 @@ export const createQuizRouter = (
    *             lessonId: "lesson123"
    *             settings:
    *               feedbackType: auto
-   *               isRandomOrder: true
+   *               questionsOrder: chronological
    *               maxQuestionCount: 5
    *               solvingTimeMs: 600000
    *     responses:
@@ -140,7 +140,7 @@ export const createQuizRouter = (
    *             lessonId: "lesson123"
    *             settings:
    *               feedbackType: auto
-   *               isRandomOrder: true
+   *               questionsOrder: chronological
    *               maxQuestionCount: 5
    *               solvingTimeMs: 600000
    *     responses:

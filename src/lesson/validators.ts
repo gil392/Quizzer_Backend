@@ -68,6 +68,7 @@ const updateLessonRequstZodSchema = z.object({
   }),
   body: z.object({
     title: z.string().optional(),
+    isFavorite: z.boolean().optional(),
     videoUrl: z.string().url().optional(),
     summary: z.string().optional(),
   }),

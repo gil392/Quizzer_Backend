@@ -1,11 +1,11 @@
 import { z } from "zod";
 import { validateHandlerRequest } from "../services/server/validators";
-import { quizFeedbacks, QuizSettings } from "./types";
+import { quizFeedbacks, quizQuestionsOrders, QuizSettings } from "./types";
 import { authenticatedRequestZodSchema } from "../authentication/validators";
 
 const quizSettingsZodSchema: z.ZodType<QuizSettings> = z.object({
   feedbackType: z.enum(quizFeedbacks),
-  isRandomOrder: z.coerce.boolean(),
+  questionsOrder: z.enum(quizQuestionsOrders),
   maxQuestionCount: z.coerce.number(),
   solvingTimeMs: z.coerce.number(),
 });
