@@ -63,13 +63,10 @@ export const getAchievementImage = (
       }
 
       const iconPath = achievement[0].reward.icon;
-      console.log("Icon path from database:", iconPath);
 
-      // Resolve the full path relative to the project root
-      const baseDir = path.resolve(__dirname, "../../../Backend_Quizzer/src"); // Adjust this to your actual public directory
+      const baseDir = path.resolve(__dirname, "../../../Backend_Quizzer/src"); 
       const fullPath = path.join(baseDir, iconPath);
-      console.log("Resolved full path to icon:", fullPath);
-
+      
       try {
         await fs.access(fullPath); 
       } catch {
