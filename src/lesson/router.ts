@@ -2,8 +2,6 @@ import { RequestHandler, Router } from "express";
 import { VideoSummeraizer } from "../externalApis/videoSummerizer";
 import { LessonsDal } from "../lesson/dal";
 import * as handlers from "./handlers";
-import { QuizzesDal } from "../quiz/dal";
-import { AttemptDal } from "../attempt/dal";
 
 /**
  * @swagger
@@ -14,22 +12,18 @@ import { AttemptDal } from "../attempt/dal";
 
 export type LessonRouterDependencies = {
   lessonsDal: LessonsDal;
-  quizzesDal: QuizzesDal;
-  attemptDal: AttemptDal;
   videoSummeraizer: VideoSummeraizer;
 };
 
 const createRouterController = ({
   lessonsDal,
-  quizzesDal,
-  attemptDal,
   videoSummeraizer,
 }: LessonRouterDependencies) => ({
   createLesson: handlers.createLesson(lessonsDal, videoSummeraizer),
   createMergedLesson: handlers.createMergedLesson(lessonsDal),
   getLessonById: handlers.getLessonById(lessonsDal),
   getLessons: handlers.getLessons(lessonsDal),
-  deleteLesson: handlers.deleteLesson(lessonsDal, quizzesDal, attemptDal),
+  deleteLesson: handlers.deleteLesson(lessonsDal),
   updateLesson: handlers.updateLesson(lessonsDal),
   getRelatedVideos: handlers.getRelatedVideosForLesson(lessonsDal),
 });

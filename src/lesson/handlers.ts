@@ -1,11 +1,7 @@
 import { StatusCodes } from "http-status-codes";
 import { isNil } from "ramda";
 import { VideoSummeraizer } from "../externalApis/videoSummerizer";
-import {
-  BadRequestError,
-  InternalServerError,
-  NotFoundError,
-} from "../services/server/exceptions";
+import { BadRequestError, InternalServerError, NotFoundError } from "../services/server/exceptions";
 import { LessonsDal } from "./dal";
 import {
   createLessonRequstValidator,
@@ -21,8 +17,6 @@ import { getVideoDetails } from "../externalApis/youtube/getVideoDetails";
 import { Lesson, VideoDetails } from "./model";
 import { getRelatedVideos } from "../externalApis/youtube/getRelatedVideos";
 import { Response } from "express";
-import { QuizzesDal } from "../quiz/dal";
-import { AttemptDal } from "../attempt/dal";
 
 export const getLessonById = (lessonsDal: LessonsDal) =>
   getLessonByIdRequstValidator(async (req, res) => {
@@ -83,29 +77,18 @@ export const getLessons =
     res.status(StatusCodes.OK).json(lessons);
   };
 
-export const deleteLesson = (
-  lessonsDal: LessonsDal,
-  quizzesDal: QuizzesDal,
-  attemptDal: AttemptDal
-) =>
+export const deleteLesson = (lessonsDal: LessonsDal) =>
   deleteLessonRequstValidator(async (req, res) => {
-    const { id: lessonId } = req.params;
+    const { id } = req.params;
 
-    const quizzes = await quizzesDal.find({ lessonId });
-    const quizIds = quizzes.map((q) => q._id);
-
-    await attemptDal.deleteMany({ quizId: { $in: quizIds } });
-
-    await quizzesDal.deleteMany({ lessonId });
-
-    const result = await lessonsDal.deleteById(lessonId);
+    const result = await lessonsDal.deleteById(id);
 
     if (isNil(result)) {
-      throw new NotFoundError(`Could not find lesson with id ${lessonId}`);
+      throw new NotFoundError(`Could not find lesson with id ${id}`);
     }
     res
       .status(StatusCodes.OK)
-      .send({ message: `Lesson with id ${lessonId} deleted successfully.` });
+      .send({ message: `Lesson with id ${id} deleted successfully.` });
   });
 
 export const updateLesson = (lessonsDal: LessonsDal) =>
