@@ -18,8 +18,9 @@ import { updateUserStreak } from "../user/handlers";
 export const GetAttemptsByQuizId = (AttemptDal: AttemptDal) =>
   getAttemptsByQuizIdRequestValidator(async (req, res) => {
     const { quizId } = req.query;
+    const { id: userId } = req.user;
 
-    const attempts = await AttemptDal.findByQuizId(quizId).lean();
+    const attempts = await AttemptDal.findByQuizAndUser(quizId, userId).lean();
 
     res.status(StatusCodes.OK).send(attempts);
   });
@@ -31,6 +32,7 @@ export const createAttempt = (
 ) =>
   createAttemptRequestValidator(async (req, res) => {
     const { quizId, questions } = req.body;
+    const { id: userId } = req.user;
 
     const quiz = await quizzesDal.findById(quizId).lean();
     if (isNil(quiz)) {
@@ -45,6 +47,7 @@ export const createAttempt = (
 
     const attempt: QuizAttempt = {
       quizId,
+      userId,
       results: questionsResults,
       score,
       expiryTime: new Date().getTime() + quiz.questions.length * 60 * 1000,
@@ -52,7 +55,6 @@ export const createAttempt = (
 
     const savedAttempt = await attemptDal.create(attempt);
 
-    const { id: userId } = req.user;
     await updateUserStreak(usersDal, userId);
 
     res.status(StatusCodes.CREATED).send(savedAttempt);
@@ -67,7 +69,7 @@ export const updateAttemptWithAnswers = (
 
     const attempt = await attemptDal.findById(attemptId);
     if (!attempt) {
-      throw new NotFoundError("Attempt not found")
+      throw new NotFoundError("Attempt not found");
     }
 
     const quiz = await quizzesDal.findById(attempt.quizId).lean();

@@ -10,4 +10,10 @@ export class LessonsDal extends BasicDal<Lesson> {
 
     return await this.model.create(data);
   };
+
+  findByUser = async (userId: string) => {
+    return await this.model.find({
+      $or: [{ owner: userId }, { sharedUsers: userId }],
+    });
+  };
 }

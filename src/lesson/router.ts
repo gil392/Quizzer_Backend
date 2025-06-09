@@ -188,7 +188,7 @@ export const createLessonRouter = (
    *       500:
    *         description: Server error
    */
-  router.get("/", controller.getLessons);
+  router.get("/", authMiddleware, controller.getLessons);
 
   /**
    * @swagger

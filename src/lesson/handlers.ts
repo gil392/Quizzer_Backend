@@ -17,6 +17,7 @@ import { getVideoDetails } from "../externalApis/youtube/getVideoDetails";
 import { Lesson, VideoDetails } from "./model";
 import { getRelatedVideos } from "../externalApis/youtube/getRelatedVideos";
 import { Response } from "express";
+import { validateAuthenticatedRequest } from "../authentication/validators";
 
 export const getLessonById = (lessonsDal: LessonsDal) =>
   getLessonByIdRequstValidator(async (req, res) => {
@@ -72,10 +73,11 @@ export const createMergedLesson = (lessonsDal: LessonsDal) =>
   });
 
 export const getLessons =
-  (lessonsDal: LessonsDal) => async (req: any, res: any) => {
-    const lessons = await lessonsDal.findAll();
+  (lessonsDal: LessonsDal) => validateAuthenticatedRequest(async (req, res) => {
+    const user = req.user;
+    const lessons = await lessonsDal.findByUser(user.id);
     res.status(StatusCodes.OK).json(lessons);
-  };
+  });
 
 export const deleteLesson = (lessonsDal: LessonsDal) =>
   deleteLessonRequstValidator(async (req, res) => {

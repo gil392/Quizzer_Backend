@@ -87,7 +87,7 @@ export const createAttemptRouter = (
    *       500:
    *         description: Server error
    */
-  router.get("/", controller.GetAttemptsByQuizId);
+  router.get("/", authMiddleware, controller.GetAttemptsByQuizId);
 
   /**
    * @swagger

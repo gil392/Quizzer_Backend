@@ -3,6 +3,7 @@ import { questionAttemptZodSchema } from "./validators";
 
 export type QuizAttempt = {
   quizId: string;
+  userId: string;
   results: QuestionAttempt[];
   score: number;
   expiryTime: number;
