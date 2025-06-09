@@ -2,6 +2,7 @@ import { RequestHandler, Router } from "express";
 import { VideoSummeraizer } from "../externalApis/videoSummerizer";
 import { LessonsDal } from "../lesson/dal";
 import * as handlers from "./handlers";
+import { UsersDal } from "../user/dal";
 
 /**
  * @swagger
@@ -13,18 +14,20 @@ import * as handlers from "./handlers";
 export type LessonRouterDependencies = {
   lessonsDal: LessonsDal;
   videoSummeraizer: VideoSummeraizer;
+  usersDal: UsersDal;
 };
 
 const createRouterController = ({
   lessonsDal,
   videoSummeraizer,
+  usersDal
 }: LessonRouterDependencies) => ({
   createLesson: handlers.createLesson(lessonsDal, videoSummeraizer),
   createMergedLesson: handlers.createMergedLesson(lessonsDal),
   getLessonById: handlers.getLessonById(lessonsDal),
-  getLessons: handlers.getLessons(lessonsDal),
+  getLessons: handlers.getLessons(lessonsDal, usersDal),
   deleteLesson: handlers.deleteLesson(lessonsDal),
-  updateLesson: handlers.updateLesson(lessonsDal),
+  updateLesson: handlers.updateLesson(lessonsDal, usersDal),
   getRelatedVideos: handlers.getRelatedVideosForLesson(lessonsDal),
 });
 
@@ -266,7 +269,7 @@ export const createLessonRouter = (
    *       500:
    *         description: Server error
    */
-  router.put("/:id", controller.updateLesson);
+  router.put("/:id", authMiddleware, controller.updateLesson);
 
   /**
    * @swagger

@@ -1,7 +1,11 @@
 import { StatusCodes } from "http-status-codes";
 import { isNil } from "ramda";
 import { VideoSummeraizer } from "../externalApis/videoSummerizer";
-import { BadRequestError, InternalServerError, NotFoundError } from "../services/server/exceptions";
+import {
+  BadRequestError,
+  InternalServerError,
+  NotFoundError,
+} from "../services/server/exceptions";
 import { LessonsDal } from "./dal";
 import {
   createLessonRequstValidator,
@@ -18,6 +22,7 @@ import { Lesson, VideoDetails } from "./model";
 import { getRelatedVideos } from "../externalApis/youtube/getRelatedVideos";
 import { Response } from "express";
 import { validateAuthenticatedRequest } from "../authentication/validators";
+import { UsersDal } from "../user/dal";
 
 export const getLessonById = (lessonsDal: LessonsDal) =>
   getLessonByIdRequstValidator(async (req, res) => {
@@ -72,11 +77,21 @@ export const createMergedLesson = (lessonsDal: LessonsDal) =>
     res.status(StatusCodes.CREATED).json(newLesson.toObject());
   });
 
-export const getLessons =
-  (lessonsDal: LessonsDal) => validateAuthenticatedRequest(async (req, res) => {
-    const user = req.user;
-    const lessons = await lessonsDal.findByUser(user.id);
-    res.status(StatusCodes.OK).json(lessons);
+export const getLessons = (lessonsDal: LessonsDal, usersDal: UsersDal) =>
+  validateAuthenticatedRequest(async (req, res) => {
+    const { id: userId } = req.user;
+    const lessons = await lessonsDal.findByUser(userId);
+    const user = await usersDal.findById(userId);
+    if (isNil(user)) {
+      throw new NotFoundError("User not found");
+    }
+    const lessonsWithFavorite = lessons.map((lesson) => ({
+      ...lesson.toObject(),
+      isFavorite: user
+        .toObject()
+        .favoriteLessons?.some((lessonId) => lessonId === lesson.id),
+    }));
+    res.status(StatusCodes.OK).json(lessonsWithFavorite);
   });
 
 export const deleteLesson = (lessonsDal: LessonsDal) =>
@@ -93,14 +108,14 @@ export const deleteLesson = (lessonsDal: LessonsDal) =>
       .send({ message: `Lesson with id ${id} deleted successfully.` });
   });
 
-export const updateLesson = (lessonsDal: LessonsDal) =>
+export const updateLesson = (lessonsDal: LessonsDal, usersDal: UsersDal) =>
   updateLessonRequstValidator(async (req, res) => {
     const { id } = req.params;
     const { title, isFavorite, summary } = req.body;
+    const { id: userId } = req.user;
 
     const updatedLesson = await lessonsDal.updateById(id, {
       title,
-      isFavorite,
       summary,
     });
 
@@ -108,7 +123,26 @@ export const updateLesson = (lessonsDal: LessonsDal) =>
       throw new NotFoundError(`Could not find lesson with id ${id}`);
     }
 
-    res.status(StatusCodes.OK).json(updatedLesson.toObject());
+    const user = await usersDal.findById(userId);
+
+    if (!user) {
+      throw new NotFoundError("User not found");
+    }
+
+    const update = isFavorite
+      ? { $addToSet: { favoriteLessons: id } }
+      : { $pull: { favoriteLessons: id } };
+
+    const updatedUserWithFavorite = await usersDal.updateByIdWithSet(
+      userId,
+      update
+    );
+
+    if (isNil(updatedUserWithFavorite)) {
+      throw new InternalServerError("Failed to update lesson"); //todo: add to swagger doc
+    }
+
+    res.status(StatusCodes.OK).json({...updatedLesson.toObject(), isFavorite});
   });
 
 export const getRelatedVideosForLesson = (lessonsDal: LessonsDal) =>
