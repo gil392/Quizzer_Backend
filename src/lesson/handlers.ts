@@ -23,6 +23,8 @@ import { getRelatedVideos } from "../externalApis/youtube/getRelatedVideos";
 import { Response } from "express";
 import { validateAuthenticatedRequest } from "../authentication/validators";
 import { UsersDal } from "../user/dal";
+import { AttemptDal } from "../attempt/dal";
+import { QuizAttempt } from "../attempt/types";
 
 export const getLessonById = (lessonsDal: LessonsDal) =>
   getLessonByIdRequstValidator(async (req, res) => {
@@ -77,7 +79,11 @@ export const createMergedLesson = (lessonsDal: LessonsDal) =>
     res.status(StatusCodes.CREATED).json(newLesson.toObject());
   });
 
-export const getLessons = (lessonsDal: LessonsDal, usersDal: UsersDal) =>
+export const getLessons = (
+  lessonsDal: LessonsDal,
+  usersDal: UsersDal,
+  attemptDal: AttemptDal
+) =>
   validateAuthenticatedRequest(async (req, res) => {
     const { id: userId } = req.user;
     const lessons = await lessonsDal.findByUser(userId);
@@ -85,12 +91,35 @@ export const getLessons = (lessonsDal: LessonsDal, usersDal: UsersDal) =>
     if (isNil(user)) {
       throw new NotFoundError("User not found");
     }
-    const lessonsWithFavorite = lessons.map((lesson) => ({
-      ...lesson.toObject(),
+
+    const lessonsWithSuccessRates = await Promise.all(
+      lessons.map(async (lesson) => {
+        const attempts = await attemptDal.findByLessonAndUser(
+          lesson.toObject()._id.toString(),
+          userId
+        );
+        const grades = attempts.map((a) => getGrade(a));
+
+        const averageGrade =
+          grades.length === 0
+            ? 0
+            : grades.reduce((sum, grade) => sum + grade, 0) / grades.length;
+        return {
+          ...lesson.toObject(),
+          successRate: Math.round(averageGrade),
+        };
+      })
+    );
+
+    const lessonsWithFavorite = lessonsWithSuccessRates.map((lesson) => ({
+      ...lesson,
       isFavorite: user
         .toObject()
-        .favoriteLessons?.some((lessonId) => lessonId === lesson.id),
+        .favoriteLessons?.some(
+          (lessonId) => lessonId === lesson._id.toString()
+        ),
     }));
+
     res.status(StatusCodes.OK).json(lessonsWithFavorite);
   });
 
@@ -142,7 +171,9 @@ export const updateLesson = (lessonsDal: LessonsDal, usersDal: UsersDal) =>
       throw new InternalServerError("Failed to update lesson"); //todo: add to swagger doc
     }
 
-    res.status(StatusCodes.OK).json({...updatedLesson.toObject(), isFavorite});
+    res
+      .status(StatusCodes.OK)
+      .json({ ...updatedLesson.toObject(), isFavorite });
   });
 
 export const getRelatedVideosForLesson = (lessonsDal: LessonsDal) =>
@@ -203,3 +234,11 @@ async function createLessonFunc(
   const lesson = await lessonsDal.create(item);
   res.status(StatusCodes.CREATED).json(lesson.toObject());
 }
+
+const getGrade = (attempt: QuizAttempt): number => {
+  const total = attempt.results.length;
+  if (total === 0) return 0;
+
+  const correct = attempt.results.filter((r) => r.isCorrect).length;
+  return (correct / total) * 100;
+};
