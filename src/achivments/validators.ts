@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { validateHandlerRequest } from "../services/server/validators";
+import { authenticatedRequestZodSchema } from "../authentication/validators";
 
 export const AchievementImageZodSchema = z.object({
   params: z.object({
@@ -9,4 +10,16 @@ export const AchievementImageZodSchema = z.object({
 
 export const validateAchievementImageRequest = validateHandlerRequest(
   AchievementImageZodSchema
+);
+
+export const AchievementProgressRequestSchema = authenticatedRequestZodSchema.and(
+  z.object({
+    query: z.object({
+      friendId: z.string().regex(/^[a-fA-F0-9]{24}$/, "Invalid friend ID").optional(),
+    }),
+  })
+);
+
+export const validateAchievementProgressRequest = validateHandlerRequest(
+  AchievementProgressRequestSchema
 );
