@@ -62,7 +62,9 @@ export class QuestionsGenerator {
   Each question must have exactly ${optionsCount} answers (1 correct answer and ${optionsCount - 1} incorrect answers,
   the answers field should include the correct answer and all of the incorrect answers as well), all the answers must be different.
   Use the summary below to create ${quizSettings.maxQuestionCount} questions.
-  If the summary is too short to generate ${quizSettings.maxQuestionCount} questions, generate as many as possible while maintaining the structure.
+  If the summary is too short to generate ${
+    quizSettings.maxQuestionCount
+  } questions, generate as many as possible while maintaining the structure.
   
   summary: ${summary}
   `,
@@ -82,8 +84,8 @@ export class QuestionsGenerator {
         answers: this.shuffleArray(question.answers),
       }));
   
-      if (quizSettings.isRandomOrder) {
-        return this.shuffleArray(transformedQuestions); 
+      if (quizSettings.questionsOrder === "random") {
+        return this.shuffleArray(transformedQuestions);
       }
   
       return transformedQuestions;

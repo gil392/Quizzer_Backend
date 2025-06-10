@@ -38,7 +38,7 @@ export const generatedQuestionsMock = [
 
 export const quizSettings: QuizSettings = {
   feedbackType: "onSubmit",
-  isRandomOrder: false,
+  questionsOrder: "chronological",
   maxQuestionCount: 10,
   solvingTimeMs: 1000 * 60 * 30,
 };
