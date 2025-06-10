@@ -1,7 +1,6 @@
 import { isNil } from "ramda";
 import * as path from "path";
 import * as fs from "fs/promises";
-import { validateAuthenticatedRequest } from "../authentication/validators";
 import { UnauthorizedError } from "../services/server/exceptions";
 import { UsersDal } from "../user/dal";
 import { AchivementsProccesor } from "./toolkit/proccesor";
@@ -11,19 +10,22 @@ import {
   injectCompletedAchievmentItsProgress,
   isRequirementNotCompleted,
 } from "./utils";
-import { validateAchievementImageRequest } from "./validators";
+import { validateAchievementImageRequest, validateAchievementProgressRequest } from "./validators";
 
 export const getAchievementProgress = (
   usersDal: UsersDal,
   achievmentsDal: AchievementsDal,
   achievmentsProccesor: AchivementsProccesor
 ) =>
-  validateAuthenticatedRequest(async (req, res) => {
+  validateAchievementProgressRequest(async (req, res) => {
     const { id: userId } = req.user;
+    const { friendId } = req.query;
 
-    const user = await usersDal.findUserWithoutAuthById(userId);
+    const targetUserId = friendId || userId;
+
+    const user = await usersDal.findUserWithoutAuthById(targetUserId);
     if (isNil(user)) {
-      throw new UnauthorizedError(`user ${userId} not found`);
+      throw new UnauthorizedError(`user ${targetUserId} not found`);
     }
 
     const achievements = await achievmentsProccesor.getUserAchievementsProgress(
@@ -35,7 +37,7 @@ export const getAchievementProgress = (
           !achievement.requirements.some(isRequirementNotCompleted)
       )
       .map(({ _id }) => _id.toString());
-    await usersDal.addCompletedAchievments(userId, newCompletedAchievments);
+    await usersDal.addCompletedAchievments(targetUserId, newCompletedAchievments);
 
     const userAchievements: Achievement[] = user.achievements
       ? await achievmentsDal.getAchievementsByIds(user.achievements).lean()
