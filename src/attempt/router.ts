@@ -23,7 +23,7 @@ const createRouterController = ({
   usersDal,
 }: AttemptRouterDependencies) => ({
   CreateAttempt: handlers.createAttempt(quizzesDal, attemptDal, usersDal),
-  GetAttemptsByQuizId: handlers.GetAttemptsByQuizId(attemptDal),
+  getAttemptsByQuizId: handlers.getAttemptsByQuizId(attemptDal),
   getQuestionResult: handlers.getQuestionResult(quizzesDal),
   addAnswerToAttempt: handlers.addAnswerToAttempt(attemptDal, quizzesDal),
   updateAttemptWithAnswers: handlers.updateAttemptWithAnswers(
@@ -87,7 +87,7 @@ export const createAttemptRouter = (
    *       500:
    *         description: Server error
    */
-  router.get("/", authMiddleware, controller.GetAttemptsByQuizId);
+  router.get("/", authMiddleware, controller.getAttemptsByQuizId);
 
   /**
    * @swagger

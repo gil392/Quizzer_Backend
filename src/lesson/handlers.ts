@@ -100,13 +100,17 @@ export const getLessons = (
         );
         const grades = attempts.map((a) => getGrade(a));
 
-        const averageGrade =
+        const successRate =
           grades.length === 0
-            ? 0
-            : grades.reduce((sum, grade) => sum + grade, 0) / grades.length;
+            ? undefined
+            : Math.round(
+                (grades.filter((passedGrade) => passedGrade >= 60).length /
+                  grades.length) *
+                  100
+              );
         return {
           ...lesson.toObject(),
-          successRate: Math.round(averageGrade),
+          successRate,
         };
       })
     );

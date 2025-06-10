@@ -15,7 +15,7 @@ import { QuestionAttempt, QuizAttempt } from "./types";
 import { UsersDal } from "../user/dal";
 import { updateUserStreak } from "../user/handlers";
 
-export const GetAttemptsByQuizId = (AttemptDal: AttemptDal) =>
+export const getAttemptsByQuizId = (AttemptDal: AttemptDal) =>
   getAttemptsByQuizIdRequestValidator(async (req, res) => {
     const { quizId } = req.query;
     const { id: userId } = req.user;

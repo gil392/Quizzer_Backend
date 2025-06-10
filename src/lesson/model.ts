@@ -67,6 +67,9 @@ export const lessonModel = model("lessons", lessonSchema);
  *         title:
  *           type: string
  *           description: The title of the lesson
+ *         success rate:
+ *           type: number
+ *           description: ID of the user who owns the lesson
  *         sharedUsers:
  *           type: array
  *           description: List of user IDs the lesson is shared with

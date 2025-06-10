@@ -23,7 +23,7 @@ const createRouterController = ({
   lessonsDal,
   videoSummeraizer,
   usersDal,
-  attemptDal
+  attemptDal,
 }: LessonRouterDependencies) => ({
   createLesson: handlers.createLesson(lessonsDal, videoSummeraizer),
   createMergedLesson: handlers.createMergedLesson(lessonsDal),
@@ -255,9 +255,13 @@ export const createLessonRouter = (
    *               summary:
    *                 type: string
    *                 description: The new summary of the lesson
+   *               isFavorite:
+   *                 type: boolean
+   *                 description: Whether the lesson should be added to or removed from the user's favorites
    *           example:
    *             title: Updated Lesson Title
    *             summary: Updated summary content.
+   *             isFavorite: true
    *     responses:
    *       200:
    *         description: Lesson successfully updated
@@ -265,12 +269,12 @@ export const createLessonRouter = (
    *           application/json:
    *             schema:
    *               $ref: '#/components/schemas/Lesson'
-   *       404:
-   *         description: Lesson not found
    *       400:
    *         description: Invalid ID format
+   *       404:
+   *         description: Lesson or user not found
    *       500:
-   *         description: Server error
+   *         description: Internal server error (e.g., failed to update lesson or user)
    */
   router.put("/:id", authMiddleware, controller.updateLesson);
 
