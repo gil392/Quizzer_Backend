@@ -11,7 +11,7 @@ const questionSchema = new Schema<Question>(
   {
     question: { type: String, required: true },
     correctAnswer: { type: String, required: true },
-    incorrectAnswers: { type: [String], required: true },
+    answers: { type: [String], required: true },
   },
   { versionKey: false, minimize: true }
 );
