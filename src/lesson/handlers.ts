@@ -184,7 +184,7 @@ export const updateLesson = (lessonsDal: LessonsDal, usersDal: UsersDal) =>
     );
 
     if (isNil(updatedUserWithFavorite)) {
-      throw new InternalServerError("Failed to update lesson"); //todo: add to swagger doc
+      throw new InternalServerError("Failed to update lesson");
     }
 
     res
