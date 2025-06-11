@@ -32,22 +32,22 @@ const notifyFriendsAboutAchievementRequestSchema = z
     .object({
         body: z.object({
             relatedEntityId: z.string(),
-            entityType: z.enum(["quiz", "summary", "user"]),
+            entityType: z.literal("user"),
             score: z.number().optional(),
         }),
     }).merge(authenticatedRequestZodSchema);
 export const notifyFriendsAboutAchievementValidator = validateHandlerRequest(notifyFriendsAboutAchievementRequestSchema);
 
-const shareQuizOrSummaryRequestSchema = z
+const shareLessonRequestSchema = z
     .object({
         body: z.object({
             toUserIds: z.array(z.string()),
-            entityType: z.enum(["quiz", "summary"]),
+            entityType: z.literal("lesson"),
             relatedEntityId: z.string(),
         }),
     }).merge(authenticatedRequestZodSchema);
 
-export const shareQuizOrSummaryValidator = validateHandlerRequest(shareQuizOrSummaryRequestSchema);
+export const shareLessonValidator = validateHandlerRequest(shareLessonRequestSchema);
 
 const friendRequestRequestSchema = z
     .object({

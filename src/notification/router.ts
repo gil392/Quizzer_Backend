@@ -24,7 +24,7 @@ const createNotificationController = ({
     markNotificationAsRead: handlers.markNotificationAsRead(notificationDal),
     deleteNotification: handlers.deleteNotification(notificationDal),
     notifyFriendsAboutAchievement: handlers.notifyFriendsAboutAchievement(notificationDal, usersDal),
-    shareQuizOrSummary: handlers.shareQuizOrSummary(notificationDal, usersDal),
+    shareLesson: handlers.shareLesson(notificationDal, usersDal),
     notifyFriendRequest: handlers.notifyFriendRequest(notificationDal, usersDal)
 });
 
@@ -112,10 +112,10 @@ export const createNotificationRouter = (
      *             properties:
      *               relatedEntityId:
      *                 type: string
-     *                 description: ID of the related quiz, summary, or user
+     *                 description: ID of the related lesson, or user
      *               entityType:
      *                 type: string
-     *                 enum: [quiz, summary, user]
+     *                 enum: [lesson, user]
      *                 description: Type of the related entity
      *     responses:
      *       201:
@@ -149,7 +149,7 @@ export const createNotificationRouter = (
      *                 description: Array of recipient user IDs
      *               entityType:
      *                 type: string
-     *                 enum: [quiz, summary]
+     *                 enum: [lesson]
      *                 description: Type of the entity being shared
      *               relatedEntityId:
      *                 type: string
@@ -158,7 +158,7 @@ export const createNotificationRouter = (
      *       201:
      *         description: Notifications sent
      */
-    router.post("/share", authMiddleware, controller.shareQuizOrSummary);
+    router.post("/share", authMiddleware, controller.shareLesson);
 
     /**
      * @swagger

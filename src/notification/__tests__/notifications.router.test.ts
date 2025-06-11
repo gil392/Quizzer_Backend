@@ -75,9 +75,9 @@ describe("notifications routes", () => {
                 toUserId: "user123",
                 fromUserId: "user456",
                 type: "share",
-                relatedEntityId: "quiz789",
-                entityType: "quiz",
-                message: "A quiz was shared with you!",
+                relatedEntityId: "lesson789",
+                entityType: "lesson",
+                message: "A lesson was shared with you!",
                 read: false,
                 createdAt: new Date(),
             });
@@ -90,9 +90,9 @@ describe("notifications routes", () => {
                         toUserId: "user123",
                         fromUserId: "user456",
                         type: "share",
-                        relatedEntityId: "quiz789",
-                        entityType: "quiz",
-                        message: "A quiz was shared with you!",
+                        relatedEntityId: "lesson789",
+                        entityType: "lesson",
+                        message: "A lesson was shared with you!",
                         read: false,
                     }),
                 ])
@@ -126,9 +126,9 @@ describe("notifications routes", () => {
                 toUserId: "user123",
                 fromUserId: "user456",
                 type: "share",
-                relatedEntityId: "quiz789",
-                entityType: "quiz",
-                message: "A quiz was shared with you!",
+                relatedEntityId: "lesson789",
+                entityType: "lesson",
+                message: "A lesson was shared with you!",
                 read: false,
                 createdAt: new Date(),
             });
@@ -149,8 +149,8 @@ describe("notifications routes", () => {
                 .post("/notifications/share")
                 .send({
                     toUserIds: ["user456", "user789"],
-                    entityType: "quiz",
-                    relatedEntityId: "quiz123"
+                    entityType: "lesson",
+                    relatedEntityId: "lesson123"
                 });
             expect(response.status).toBe(StatusCodes.CREATED);
             expect(response.body).toEqual({ message: "Notifications sent" });
@@ -158,18 +158,18 @@ describe("notifications routes", () => {
             const notifs = await notificationModel.find({ type: "share" });
             expect(notifs.length).toBe(2);
             expect(notifs.map(n => n.toUserId)).toEqual(expect.arrayContaining(["user456", "user789"]));
-            expect(notifs[0].entityType).toBe("quiz");
-            expect(notifs[0].relatedEntityId).toBe("quiz123");
+            expect(notifs[0].entityType).toBe("lesson");
+            expect(notifs[0].relatedEntityId).toBe("lesson123");
         });
     });
 
-    describe("POST /notifications/notify-friends-achievement", () => {
+    describe("POST /notifications/share-achievement", () => {
         test("should notify all friends about an achievement", async () => {
             const response = await request(app)
-                .post("/notifications/notify-friends-achievement")
+                .post("/notifications/share-achievement")
                 .send({
-                    relatedEntityId: "quiz123",
-                    entityType: "quiz",
+                    relatedEntityId: "lesson123",
+                    entityType: "user",
                     score: 95
                 });
             expect(response.status).toBe(StatusCodes.CREATED);
@@ -178,9 +178,27 @@ describe("notifications routes", () => {
             const notifs = await notificationModel.find({ type: "achievement" });
             expect(notifs.length).toBe(2);
             expect(notifs.map(n => n.toUserId)).toEqual(expect.arrayContaining(["user456", "user789"]));
-            expect(notifs[0].entityType).toBe("quiz");
-            expect(notifs[0].relatedEntityId).toBe("quiz123");
-            expect(notifs[0].message).toContain("Alice completed a quiz and scored 95%");
+            expect(notifs[0].entityType).toBe("user");
+            expect(notifs[0].relatedEntityId).toBe("lesson123");
+            expect(notifs[0].message).toContain("Alice unlocked a new achievement");
+        });
+    });
+
+    describe("POST /notifications/friend-request", () => {
+        test("should notify a user about a friend request", async () => {
+            const response = await request(app)
+                .post("/notifications/friend-request")
+                .send({
+                    toUserId: "user456"
+                });
+            expect(response.status).toBe(StatusCodes.CREATED);
+            expect(response.body).toEqual({ message: "Friend request notification sent" });
+
+            const notif = await notificationModel.findOne({ type: "friendRequest", toUserId: "user456" });
+            expect(notif).toBeTruthy();
+            expect(notif?.entityType).toBe("user");
+            expect(notif?.fromUserId).toBe("user123");
+            expect(notif?.message).toContain("Alice sent you a friend request");
         });
     });
 });

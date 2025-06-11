@@ -1,5 +1,5 @@
 export type NotificationType = "share" | "achievement" | "friendRequest";
-export type NotificationEntityType = "quiz" | "summary" | "user";
+export type NotificationEntityType = "lesson" | "user";
 
 export interface Notification extends Document {
     toUserId: string;

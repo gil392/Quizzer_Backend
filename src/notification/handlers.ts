@@ -6,7 +6,7 @@ import {
     markAsReadValidator,
     deleteNotificationValidator,
     notifyFriendsAboutAchievementValidator,
-    shareQuizOrSummaryValidator,
+    shareLessonValidator,
     friendRequestValidator
 } from "./validators";
 import { isNil } from "ramda";
@@ -56,11 +56,11 @@ export const notifyFriendsAboutAchievement = (
         res.status(StatusCodes.CREATED).send({ message: "Friends notified" });
     });
 
-export const shareQuizOrSummary = (
+export const shareLesson = (
     notificationsDal: NotificationsDal,
     usersDal: UsersDal,
 ) =>
-    shareQuizOrSummaryValidator(async (req, res) => {
+    shareLessonValidator(async (req, res) => {
         const { id: fromUserId } = req.user;
         const { toUserIds, entityType, relatedEntityId } = req.body;
 

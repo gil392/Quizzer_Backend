@@ -6,7 +6,7 @@ const notificationSchema = new Schema<Notification>({
     fromUserId: { type: String, required: true },
     type: { type: String, enum: ["share", "achievement", "friendRequest"], required: true },
     relatedEntityId: { type: String, required: true },
-    entityType: { type: String, enum: ["quiz", "summary", "user"], required: true },
+    entityType: { type: String, enum: ["lesson", "user"], required: true },
     message: { type: String, required: true },
     read: { type: Boolean, default: false },
     createdAt: { type: Date, default: Date.now },
@@ -37,10 +37,10 @@ export const notificationModel = model("notifications", notificationSchema);
  *           description: Type of notification
  *         relatedEntityId:
  *           type: string
- *           description: ID of the related quiz, summary, or user
+ *           description: ID of the related lesson, or user
  *         entityType:
  *           type: string
- *           enum: [quiz, summary, user]
+ *           enum: [lesson, user]
  *           description: Type of the related entity
  *         message:
  *           type: string
