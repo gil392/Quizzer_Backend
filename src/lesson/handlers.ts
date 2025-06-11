@@ -21,6 +21,9 @@ import { getVideoDetails } from "../externalApis/youtube/getVideoDetails";
 import { Lesson, VideoDetails } from "./model";
 import { getRelatedVideos } from "../externalApis/youtube/getRelatedVideos";
 import { Response } from "express";
+import { validateAuthenticatedRequest } from "../authentication/validators";
+import { UsersDal } from "../user/dal";
+import { QuizAttempt } from "../attempt/types";
 import { QuizzesDal } from "../quiz/dal";
 import { AttemptDal } from "../attempt/dal";
 
@@ -77,11 +80,53 @@ export const createMergedLesson = (lessonsDal: LessonsDal) =>
     res.status(StatusCodes.CREATED).json(newLesson.toObject());
   });
 
-export const getLessons =
-  (lessonsDal: LessonsDal) => async (req: any, res: any) => {
-    const lessons = await lessonsDal.findAll();
-    res.status(StatusCodes.OK).json(lessons);
-  };
+export const getLessons = (
+  lessonsDal: LessonsDal,
+  usersDal: UsersDal,
+  attemptDal: AttemptDal
+) =>
+  validateAuthenticatedRequest(async (req, res) => {
+    const { id: userId } = req.user;
+    const lessons = await lessonsDal.findByUser(userId);
+    const user = await usersDal.findById(userId);
+    if (isNil(user)) {
+      throw new NotFoundError("User not found");
+    }
+
+    const lessonsWithSuccessRates = await Promise.all(
+      lessons.map(async (lesson) => {
+        const attempts = await attemptDal.findByLessonAndUser(
+          lesson.toObject()._id.toString(),
+          userId
+        );
+        const grades = attempts.map((a) => getGrade(a));
+
+        const successRate =
+          grades.length === 0
+            ? undefined
+            : Math.round(
+                (grades.filter((passedGrade) => passedGrade >= 60).length /
+                  grades.length) *
+                  100
+              );
+        return {
+          ...lesson.toObject(),
+          successRate,
+        };
+      })
+    );
+
+    const lessonsWithFavorite = lessonsWithSuccessRates.map((lesson) => ({
+      ...lesson,
+      isFavorite: user
+        .toObject()
+        .favoriteLessons?.some(
+          (lessonId) => lessonId === lesson._id.toString()
+        ),
+    }));
+
+    res.status(StatusCodes.OK).json(lessonsWithFavorite);
+  });
 
 export const deleteLesson = (
   lessonsDal: LessonsDal,
@@ -108,14 +153,14 @@ export const deleteLesson = (
       .send({ message: `Lesson with id ${lessonId} deleted successfully.` });
   });
 
-export const updateLesson = (lessonsDal: LessonsDal) =>
+export const updateLesson = (lessonsDal: LessonsDal, usersDal: UsersDal) =>
   updateLessonRequstValidator(async (req, res) => {
     const { id } = req.params;
     const { title, isFavorite, summary } = req.body;
+    const { id: userId } = req.user;
 
     const updatedLesson = await lessonsDal.updateById(id, {
       title,
-      isFavorite,
       summary,
     });
 
@@ -123,7 +168,28 @@ export const updateLesson = (lessonsDal: LessonsDal) =>
       throw new NotFoundError(`Could not find lesson with id ${id}`);
     }
 
-    res.status(StatusCodes.OK).json(updatedLesson.toObject());
+    const user = await usersDal.findById(userId);
+
+    if (!user) {
+      throw new NotFoundError("User not found");
+    }
+
+    const update = isFavorite
+      ? { $addToSet: { favoriteLessons: id } }
+      : { $pull: { favoriteLessons: id } };
+
+    const updatedUserWithFavorite = await usersDal.updateByIdWithSet(
+      userId,
+      update
+    );
+
+    if (isNil(updatedUserWithFavorite)) {
+      throw new InternalServerError("Failed to update lesson");
+    }
+
+    res
+      .status(StatusCodes.OK)
+      .json({ ...updatedLesson.toObject(), isFavorite });
   });
 
 export const getRelatedVideosForLesson = (lessonsDal: LessonsDal) =>
@@ -184,3 +250,11 @@ async function createLessonFunc(
   const lesson = await lessonsDal.create(item);
   res.status(StatusCodes.CREATED).json(lesson.toObject());
 }
+
+const getGrade = (attempt: QuizAttempt): number => {
+  const total = attempt.results.length;
+  if (total === 0) return 0;
+
+  const correct = attempt.results.filter((r) => r.isCorrect).length;
+  return (correct / total) * 100;
+};

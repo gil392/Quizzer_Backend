@@ -72,7 +72,7 @@ const updateLessonRequstZodSchema = z.object({
     videoUrl: z.string().url().optional(),
     summary: z.string().optional(),
   }),
-});
+}).merge(authenticatedRequestZodSchema);
 export const updateLessonRequstValidator = validateHandlerRequest(
   updateLessonRequstZodSchema
 );
