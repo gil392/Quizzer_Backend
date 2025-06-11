@@ -8,10 +8,13 @@ import { Settings } from "./settingsModel";
 import {
   validateAnswerFriendRequestRequest,
   validateCreateFriendRequestRequest,
+  validateDeleteFriendRequest,
   validateEditUserRequest,
+  validateFetchFriendRequest,
   validateSearchUsersRequest,
 } from "./validators";
 import { differenceInCalendarDays } from "date-fns";
+import { AuthenticatedRequest } from "../authentication/types";
 
 export const getLoggedUser = (usersDal: UsersDal) =>
   validateAuthenticatedRequest(async (request, response) => {
@@ -144,3 +147,36 @@ export const updateUserStreak = async (usersDal: UsersDal, userId: string) => {
       .lean();
   }
 };
+
+export const deleteFriend = (usersDal: UsersDal) =>
+  validateDeleteFriendRequest(async (req, res) => {
+    const { userId } = req.params;
+    const { id: loggedInUserId } = req.user;
+
+    const result = await usersDal.removeFriend(loggedInUserId, userId);
+
+    if (result.modifiedCount === 0) {
+      res
+        .status(404)
+        .json({ message: "Friend not found or not in your friends list" });
+      return;
+    }
+
+    res
+      .status(200)
+      .json({ message: `Friend with ID ${userId} deleted successfully` });
+  });
+
+export const fetchFriendById = (usersDal: UsersDal) =>
+  validateFetchFriendRequest(async (req, res) => {
+    const { userId } = req.params;
+
+    const friend = await usersDal.findById(userId).lean();
+
+    if (!friend) {
+      res.status(404).json({ message: "Friend not found" });
+      return;
+    }
+
+    res.status(200).json(friend);
+  });
