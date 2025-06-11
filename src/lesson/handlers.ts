@@ -6,11 +6,6 @@ import {
   InternalServerError,
   NotFoundError,
 } from "../services/server/exceptions";
-import {
-  BadRequestError,
-  InternalServerError,
-  NotFoundError,
-} from "../services/server/exceptions";
 import { LessonsDal } from "./dal";
 import {
   createLessonRequstValidator,
@@ -28,7 +23,6 @@ import { getRelatedVideos } from "../externalApis/youtube/getRelatedVideos";
 import { Response } from "express";
 import { validateAuthenticatedRequest } from "../authentication/validators";
 import { UsersDal } from "../user/dal";
-import { AttemptDal } from "../attempt/dal";
 import { QuizAttempt } from "../attempt/types";
 import { QuizzesDal } from "../quiz/dal";
 import { AttemptDal } from "../attempt/dal";

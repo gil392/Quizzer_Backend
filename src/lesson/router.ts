@@ -5,7 +5,6 @@ import * as handlers from "./handlers";
 import { QuizzesDal } from "../quiz/dal";
 import { AttemptDal } from "../attempt/dal";
 import { UsersDal } from "../user/dal";
-import { AttemptDal } from "../attempt/dal";
 
 /**
  * @swagger
@@ -20,13 +19,11 @@ export type LessonRouterDependencies = {
   attemptDal: AttemptDal;
   videoSummeraizer: VideoSummeraizer;
   usersDal: UsersDal;
-  attemptDal: AttemptDal;
 };
 
 const createRouterController = ({
   lessonsDal,
   quizzesDal,
-  attemptDal,
   videoSummeraizer,
   usersDal,
   attemptDal,
