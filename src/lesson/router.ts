@@ -2,6 +2,8 @@ import { RequestHandler, Router } from "express";
 import { VideoSummeraizer } from "../externalApis/videoSummerizer";
 import { LessonsDal } from "../lesson/dal";
 import * as handlers from "./handlers";
+import { QuizzesDal } from "../quiz/dal";
+import { AttemptDal } from "../attempt/dal";
 import { UsersDal } from "../user/dal";
 import { AttemptDal } from "../attempt/dal";
 
@@ -14,6 +16,8 @@ import { AttemptDal } from "../attempt/dal";
 
 export type LessonRouterDependencies = {
   lessonsDal: LessonsDal;
+  quizzesDal: QuizzesDal;
+  attemptDal: AttemptDal;
   videoSummeraizer: VideoSummeraizer;
   usersDal: UsersDal;
   attemptDal: AttemptDal;
@@ -21,6 +25,8 @@ export type LessonRouterDependencies = {
 
 const createRouterController = ({
   lessonsDal,
+  quizzesDal,
+  attemptDal,
   videoSummeraizer,
   usersDal,
   attemptDal,
@@ -29,7 +35,7 @@ const createRouterController = ({
   createMergedLesson: handlers.createMergedLesson(lessonsDal),
   getLessonById: handlers.getLessonById(lessonsDal),
   getLessons: handlers.getLessons(lessonsDal, usersDal, attemptDal),
-  deleteLesson: handlers.deleteLesson(lessonsDal),
+  deleteLesson: handlers.deleteLesson(lessonsDal, quizzesDal, attemptDal),
   updateLesson: handlers.updateLesson(lessonsDal, usersDal),
   getRelatedVideos: handlers.getRelatedVideosForLesson(lessonsDal),
 });
