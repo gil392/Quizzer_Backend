@@ -1,6 +1,6 @@
 import { google } from 'googleapis';
 import { authenticate } from './authentication';
-import { YoutubeTranscript, TranscriptConfig } from 'youtube-transcript';
+import { YoutubeTranscript, TranscriptConfig } from './youtubeTranscript';
 
 interface CaptionDetails {
     language: string;
@@ -46,7 +46,7 @@ export const fetchVideoTranscript = async (videoId: string): Promise<string | nu
     const captions = await listCaptions(videoId);
     const englishCaption = captions?.find((caption) => caption.language === 'en');
     if (!englishCaption) {
-        console.log('No English captions available for this video.');
+        console.warn('No English captions available for this video.');
         return null;
     }
 
@@ -66,7 +66,7 @@ export const fetchVideoTranscript = async (videoId: string): Promise<string | nu
     }
 
     if (!transcriptList || transcriptList.length === 0) {
-        console.log('Failed to fetch transcript after maximum retries.');
+        console.warn('Failed to fetch transcript after maximum retries.');
         return null;
     }
 
