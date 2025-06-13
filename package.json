@@ -8,6 +8,10 @@
     "start:dev": "nodemon src/index.ts",
     "build": "tsc",
     "build:watch": "tsc -w",
+    "build:production": "docker rmi -f quizzer_backend && docker build . -t quizzer_backend",
+    "shutdown:production": "docker rm -f backend",
+    "start:production": "docker run --network quizzer_network --env-file ./.env.production --name backend -d quizzer_backend",
+    "restart:production": "npm run shutdown:production && npm run build:production && npm run start:production",
     "test": "jest --detectOpenHandles --forceExit --runInBand"
   },
   "repository": {
