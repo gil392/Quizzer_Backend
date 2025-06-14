@@ -1,19 +1,19 @@
-import { z } from 'zod';
-import { questionAttemptZodSchema } from './validators';
+import { z } from "zod";
+import { questionAttemptZodSchema } from "./validators";
 
 export type QuizAttempt = {
-    quizId: string;
-    results: QuestionAttempt[];
-    score: number;
+  quizId: string;
+  userId: string;
+  results: QuestionAttempt[];
+  score: number;
+  expiryTime: number;
 };
 
 export type QuestionAttempt = {
-    questionId: string;
-    selectedAnswer: string;
-    correctAnswer: string;
-    isCorrect: boolean;
+  questionId: string;
+  selectedAnswer: string;
+  correctAnswer: string;
+  isCorrect: boolean;
 };
 
-export type QuestionAnswerAttempt = z.infer<
-    typeof questionAttemptZodSchema
->;
+export type QuestionAnswerAttempt = z.infer<typeof questionAttemptZodSchema>;

@@ -6,3 +6,4 @@ dist/
 youtube-token.json
 youtube-credentials.json
 /images/profiles
+.env.production

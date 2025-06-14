@@ -5,6 +5,7 @@ import { QuizzesDal } from "./dal";
 import * as handlers from "./handlers";
 import { QuizzesRatingDal } from "../quizRating/dal";
 import { rateQuiz } from "../quizRating/handlers";
+import { AttemptDal } from "../attempt/dal";
 
 /**
  * @swagger
@@ -17,6 +18,7 @@ export type QuizRouterDependencies = {
   quizzesDal: QuizzesDal;
   lessonsDal: LessonsDal;
   quizzesRatingDal: QuizzesRatingDal;
+  attemptDal: AttemptDal;
   questionsGenerator: QuestionsGenerator;
 };
 
@@ -24,6 +26,7 @@ const createRouterController = ({
   quizzesDal,
   lessonsDal,
   questionsGenerator,
+  attemptDal,
   quizzesRatingDal,
 }: QuizRouterDependencies) => ({
   getQuizById: handlers.getQuizById(quizzesDal),
@@ -33,7 +36,7 @@ const createRouterController = ({
     questionsGenerator
   ),
   getQuizzes: handlers.getQuizzes(quizzesDal),
-  deleteQuiz: handlers.deleteQuiz(quizzesDal, quizzesRatingDal),
+  deleteQuiz: handlers.deleteQuiz(quizzesDal, attemptDal, quizzesRatingDal),
   updateQuiz: handlers.updateQuiz(quizzesDal),
   rateQuiz: rateQuiz(quizzesDal, quizzesRatingDal),
 });
@@ -99,7 +102,7 @@ export const createQuizRouter = (
    *             lessonId: "lesson123"
    *             settings:
    *               feedbackType: auto
-   *               isRandomOrder: true
+   *               questionsOrder: chronological
    *               maxQuestionCount: 5
    *               solvingTimeMs: 600000
    *     responses:
@@ -140,7 +143,7 @@ export const createQuizRouter = (
    *             lessonId: "lesson123"
    *             settings:
    *               feedbackType: auto
-   *               isRandomOrder: true
+   *               questionsOrder: chronological
    *               maxQuestionCount: 5
    *               solvingTimeMs: 600000
    *     responses:
