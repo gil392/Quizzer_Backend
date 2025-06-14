@@ -11,6 +11,7 @@ import {
   isRequirementNotCompleted,
 } from "./utils";
 import { validateAchievementImageRequest, validateAchievementProgressRequest } from "./validators";
+import { NotFoundError } from "../services/server/exceptions";
 
 export const getAchievementProgress = (
   usersDal: UsersDal,
@@ -25,7 +26,7 @@ export const getAchievementProgress = (
 
     const user = await usersDal.findUserWithoutAuthById(targetUserId);
     if (isNil(user)) {
-      throw new UnauthorizedError(`user ${targetUserId} not found`);
+      throw new UnauthorizedError(`User ${targetUserId} unauthorized!`);
     }
 
     const achievements = await achievmentsProccesor.getUserAchievementsProgress(
@@ -40,7 +41,7 @@ export const getAchievementProgress = (
     await usersDal.addCompletedAchievments(targetUserId, newCompletedAchievments);
 
     const userAchievements: Achievement[] = user.achievements
-      ? await achievmentsDal.getAchievementsByIds(user.achievements).lean()
+      ? await achievmentsDal.findByIds(user.achievements).lean()
       : [];
 
     const achievmentsWithProgress = achievements.concat(
@@ -56,29 +57,23 @@ export const getAchievementImage = (
   validateAchievementImageRequest(async (req, res) => {
     const { id } = req.params;
 
-    try {
-      const achievement = await achievementsDal.getAchievementsByIds([id]);
+    const achievement = await achievementsDal.findById(id);
 
-      if (!achievement || achievement.length === 0) {
-        res.status(404).json({ message: "Achievement not found" });
-        return; 
-      }
-
-      const iconPath = achievement[0].reward.icon;
-
-      const baseDir = path.resolve(__dirname, "../../../Backend_Quizzer/src"); 
-      const fullPath = path.join(baseDir, iconPath);
-      
-      try {
-        await fs.access(fullPath); 
-      } catch {
-        res.status(404).json({ message: "Achievement image not found" });
-        return; 
-      }
-
-      res.sendFile(fullPath);
-    } catch (error) {
-      console.error("Error fetching achievement image:", error);
-      res.status(500).json({ message: "Server error" });
+    if (!achievement) {
+      throw new NotFoundError(`Achievement with id: ${id} not found`);
     }
+
+    const iconPath = achievement.reward.icon;
+
+    const baseDir = path.resolve(__dirname, "../../../Backend_Quizzer/src"); 
+    const fullPath = path.join(baseDir, iconPath);
+    
+    try {
+      await fs.access(fullPath); 
+    } catch {
+      res.status(404).json({ message: "Achievement image not found" });
+      return; 
+    }
+
+    res.sendFile(fullPath);
   });

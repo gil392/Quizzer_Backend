@@ -14,7 +14,6 @@ import {
   validateSearchUsersRequest,
 } from "./validators";
 import { differenceInCalendarDays } from "date-fns";
-import { AuthenticatedRequest } from "../authentication/types";
 
 export const getLoggedUser = (usersDal: UsersDal) =>
   validateAuthenticatedRequest(async (request, response) => {
@@ -156,15 +155,12 @@ export const deleteFriend = (usersDal: UsersDal) =>
     const result = await usersDal.removeFriend(loggedInUserId, userId);
 
     if (result.modifiedCount === 0) {
-      res
-        .status(404)
-        .json({ message: "Friend not found or not in your friends list" });
-      return;
+      throw new NotFoundError(
+        "Friend not found or not in your friends list"
+      );
     }
 
-    res
-      .status(200)
-      .json({ message: `Friend with ID ${userId} deleted successfully` });
+    res.json({ message: `Friend with ID ${userId} deleted successfully` });
   });
 
 export const fetchFriendById = (usersDal: UsersDal) =>
@@ -174,8 +170,7 @@ export const fetchFriendById = (usersDal: UsersDal) =>
     const friend = await usersDal.findById(userId).lean();
 
     if (!friend) {
-      res.status(404).json({ message: "Friend not found" });
-      return;
+      throw new NotFoundError("Friend not found");
     }
 
     res.status(200).json(friend);
