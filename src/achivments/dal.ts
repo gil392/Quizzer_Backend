@@ -10,7 +10,4 @@ export class AchievementsDal extends BasicDal<Achievement> {
         { achievementLock: { $in: completedAchievements } },
       ],
     });
-
-  getAchievementsByIds = (achievements: string[]) =>
-    this.model.find({ _id: { $in: achievements } });
 }
