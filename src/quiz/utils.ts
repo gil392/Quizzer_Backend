@@ -9,11 +9,11 @@ export const createQuizResponseQuestion = ({
     _id,
     question,
     correctAnswer,
-    incorrectAnswers
+    answers
 }: Question): QuizResponseQuestion => ({
     _id: _id?.toString() ?? '',
     text: question,
-    answers: incorrectAnswers.concat(correctAnswer),
+    answers: answers
 });
 
 export const createQuizResponse = (quiz: Quiz): QuizResponse => ({

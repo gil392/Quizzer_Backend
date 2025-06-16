@@ -1,13 +1,23 @@
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import express, { Express } from "express";
+import express, { Express, Router } from "express";
 import * as http from "http";
 import swaggerUI from "swagger-ui-express";
+import {
+  AchievementRouterDependencies,
+  createAchievementsRouter,
+} from "../../achivments/router";
+import {
+  AttemptRouterDependencies,
+  createAttemptRouter,
+} from "../../attempt/router";
 import { configureGooglePassport, injectUserToRequest } from "../../authentication/middlewares";
 import {
   AuthRouterDependencies,
-  createAuthRouter,
+  createAuthRouter
 } from "../../authentication/router";
+import { createFileRouterConfig } from "../../files/config";
+import { createFilesRouter } from "../../files/router";
 import {
   createLessonRouter,
   LessonRouterDependencies,
@@ -18,10 +28,6 @@ import { Service } from "../service";
 import { ServerConfig } from "./config";
 import { createSwaggerSpecs } from "./swagger";
 import { requestErrorHandler } from "./utils";
-import {
-  AttemptRouterDependencies,
-  createAttemptRouter,
-} from "../../attempt/router";
 import session from "express-session";
 import passport from "passport";
 
@@ -35,7 +41,8 @@ export const createBasicApp = (corsOrigin?: string): Express => {
   return app;
 };
 
-export type ServerDependencies = AttemptRouterDependencies &
+export type ServerDependencies = AchievementRouterDependencies &
+  AttemptRouterDependencies &
   QuizRouterDependencies &
   LessonRouterDependencies &
   AuthRouterDependencies &
@@ -81,13 +88,26 @@ export class Server extends Service {
     this.app.use(passport.session());
 
     this.app.use("/auth", createAuthRouter(authConfig, this.dependencies));
-    this.app.use("/lesson", createLessonRouter(this.dependencies));
+    this.app.use(
+      "/lesson",
+      createLessonRouter(authMiddleware, this.dependencies)
+    );
     this.app.use("/quiz", createQuizRouter(authMiddleware, this.dependencies));
     this.app.use(
       "/attempt",
       createAttemptRouter(authMiddleware, this.dependencies)
     );
     this.app.use("/user", createUsersRouter(authMiddleware, this.dependencies));
+    this.app.use(
+      "/achievement",
+      createAchievementsRouter(authMiddleware, this.dependencies)
+    );
+
+    const apiRouter = Router();
+    const filesRouterConfig = createFileRouterConfig(this.config);
+    apiRouter.use("/files", createFilesRouter(filesRouterConfig));
+
+    this.app.use("/api", apiRouter);
   };
 
   private useErrorHandler = () => {

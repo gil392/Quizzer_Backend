@@ -23,6 +23,8 @@ const buildRouteHandlers = (dependencies: UsersRouterDependencies) => ({
   ),
   editUser: handlers.editUser(dependencies.usersDal),
   getMessages: handlers.getMessages,
+  deleteFriend: handlers.deleteFriend(dependencies.usersDal),
+  fetchFriendById: handlers.fetchFriendById(dependencies.usersDal),
 });
 
 export const createUsersRouter = (
@@ -48,7 +50,7 @@ export const createUsersRouter = (
    *         content:
    *           application/json:
    *             schema:
-   *               $ref: '#/components/schemas/PublicUser'
+   *               $ref: '#/components/schemas/User'
    *       401:
    *         description: User is unauthorized
    *       404:
@@ -60,7 +62,7 @@ export const createUsersRouter = (
 
   /**
    * @swagger
-   * /user/me:
+   * /user/messages:
    *   get:
    *     summary: get logged user messages since timestamp
    *     description: get logged user messages since timestamp
@@ -293,6 +295,64 @@ export const createUsersRouter = (
    *         description: Server error
    */
   router.put("/", authMiddleware, handlers.editUser);
+
+  /**
+   *@swagger
+   * /user/friend/{userId}:
+   *   delete:
+   *     summary: Delete a friend
+   *     description: Removes a friend from the authenticated user's friends list.
+   *     tags:
+   *       - User
+   *     security:
+   *       - bearerAuth: []
+   *     parameters:
+   *       - in: path
+   *         name: userId
+   *         required: true
+   *         schema:
+   *           type: string
+   *           description: ID of the friend to delete
+   *     responses:
+   *       200:
+   *         description: Friend deleted successfully
+   *       404:
+   *         description: Friend not found
+   *       401:
+   *         description: Unauthorized - missing or invalid token
+   *       500:
+   *         description: Server error
+   */
+  router.delete("/friend/:userId", authMiddleware, handlers.deleteFriend);
+
+  /**
+   * @swagger
+   * /user/friend/{userId}:
+   *   get:
+   *     summary: Fetch a friend by ID
+   *     description: Retrieves details of a friend by their ID.
+   *     tags:
+   *       - User
+   *     security:
+   *       - bearerAuth: []
+   *     parameters:
+   *       - in: path
+   *         name: userId
+   *         required: true
+   *         schema:
+   *           type: string
+   *           description: ID of the friend to fetch
+   *     responses:
+   *       200:
+   *         description: Friend details retrieved successfully
+   *       404:
+   *         description: Friend not found
+   *       401:
+   *         description: Unauthorized - missing or invalid token
+   *       500:
+   *         description: Server error
+   */
+  router.get("/friend/:userId", authMiddleware, handlers.fetchFriendById);
 
   return router;
 };

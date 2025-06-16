@@ -8,7 +8,9 @@ import { Settings } from "./settingsModel";
 import {
   validateAnswerFriendRequestRequest,
   validateCreateFriendRequestRequest,
+  validateDeleteFriendRequest,
   validateEditUserRequest,
+  validateFetchFriendRequest,
   validateSearchUsersRequest,
 } from "./validators";
 import { differenceInCalendarDays } from "date-fns";
@@ -16,7 +18,7 @@ import { differenceInCalendarDays } from "date-fns";
 export const getLoggedUser = (usersDal: UsersDal) =>
   validateAuthenticatedRequest(async (request, response) => {
     const { id: userId } = request.user;
-    const user = await usersDal.findPublicUserById(userId).lean();
+    const user = await usersDal.findUserWithoutAuthById(userId);
     if (!user) {
       throw new NotFoundError("user not found");
     }
@@ -84,10 +86,10 @@ export const getUserFriendsRequests = (usersDal: UsersDal) =>
 export const editUser = (usersDal: UsersDal) =>
   validateEditUserRequest(async (request, response) => {
     const { id: userId } = request.user;
-    const { username, settings: partialSettings } = request.body;
+    const { settings: partialSettings, ...userDetails } = request.body;
     const settings = await getSettings(usersDal, userId, partialSettings);
     const updatedUser = await usersDal
-      .updateById(userId, { username, settings })
+      .updateById(userId, { ...userDetails, settings })
       .lean();
 
     if (!updatedUser) {
@@ -109,7 +111,7 @@ const getSettings = async (
     return undefined;
   }
 
-  const user = await usersDal.findPublicUserById(userId).lean();
+  const user = await usersDal.findUserWithoutAuthById(userId);
   if (!user) {
     throw new NotFoundError("user not found");
   }
@@ -127,7 +129,7 @@ const getSettings = async (
 };
 
 export const updateUserStreak = async (usersDal: UsersDal, userId: string) => {
-  const user = await usersDal.findPublicUserById(userId).lean();
+  const user = await usersDal.findUserWithoutAuthById(userId);
   if (!user) {
     throw new NotFoundError("user not found");
   }
@@ -144,3 +146,32 @@ export const updateUserStreak = async (usersDal: UsersDal, userId: string) => {
       .lean();
   }
 };
+
+export const deleteFriend = (usersDal: UsersDal) =>
+  validateDeleteFriendRequest(async (req, res) => {
+    const { userId } = req.params;
+    const { id: loggedInUserId } = req.user;
+
+    const result = await usersDal.removeFriend(loggedInUserId, userId);
+
+    if (result.modifiedCount === 0) {
+      throw new NotFoundError(
+        "Friend not found or not in your friends list"
+      );
+    }
+
+    res.json({ message: `Friend with ID ${userId} deleted successfully` });
+  });
+
+export const fetchFriendById = (usersDal: UsersDal) =>
+  validateFetchFriendRequest(async (req, res) => {
+    const { userId } = req.params;
+
+    const friend = await usersDal.findById(userId).lean();
+
+    if (!friend) {
+      throw new NotFoundError("Friend not found");
+    }
+
+    res.status(200).json(friend);
+  });

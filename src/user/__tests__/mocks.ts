@@ -1,7 +1,8 @@
 import { Types } from "mongoose";
-import { User } from "../model";
+import { WithStringId } from "../../utils/tests/types";
+import { UserWithAuthentication } from "../model";
 
-export const loggedUser: User & { _id: string } = {
+export const loggedUser: WithStringId<UserWithAuthentication> = {
   _id: new Types.ObjectId().toString(),
   email: "loggedUser@gmail.com",
   username: " logged-user",
@@ -9,11 +10,12 @@ export const loggedUser: User & { _id: string } = {
   favoriteLessons: [],
   friendRequests: [],
   friends: [],
+  lastQuizDate: new Date(),
   streak: 0,
   xp: 0,
 };
 
-export const otherUser: User & { _id: string } = {
+export const otherUser: WithStringId<UserWithAuthentication> = {
   _id: new Types.ObjectId().toString(),
   email: "otherUser@gmail.com",
   username: "other-user",
@@ -21,6 +23,7 @@ export const otherUser: User & { _id: string } = {
   favoriteLessons: [],
   friendRequests: [],
   friends: [],
+  lastQuizDate: new Date(),
   streak: 0,
   xp: 0,
 };

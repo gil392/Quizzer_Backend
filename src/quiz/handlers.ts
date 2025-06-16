@@ -6,14 +6,15 @@ import { BadRequestError, NotFoundError } from "../services/server/exceptions";
 import { QuizzesDal } from "./dal";
 import { createQuizResponse } from "./utils";
 import {
-    getQuizByIdRequestValidator,
-    deleteQuizRequstValidator,
-    generateQuizRequstValidator,
-    getQuizzesRequstValidator,
-    updateQuizRequstValidator,
+  getQuizByIdRequestValidator,
+  deleteQuizRequstValidator,
+  generateQuizRequstValidator,
+  getQuizzesRequstValidator,
+  updateQuizRequstValidator,
 } from "./validators";
 import { QuizzesRatingDal } from "../quizRating/dal";
 import { Quiz } from "./types";
+import { AttemptDal } from "../attempt/dal";
 
 export const getQuizById = (quizzesDal: QuizzesDal) =>
   getQuizByIdRequestValidator(async (req, res) => {
@@ -63,7 +64,7 @@ export const getQuizzes = (quizzesDal: QuizzesDal) =>
     const quizzes: (Quiz & { ratings: { rating: number }[] })[] =
       await quizzesDal.findQuizzesWithUserRatingByLesson(lessonId, userId);
     const quizzesWithRatings = quizzes.map((quiz) => ({
-      ...quiz,
+      ...createQuizResponse(quiz),
       rating: quiz.ratings[0]?.rating ?? null,
     }));
     res.status(StatusCodes.OK).json(quizzesWithRatings);
@@ -71,6 +72,7 @@ export const getQuizzes = (quizzesDal: QuizzesDal) =>
 
 export const deleteQuiz = (
   quizzesDal: QuizzesDal,
+  attemptDal: AttemptDal,
   quizzesRatingDal: QuizzesRatingDal
 ) =>
   deleteQuizRequstValidator(async (req, res) => {
@@ -83,6 +85,7 @@ export const deleteQuiz = (
     }
 
     await quizzesRatingDal.deleteMany({ quizId: id });
+    await attemptDal.deleteMany({ quizId: id });
 
     res
       .status(StatusCodes.OK)

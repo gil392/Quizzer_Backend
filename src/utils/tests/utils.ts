@@ -1,4 +1,4 @@
-import { ProcessEnv, getProcessEnv } from '../config';
+import { ProcessEnv, getProcessEnv } from '../../config';
 
 export const createTestEnv = (env?: Partial<ProcessEnv>): ProcessEnv => {
     const processEnv = getProcessEnv();

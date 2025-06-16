@@ -54,14 +54,17 @@ export class QuestionsGenerator {
   Generate multiple-choice questions in the following JSON format without markdowns. Each question should follow this structure and be inserted into an array:
   {
     "question": "string",
-    "incorrectAnswers":
-      ["string", "string", ...],
+    "answers":
+      ["string", "string", "string", ...],
     "correctAnswer": "string"
   }
   
-  Each question must have exactly ${optionsCount} options (1 correct answer and ${optionsCount - 1} incorrect answers).
+  Each question must have exactly ${optionsCount} answers (1 correct answer and ${optionsCount - 1} incorrect answers,
+  the answers field should include the correct answer and all of the incorrect answers as well), all the answers must be different.
   Use the summary below to create ${quizSettings.maxQuestionCount} questions.
-  If the summary is too short to generate ${quizSettings.maxQuestionCount} questions, generate as many as possible while maintaining the structure.
+  If the summary is too short to generate ${
+    quizSettings.maxQuestionCount
+  } questions, generate as many as possible while maintaining the structure.
   
   summary: ${summary}
   `,
@@ -76,11 +79,16 @@ export class QuestionsGenerator {
       }
       const questions: Question[] = JSON.parse(generatedText);
 
-      if (quizSettings.isRandomOrder) {
-        return this.shuffleArray(questions);
+      const transformedQuestions = questions.map((question) => ({
+        ...question,
+        answers: this.shuffleArray(question.answers),
+      }));
+  
+      if (quizSettings.questionsOrder === "random") {
+        return this.shuffleArray(transformedQuestions);
       }
-
-      return questions;
+  
+      return transformedQuestions;
     } catch (error) {
       console.error("Error generating questions:", error);
       throw error;
