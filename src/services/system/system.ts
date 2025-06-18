@@ -16,6 +16,7 @@ import { seedAchievements } from "../../achivments/toolkit/seeder";
 export class System extends Service {
   private readonly database: Database;
   private readonly server: Server;
+  private achievementsDal: AchievementsDal;
 
   constructor(config: SystemConfig) {
     super();
@@ -23,10 +24,11 @@ export class System extends Service {
 
     this.database = new Database(databaseConfig);
     const dals = this.createDals();
+    this.achievementsDal = dals.achievementsDal;
     const questionsGenerator = new QuestionsGenerator(openAiConfig);
     const videoSummeraizer = new VideoSummeraizer(openAiConfig);
-    const achievementsProccesor = new AchivementsProccesor({...dals});
-    
+    const achievementsProccesor = new AchivementsProccesor({ ...dals });
+
     this.server = new Server(
       { ...dals, questionsGenerator, videoSummeraizer, achievementsProccesor },
       serverConfig
@@ -40,7 +42,7 @@ export class System extends Service {
       userModel,
       quizRatingModel,
       achievementModel,
-      quizAttemptModel
+      quizAttemptModel,
     } = this.database.getModels();
 
     const quizzesDal = new QuizzesDal(quizModel);
@@ -62,7 +64,7 @@ export class System extends Service {
 
   async start() {
     await this.database.start();
-    await seedAchievements();
+    await seedAchievements(this.achievementsDal);
     await this.server.start();
   }
 
