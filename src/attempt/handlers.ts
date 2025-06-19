@@ -14,6 +14,7 @@ import { QuizzesDal } from "../quiz/dal";
 import { QuestionAttempt, QuizAttempt } from "./types";
 import { UsersDal } from "../user/dal";
 import { updateUserStreak } from "../user/handlers";
+import { Document, Types } from "mongoose";
 
 export const getAttemptsByQuizId = (AttemptDal: AttemptDal) =>
   getAttemptsByQuizIdRequestValidator(async (req, res) => {
@@ -55,17 +56,21 @@ export const createAttempt = (
 
     const savedAttempt = await attemptDal.create(attempt);
 
-    await updateUserStreak(usersDal, userId);
+    if (quiz.questions.length === savedAttempt.results.length) {
+      await updateUserStreak(usersDal, userId);
+    }
 
     res.status(StatusCodes.CREATED).send(savedAttempt);
   });
 
 export const updateAttemptWithAnswers = (
   attemptDal: AttemptDal,
-  quizzesDal: QuizzesDal
+  quizzesDal: QuizzesDal,
+  usersDal: UsersDal
 ) =>
   updateAttemptWithAnswersRequestValidator(async (req, res) => {
     const { attemptId, questions } = req.body;
+    const { id: userId } = req.user;
 
     const attempt = await attemptDal.findById(attemptId);
     if (!attempt) {
@@ -84,7 +89,12 @@ export const updateAttemptWithAnswers = (
     attempt.results = questionsResults;
     attempt.score = attemptScore(questionsResults, quiz.questions.length);
 
-    const savedAttempt = await attempt.save();
+    const savedAttempt = await saveAttempt(
+      attempt,
+      quiz.questions.length,
+      usersDal,
+      userId
+    );
 
     res.status(StatusCodes.OK).json(savedAttempt);
   });
@@ -110,10 +120,12 @@ export const getQuestionResult = (quizzesDal: QuizzesDal) =>
 
 export const addAnswerToAttempt = (
   attemptDal: AttemptDal,
-  quizzesDal: QuizzesDal
+  quizzesDal: QuizzesDal,
+  usersDal: UsersDal
 ) =>
   addAnswerToAttemptRequestValidator(async (req, res) => {
     const { attemptId, questionId, selectedAnswer } = req.body;
+    const { id: userId } = req.user;
 
     const attempt = await attemptDal.findById(attemptId);
     if (!attempt) {
@@ -144,12 +156,32 @@ export const addAnswerToAttempt = (
       attempt.results.push(questionResult);
     }
 
-    attempt.score = attemptScore(attempt.results, quiz.questions.length);
-
-    const savedAttempt = await attempt.save();
+    const savedAttempt = await saveAttempt(
+      attempt,
+      quiz.questions.length,
+      usersDal,
+      userId
+    );
 
     res.status(StatusCodes.OK).json(savedAttempt);
   });
+
+async function saveAttempt(
+  attempt: Document<unknown, {}, QuizAttempt> &
+    QuizAttempt & { _id: Types.ObjectId } & { __v: number },
+  quizQuestionsAmount: number,
+  usersDal: UsersDal,
+  userId: string
+) {
+  attempt.score = attemptScore(attempt.results, quizQuestionsAmount);
+
+  const savedAttempt = await attempt.save();
+
+  if (quizQuestionsAmount === savedAttempt.results.length) {
+    await updateUserStreak(usersDal, userId);
+  }
+  return savedAttempt;
+}
 
 function attemptScore(
   questionsResults: QuestionAttempt[],
