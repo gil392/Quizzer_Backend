@@ -96,10 +96,6 @@ export const updateAttemptWithAnswers = (
       userId
     );
 
-    if (quiz.questions.length === savedAttempt.results.length) {
-      await updateUserStreak(usersDal, userId);
-    }
-
     res.status(StatusCodes.OK).json(savedAttempt);
   });
 
