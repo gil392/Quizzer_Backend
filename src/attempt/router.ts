@@ -25,10 +25,11 @@ const createRouterController = ({
   CreateAttempt: handlers.createAttempt(quizzesDal, attemptDal, usersDal),
   getAttemptsByQuizId: handlers.getAttemptsByQuizId(attemptDal),
   getQuestionResult: handlers.getQuestionResult(quizzesDal),
-  addAnswerToAttempt: handlers.addAnswerToAttempt(attemptDal, quizzesDal),
+  addAnswerToAttempt: handlers.addAnswerToAttempt(attemptDal, quizzesDal, usersDal),
   updateAttemptWithAnswers: handlers.updateAttemptWithAnswers(
     attemptDal,
-    quizzesDal
+    quizzesDal,
+    usersDal
   ),
 });
 
@@ -45,6 +46,8 @@ export const createAttemptRouter = (
    *   get:
    *     summary: Get attempts by quiz ID
    *     tags: [Attempt]
+   *     security:
+   *       - bearerAuth: []
    *     parameters:
    *       - in: query
    *         name: quizId
@@ -95,6 +98,8 @@ export const createAttemptRouter = (
    *   post:
    *     summary: Submit a solved quiz
    *     tags: [Attempt]
+   *     security:
+   *       - bearerAuth: []
    *     requestBody:
    *       required: true
    *       content:

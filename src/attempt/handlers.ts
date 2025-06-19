@@ -55,17 +55,21 @@ export const createAttempt = (
 
     const savedAttempt = await attemptDal.create(attempt);
 
-    await updateUserStreak(usersDal, userId);
+    if (quiz.questions.length === savedAttempt.results.length) {
+      await updateUserStreak(usersDal, userId);
+    }
 
     res.status(StatusCodes.CREATED).send(savedAttempt);
   });
 
 export const updateAttemptWithAnswers = (
   attemptDal: AttemptDal,
-  quizzesDal: QuizzesDal
+  quizzesDal: QuizzesDal,
+  usersDal: UsersDal
 ) =>
   updateAttemptWithAnswersRequestValidator(async (req, res) => {
     const { attemptId, questions } = req.body;
+    const { id: userId } = req.user;
 
     const attempt = await attemptDal.findById(attemptId);
     if (!attempt) {
@@ -85,6 +89,10 @@ export const updateAttemptWithAnswers = (
     attempt.score = attemptScore(questionsResults, quiz.questions.length);
 
     const savedAttempt = await attempt.save();
+
+    if (quiz.questions.length === savedAttempt.results.length) {
+      await updateUserStreak(usersDal, userId);
+    }
 
     res.status(StatusCodes.OK).json(savedAttempt);
   });
@@ -110,10 +118,12 @@ export const getQuestionResult = (quizzesDal: QuizzesDal) =>
 
 export const addAnswerToAttempt = (
   attemptDal: AttemptDal,
-  quizzesDal: QuizzesDal
+  quizzesDal: QuizzesDal,
+  usersDal: UsersDal
 ) =>
   addAnswerToAttemptRequestValidator(async (req, res) => {
     const { attemptId, questionId, selectedAnswer } = req.body;
+    const { id: userId } = req.user;
 
     const attempt = await attemptDal.findById(attemptId);
     if (!attempt) {
@@ -147,6 +157,10 @@ export const addAnswerToAttempt = (
     attempt.score = attemptScore(attempt.results, quiz.questions.length);
 
     const savedAttempt = await attempt.save();
+
+    if (quiz.questions.length === savedAttempt.results.length) {
+      await updateUserStreak(usersDal, userId);
+    }
 
     res.status(StatusCodes.OK).json(savedAttempt);
   });
