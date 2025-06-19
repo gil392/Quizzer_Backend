@@ -1,5 +1,6 @@
-import dotenv from "dotenv";
-import { z } from "zod";
+import dotenv from 'dotenv';
+import { Auth } from 'googleapis';
+import { z } from 'zod';
 
 dotenv.config();
 
@@ -27,6 +28,14 @@ const processEnvZodSchema = z.object({
   AUTH_TOKEN_SECRET: z.string(),
   AUTH_TOKEN_EXPIRES: jwtExpiresInZodSchema,
   AUTH_REFRESH_TOKEN_EXPIRES: jwtExpiresInZodSchema,
+
+  // Google OAuth
+  AUTH_GOOGLE_CLIENT_ID: z.string(),
+  AUTH_GOOGLE_CLIENT_SECRET: z.string(),
+  AUTH_SESSION_SECRET: z.string(),
+  AUTH_GOOGLE_CALLBACK_URL: z.string(),
+  AUTH_FRONTEND_REDIRECT_URL: z.string().url()
+
 });
 export type ProcessEnv = z.infer<typeof processEnvZodSchema>;
 
