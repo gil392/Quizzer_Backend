@@ -6,7 +6,7 @@ export const getAttemptsByQuizIdRequestSchema = z.object({
   query: z.object({
     quizId: z.string(),
   }),
-});
+}).merge(authenticatedRequestZodSchema);
 
 export const questionAttemptZodSchema = z.object({
   questionId: z.string(),
@@ -38,7 +38,7 @@ export const addAnswerToAttemptRequestSchema = z.object({
     attemptId: z.string().min(1, "attemptId is required"),
     selectedAnswer: z.string().min(1, "selectedAnswer is required"),
   }),
-});
+}).merge(authenticatedRequestZodSchema);
 
 export const getQuestionResultRequestSchema = z.object({
   params: z.object({

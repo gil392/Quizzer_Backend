@@ -153,7 +153,7 @@ export type User = LeanDocument<{
   achievements?: string[];
   favoriteLessons?: string[];
   streak: number;
-  lastQuizDate: Date;
+  lastQuizDate?: Date;
   xp: number;
   settings?: Partial<Settings>;
 }>;
@@ -174,7 +174,7 @@ const userSchema = new Schema<UserWithAuthentication>({
   achievements: { type: [String], default: [] },
   favoriteLessons: { type: [String], default: [] },
   streak: { type: Number, default: 0 },
-  lastQuizDate: { type: Date, default: new Date() },
+  lastQuizDate: { type: Date },
   xp: { type: Number, default: 0 },
   settings: { type: settingsSchema, required: false },
 });

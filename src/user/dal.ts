@@ -103,4 +103,20 @@ export class UsersDal extends BasicDal<UserWithAuthentication> {
       { _id: userId },
       { $addToSet: { achievements: { $each: achievements } } }
     );
+
+  removeFriend = (userId: string, friendId: string) =>
+    this.model.bulkWrite([
+      {
+        updateOne: {
+          filter: { _id: userId },
+          update: { $pull: { friends: friendId } },
+        },
+      },
+      {
+        updateOne: {
+          filter: { _id: friendId },
+          update: { $pull: { friends: userId } },
+        },
+      },
+    ]);
 }

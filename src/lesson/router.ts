@@ -4,6 +4,7 @@ import { LessonsDal } from "../lesson/dal";
 import * as handlers from "./handlers";
 import { QuizzesDal } from "../quiz/dal";
 import { AttemptDal } from "../attempt/dal";
+import { UsersDal } from "../user/dal";
 
 /**
  * @swagger
@@ -17,20 +18,22 @@ export type LessonRouterDependencies = {
   quizzesDal: QuizzesDal;
   attemptDal: AttemptDal;
   videoSummeraizer: VideoSummeraizer;
+  usersDal: UsersDal;
 };
 
 const createRouterController = ({
   lessonsDal,
   quizzesDal,
-  attemptDal,
   videoSummeraizer,
+  usersDal,
+  attemptDal,
 }: LessonRouterDependencies) => ({
   createLesson: handlers.createLesson(lessonsDal, videoSummeraizer),
   createMergedLesson: handlers.createMergedLesson(lessonsDal),
   getLessonById: handlers.getLessonById(lessonsDal),
-  getLessons: handlers.getLessons(lessonsDal),
+  getLessons: handlers.getLessons(lessonsDal, usersDal, attemptDal),
   deleteLesson: handlers.deleteLesson(lessonsDal, quizzesDal, attemptDal),
-  updateLesson: handlers.updateLesson(lessonsDal),
+  updateLesson: handlers.updateLesson(lessonsDal, usersDal),
   getRelatedVideos: handlers.getRelatedVideosForLesson(lessonsDal),
 });
 
@@ -194,7 +197,7 @@ export const createLessonRouter = (
    *       500:
    *         description: Server error
    */
-  router.get("/", controller.getLessons);
+  router.get("/", authMiddleware, controller.getLessons);
 
   /**
    * @swagger
@@ -255,9 +258,13 @@ export const createLessonRouter = (
    *               summary:
    *                 type: string
    *                 description: The new summary of the lesson
+   *               isFavorite:
+   *                 type: boolean
+   *                 description: Whether the lesson should be added to or removed from the user's favorites
    *           example:
    *             title: Updated Lesson Title
    *             summary: Updated summary content.
+   *             isFavorite: true
    *     responses:
    *       200:
    *         description: Lesson successfully updated
@@ -265,14 +272,14 @@ export const createLessonRouter = (
    *           application/json:
    *             schema:
    *               $ref: '#/components/schemas/Lesson'
-   *       404:
-   *         description: Lesson not found
    *       400:
    *         description: Invalid ID format
+   *       404:
+   *         description: Lesson or user not found
    *       500:
-   *         description: Server error
+   *         description: Internal server error (e.g., failed to update lesson or user)
    */
-  router.put("/:id", controller.updateLesson);
+  router.put("/:id", authMiddleware, controller.updateLesson);
 
   /**
    * @swagger

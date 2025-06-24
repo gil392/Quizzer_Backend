@@ -1,4 +1,4 @@
-import { AchivementsProccesor } from "../../achivments/achivmentsProccesor/achivmentsProccesor";
+import { AchivementsProccesor } from "../../achivments/toolkit/proccesor";
 import { AchievementsDal } from "../../achivments/dal";
 import { AttemptDal } from "../../attempt/dal";
 import { QuestionsGenerator } from "../../externalApis/quizGenerator";
@@ -12,10 +12,12 @@ import { Database } from "../database/database";
 import { Server } from "../server/server";
 import { Service } from "../service";
 import { SystemConfig } from "./config";
+import { seedAchievements } from "../../achivments/toolkit/seeder";
 
 export class System extends Service {
   private readonly database: Database;
   private readonly server: Server;
+  private achievementsDal: AchievementsDal;
 
   constructor(config: SystemConfig) {
     super();
@@ -23,6 +25,7 @@ export class System extends Service {
 
     this.database = new Database(databaseConfig);
     const dals = this.createDals();
+    this.achievementsDal = dals.achievementsDal;
     const questionsGenerator = new QuestionsGenerator(openAiConfig);
     const videoSummeraizer = new VideoSummeraizer(openAiConfig);
     const achievementsProccesor = new AchivementsProccesor({ ...dals });
@@ -65,6 +68,7 @@ export class System extends Service {
 
   async start() {
     await this.database.start();
+    await seedAchievements(this.achievementsDal);
     await this.server.start();
   }
 

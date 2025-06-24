@@ -17,6 +17,7 @@ const quizAttemptSchema = new Schema<QuizAttempt>(
     results: { type: [questionAttemptSchema], required: true },
     score: { type: Number, required: true },
     expiryTime: { type: Number },
+    userId: {type: String, required: true}
   },
   { versionKey: false, minimize: true }
 );

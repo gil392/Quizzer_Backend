@@ -5,6 +5,7 @@ import {
   ProjectionType,
   RootFilterQuery,
   Types,
+  UpdateQuery,
 } from "mongoose";
 import { OmitLeanDocument } from "./types";
 
@@ -22,6 +23,10 @@ export class BasicDal<T extends {}> {
   findAll = () => this.model.find();
 
   deleteById = (id: string | ObjectId) => this.model.findByIdAndDelete(id);
+
+  updateByIdWithSet = async (id: string, update: UpdateQuery<Document>) => {
+    return this.model.findByIdAndUpdate(id, update, { new: true });
+  };
 
   updateById = (id: string | ObjectId, data: Partial<T>) =>
     this.model.findByIdAndUpdate(id, data, { new: true });

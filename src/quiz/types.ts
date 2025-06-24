@@ -23,7 +23,7 @@ export type Answer = string;
 export type Question = {
   _id?: Types.ObjectId;
   question: string;
-  incorrectAnswers: Answer[];
+  answers: Answer[];
   correctAnswer: Answer;
 };
 

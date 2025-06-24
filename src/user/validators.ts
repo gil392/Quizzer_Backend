@@ -49,3 +49,25 @@ export type EditUserRequest = z.infer<typeof editUserRequestZodSchema>;
 export const validateEditUserRequest = validateHandlerRequest(
   editUserRequestZodSchema
 );
+
+export const DeleteFriendSchema = authenticatedRequestZodSchema.and(
+  z.object({
+    params: z.object({
+      userId: z.string().regex(/^[a-fA-F0-9]{24}$/, "Invalid user ID"),
+    }),
+  })
+);
+export const validateDeleteFriendRequest = validateHandlerRequest(
+  DeleteFriendSchema
+);
+
+export const FetchFriendByIdSchema = authenticatedRequestZodSchema.and(
+  z.object({
+    params: z.object({
+      userId: z.string().regex(/^[a-fA-F0-9]{24}$/, "Invalid user ID"), 
+    }),
+  })
+);
+export const validateFetchFriendRequest = validateHandlerRequest(
+  FetchFriendByIdSchema
+);
