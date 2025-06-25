@@ -39,7 +39,7 @@ export const shareAchievement = (
             return;
         }
 
-        const message = `${sender.username} unlocked a new achievement!`;
+        const message = `${sender.username} shared an achievement with you!`;
 
         const notifications = toUserIds.map((toUserId: string) => ({
             toUserId,
