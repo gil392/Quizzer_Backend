@@ -23,7 +23,7 @@ const createNotificationController = ({
     getNotificationsByUserId: handlers.getNotificationsByUserId(notificationDal),
     markNotificationAsRead: handlers.markNotificationAsRead(notificationDal),
     deleteNotification: handlers.deleteNotification(notificationDal),
-    notifyFriendsAboutAchievement: handlers.notifyFriendsAboutAchievement(notificationDal, usersDal),
+    shareAchievement: handlers.shareAchievement(notificationDal, usersDal),
     shareLesson: handlers.shareLesson(notificationDal, usersDal),
     notifyFriendRequest: handlers.notifyFriendRequest(notificationDal, usersDal)
 });
@@ -108,24 +108,16 @@ export const createNotificationRouter = (
      *             type: object
      *             required:
      *               - relatedEntityId
-     *               - entityType
-     *             properties:
-     *               relatedEntityId:
-     *                 type: string
-     *                 description: ID of the related lesson, or user
-     *               entityType:
-     *                 type: string
-     *                 enum: [lesson, user]
-     *                 description: Type of the related entity
+     *             properties: {}
      *     responses:
      *       201:
      *         description: Friends notified
      */
-    router.post("/share-achievement", authMiddleware, controller.notifyFriendsAboutAchievement);
+    router.post("/share-achievement", authMiddleware, controller.shareAchievement);
 
     /**
      * @swagger
-     * /notifications/share:
+     * /notifications/share-lesson:
      *   post:
      *     summary: Share a quiz or summary with users
      *     tags: [Notification]
@@ -139,7 +131,6 @@ export const createNotificationRouter = (
      *             type: object
      *             required:
      *               - toUserIds
-     *               - entityType
      *               - relatedEntityId
      *             properties:
      *               toUserIds:
@@ -147,10 +138,6 @@ export const createNotificationRouter = (
      *                 items:
      *                   type: string
      *                 description: Array of recipient user IDs
-     *               entityType:
-     *                 type: string
-     *                 enum: [lesson]
-     *                 description: Type of the entity being shared
      *               relatedEntityId:
      *                 type: string
      *                 description: ID of the related quiz or summary
@@ -158,7 +145,7 @@ export const createNotificationRouter = (
      *       201:
      *         description: Notifications sent
      */
-    router.post("/share", authMiddleware, controller.shareLesson);
+    router.post("/share-lesson", authMiddleware, controller.shareLesson);
 
     /**
      * @swagger

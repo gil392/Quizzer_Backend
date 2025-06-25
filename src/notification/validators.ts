@@ -28,21 +28,19 @@ const deleteNotificationRequestSchema = z
 
 export const deleteNotificationValidator = validateHandlerRequest(deleteNotificationRequestSchema);
 
-const notifyFriendsAboutAchievementRequestSchema = z
+const shareAchievementRequestSchema = z
     .object({
         body: z.object({
+            toUserIds: z.array(z.string()),
             relatedEntityId: z.string(),
-            entityType: z.literal("user"),
-            score: z.number().optional(),
         }),
     }).merge(authenticatedRequestZodSchema);
-export const notifyFriendsAboutAchievementValidator = validateHandlerRequest(notifyFriendsAboutAchievementRequestSchema);
+export const shareAchievementValidator = validateHandlerRequest(shareAchievementRequestSchema);
 
 const shareLessonRequestSchema = z
     .object({
         body: z.object({
             toUserIds: z.array(z.string()),
-            entityType: z.literal("lesson"),
             relatedEntityId: z.string(),
         }),
     }).merge(authenticatedRequestZodSchema);

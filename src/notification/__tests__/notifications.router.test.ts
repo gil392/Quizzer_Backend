@@ -143,10 +143,10 @@ describe("notifications routes", () => {
         });
     });
 
-    describe("POST /notifications/share", () => {
+    describe("POST /notifications/share-lesson", () => {
         test("should create share notifications for specified users", async () => {
             const response = await request(app)
-                .post("/notifications/share")
+                .post("/notifications/share-lesson")
                 .send({
                     toUserIds: ["user456", "user789"],
                     entityType: "lesson",

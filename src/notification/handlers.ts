@@ -5,7 +5,7 @@ import {
     getNotificationsValidatorByUserId,
     markAsReadValidator,
     deleteNotificationValidator,
-    notifyFriendsAboutAchievementValidator,
+    shareAchievementValidator,
     shareLessonValidator,
     friendRequestValidator
 } from "./validators";
@@ -25,28 +25,28 @@ export const getNotificationsByUserId = (notificationsDal: NotificationsDal) =>
         res.status(StatusCodes.OK).json(notifications);
     });
 
-export const notifyFriendsAboutAchievement = (
+export const shareAchievement = (
     notificationsDal: NotificationsDal,
     usersDal: UsersDal
 ) =>
-    notifyFriendsAboutAchievementValidator(async (req, res) => {
-        const { id: userId } = req.user;
-        const { relatedEntityId, entityType } = req.body;
+    shareAchievementValidator(async (req, res) => {
+        const { id: fromUserId } = req.user;
+        const { toUserIds, relatedEntityId } = req.body;
 
-        const user = await usersDal.findById(userId).lean();
-        if (!user || !user.friends) {
-            res.status(StatusCodes.NOT_FOUND).send({ message: "User or friends not found" });
+        const sender = await usersDal.findById(fromUserId).lean();
+        if (!sender || !sender.username) {
+            res.status(StatusCodes.NOT_FOUND).send({ message: "Sender not found" });
             return;
         }
 
-        const message = `${user.username} unlocked a new achievement!`;
+        const message = `${sender.username} unlocked a new achievement!`;
 
-        const notifications = user.friends.map((friendId: string) => ({
-            toUserId: friendId,
-            fromUserId: userId,
+        const notifications = toUserIds.map((toUserId: string) => ({
+            toUserId,
+            fromUserId,
             type: "achievement",
             relatedEntityId,
-            entityType,
+            entityType: "user",
             message,
             read: false,
             createdAt: new Date(),
@@ -62,7 +62,7 @@ export const shareLesson = (
 ) =>
     shareLessonValidator(async (req, res) => {
         const { id: fromUserId } = req.user;
-        const { toUserIds, entityType, relatedEntityId } = req.body;
+        const { toUserIds, relatedEntityId } = req.body;
 
         const sender = await usersDal.findById(fromUserId).lean();
         if (!sender || !sender.username) {
@@ -70,20 +70,20 @@ export const shareLesson = (
             return;
         }
 
-        const message = `${sender.username} shared a ${entityType} with you!`;
+        const message = `${sender.username} shared a lesson with you!`;
 
-        const notifications = toUserIds.map((toUserId: string) => ({
+        const notification = toUserIds.map((toUserId: string) => ({
             toUserId,
             fromUserId,
             type: "share",
             relatedEntityId,
-            entityType,
+            entityType: "lesson",
             message,
             read: false,
             createdAt: new Date(),
         }));
 
-        await notificationsDal.insertMany(notifications as any);
+        await notificationsDal.insertMany(notification as any);
         res.status(StatusCodes.CREATED).send({ message: "Notifications sent" });
     });
 
@@ -126,7 +126,7 @@ export const notifyFriendRequest = (
         const message = `${sender.username} sent you a friend request!`;
 
         const notification = {
-            toUserId,
+            toUserIds: [toUserId], // single recipient as array
             fromUserId,
             type: "friendRequest",
             relatedEntityId: fromUserId,
