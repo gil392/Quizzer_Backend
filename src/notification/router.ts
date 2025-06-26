@@ -41,6 +41,8 @@ export const createNotificationRouter = (
      *   get:
      *     summary: Get all notifications for the authenticated user
      *     tags: [Notification]
+     *     security:
+     *      - bearerAuth: []
      *     responses:
      *       200:
      *         description: List of notifications
@@ -59,6 +61,8 @@ export const createNotificationRouter = (
      *   put:
      *     summary: Mark a notification as read
      *     tags: [Notification]
+     *     security:
+     *      - bearerAuth: []
      *     parameters:
      *       - in: path
      *         name: id
@@ -78,6 +82,8 @@ export const createNotificationRouter = (
      *   delete:
      *     summary: Delete a notification
      *     tags: [Notification]
+     *     security:
+     *      - bearerAuth: []
      *     parameters:
      *       - in: path
      *         name: id
