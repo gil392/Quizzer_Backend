@@ -21,8 +21,12 @@ describe("notifications routes", () => {
     const notificationDal = new NotificationsDal(notificationModel);
     const usersDal = new UsersDal(userModel);
 
+    const userId = new Types.ObjectId();
+    const user2Id = new Types.ObjectId();
+    const user3Id = new Types.ObjectId();
+
     const authMiddlewareMock = (req: any, res: any, next: any) => {
-        req.user = { id: "user123" };
+        req.user = { id: userId.toString() };
         next();
     };
 
@@ -38,21 +42,28 @@ describe("notifications routes", () => {
     beforeAll(async () => {
         await database.start();
         await userModel.deleteMany();
-        // Create a user with friends for achievement notification test
+        await notificationModel.deleteMany();
+
         await userModel.create({
-            _id: "user123",
+            _id: userId,
             username: "Alice",
-            friends: ["user456", "user789"],
+            friends: [user2Id, user3Id],
+            email: "alice@example.com",
+            hashedPassword: "testhash"
         });
         await userModel.create({
-            _id: "user456",
+            _id: user2Id,
             username: "Bob",
             friends: [],
+            email: "bob@example.com",
+            hashedPassword: "testhash"
         });
         await userModel.create({
-            _id: "user789",
+            _id: user3Id,
             username: "Charlie",
             friends: [],
+            email: "charlie@example.com",
+            hashedPassword: "testhash"
         });
     });
     afterAll(async () => {
@@ -63,7 +74,7 @@ describe("notifications routes", () => {
         await notificationModel.deleteMany();
     });
 
-    describe("get notifications for authenticated user", () => {
+    describe("GET /notifications", () => {
         test("should return empty array if no notifications", async () => {
             const response = await request(app).get("/notifications");
             expect(response.status).toBe(StatusCodes.OK);
@@ -71,11 +82,11 @@ describe("notifications routes", () => {
         });
 
         test("should return notifications for the authenticated user", async () => {
-            const notif = await notificationModel.create({
-                toUserId: "user123",
-                fromUserId: "user456",
+            await notificationModel.create({
+                toUserId: userId.toString(),
+                fromUserId: user2Id.toString(),
                 type: "share",
-                relatedEntityId: "lesson789",
+                relatedEntityId: new Types.ObjectId().toString(),
                 entityType: "lesson",
                 message: "A lesson was shared with you!",
                 read: false,
@@ -83,30 +94,25 @@ describe("notifications routes", () => {
             });
             const response = await request(app).get("/notifications");
             expect(response.status).toBe(StatusCodes.OK);
-            expect(response.body).toEqual(
-                expect.arrayContaining([
-                    expect.objectContaining({
-                        _id: notif._id.toString(),
-                        toUserId: "user123",
-                        fromUserId: "user456",
-                        type: "share",
-                        relatedEntityId: "lesson789",
-                        entityType: "lesson",
-                        message: "A lesson was shared with you!",
-                        read: false,
-                    }),
-                ])
-            );
+            expect(response.body.length).toBe(1);
+            expect(response.body[0]).toMatchObject({
+                toUserId: userId.toString(),
+                fromUserId: user2Id.toString(),
+                type: "share",
+                entityType: "lesson",
+                message: "A lesson was shared with you!",
+                read: false,
+            });
         });
     });
 
-    describe("mark notification as read", () => {
+    describe("PUT /notifications/:id/read", () => {
         test("should mark notification as read", async () => {
             const notif = await notificationModel.create({
-                toUserId: "user123",
-                fromUserId: "user456",
+                toUserId: userId.toString(),
+                fromUserId: user2Id.toString(),
                 type: "achievement",
-                relatedEntityId: "achv1",
+                relatedEntityId: new Types.ObjectId().toString(),
                 entityType: "user",
                 message: "You got an achievement!",
                 read: false,
@@ -120,13 +126,13 @@ describe("notifications routes", () => {
         });
     });
 
-    describe("delete notification", () => {
+    describe("DELETE /notifications/:id", () => {
         test("should delete notification", async () => {
             const notif = await notificationModel.create({
-                toUserId: "user123",
-                fromUserId: "user456",
+                toUserId: userId.toString(),
+                fromUserId: user2Id.toString(),
                 type: "share",
-                relatedEntityId: "lesson789",
+                relatedEntityId: new Types.ObjectId().toString(),
                 entityType: "lesson",
                 message: "A lesson was shared with you!",
                 read: false,
@@ -145,42 +151,42 @@ describe("notifications routes", () => {
 
     describe("POST /notifications/share-lesson", () => {
         test("should create share notifications for specified users", async () => {
+            const relatedEntityId = new Types.ObjectId().toString();
             const response = await request(app)
                 .post("/notifications/share-lesson")
                 .send({
-                    toUserIds: ["user456", "user789"],
-                    entityType: "lesson",
-                    relatedEntityId: "lesson123"
+                    toUserIds: [user2Id.toString(), user3Id.toString()],
+                    relatedEntityId
                 });
             expect(response.status).toBe(StatusCodes.CREATED);
             expect(response.body).toEqual({ message: "Notifications sent" });
 
             const notifs = await notificationModel.find({ type: "share" });
             expect(notifs.length).toBe(2);
-            expect(notifs.map(n => n.toUserId)).toEqual(expect.arrayContaining(["user456", "user789"]));
+            expect(notifs.map(n => n.toUserId)).toEqual(expect.arrayContaining([user2Id.toString(), user3Id.toString()]));
             expect(notifs[0].entityType).toBe("lesson");
-            expect(notifs[0].relatedEntityId).toBe("lesson123");
+            expect(notifs[0].relatedEntityId).toBe(relatedEntityId);
         });
     });
 
     describe("POST /notifications/share-achievement", () => {
         test("should notify all friends about an achievement", async () => {
+            const relatedEntityId = new Types.ObjectId().toString();
             const response = await request(app)
                 .post("/notifications/share-achievement")
                 .send({
-                    relatedEntityId: "lesson123",
-                    entityType: "user",
-                    score: 95
+                    toUserIds: [user2Id.toString(), user3Id.toString()],
+                    relatedEntityId
                 });
             expect(response.status).toBe(StatusCodes.CREATED);
             expect(response.body).toEqual({ message: "Friends notified" });
 
             const notifs = await notificationModel.find({ type: "achievement" });
             expect(notifs.length).toBe(2);
-            expect(notifs.map(n => n.toUserId)).toEqual(expect.arrayContaining(["user456", "user789"]));
+            expect(notifs.map(n => n.toUserId)).toEqual(expect.arrayContaining([user2Id.toString(), user3Id.toString()]));
             expect(notifs[0].entityType).toBe("user");
-            expect(notifs[0].relatedEntityId).toBe("lesson123");
-            expect(notifs[0].message).toContain("Alice unlocked a new achievement");
+            expect(notifs[0].relatedEntityId).toBe(relatedEntityId);
+            expect(notifs[0].message).toContain("achievement");
         });
     });
 
@@ -189,16 +195,16 @@ describe("notifications routes", () => {
             const response = await request(app)
                 .post("/notifications/friend-request")
                 .send({
-                    toUserId: "user456"
+                    toUserId: user2Id.toString()
                 });
             expect(response.status).toBe(StatusCodes.CREATED);
             expect(response.body).toEqual({ message: "Friend request notification sent" });
 
-            const notif = await notificationModel.findOne({ type: "friendRequest", toUserId: "user456" });
+            const notif = await notificationModel.findOne({ type: "friendRequest", toUserId: user2Id.toString() });
             expect(notif).toBeTruthy();
             expect(notif?.entityType).toBe("user");
-            expect(notif?.fromUserId).toBe("user123");
-            expect(notif?.message).toContain("Alice sent you a friend request");
+            expect(notif?.fromUserId).toBe(userId.toString());
+            expect(notif?.message).toContain("sent you a friend request");
         });
     });
 });

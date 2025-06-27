@@ -125,17 +125,21 @@ export const notifyFriendRequest = (
 
         const message = `${sender.username} sent you a friend request!`;
 
-        const notification = {
-            toUserIds: [toUserId], // single recipient as array
-            fromUserId,
-            type: "friendRequest",
-            relatedEntityId: fromUserId,
-            entityType: "user",
-            message,
-            read: false,
-            createdAt: new Date(),
-        };
+        try {
+            const notification = {
+                toUserId: toUserId,
+                fromUserId,
+                type: "friendRequest",
+                relatedEntityId: fromUserId,
+                entityType: "user",
+                message,
+                read: false,
+                createdAt: new Date(),
+            };
 
-        await notificationsDal.create(notification as any);
-        res.status(StatusCodes.CREATED).send({ message: "Friend request notification sent" });
+            await notificationsDal.create(notification as any);
+            res.status(StatusCodes.CREATED).send({ message: "Friend request notification sent" });
+        } catch (error) {
+            res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({ message: "Failed to send friend request notification" });
+        }
     });
