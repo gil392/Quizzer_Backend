@@ -7,6 +7,7 @@ import { LessonsDal } from "../../lesson/dal";
 import { QuizzesDal } from "../../quiz/dal";
 import { QuizzesRatingDal } from "../../quizRating/dal";
 import { UsersDal } from "../../user/dal";
+import { NotificationsDal } from "../../notification/dal";
 import { Database } from "../database/database";
 import { Server } from "../server/server";
 import { Service } from "../service";
@@ -43,6 +44,7 @@ export class System extends Service {
       quizRatingModel,
       achievementModel,
       quizAttemptModel,
+      notificationModel,
     } = this.database.getModels();
 
     const quizzesDal = new QuizzesDal(quizModel);
@@ -51,6 +53,7 @@ export class System extends Service {
     const attemptDal = new AttemptDal(quizAttemptModel);
     const quizzesRatingDal = new QuizzesRatingDal(quizRatingModel);
     const achievementsDal = new AchievementsDal(achievementModel);
+    const notificationDal = new NotificationsDal(notificationModel);
 
     return {
       quizzesDal,
@@ -59,6 +62,7 @@ export class System extends Service {
       attemptDal,
       quizzesRatingDal,
       achievementsDal,
+      notificationDal,
     };
   };
 
