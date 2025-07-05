@@ -11,6 +11,30 @@ import { User, UserWithAuthentication } from "./model";
 export class UsersDal extends BasicDal<UserWithAuthentication> {
   findByUsername = (username: string) => this.model.findOne({ username });
 
+  findByGoogleId = (googleId: string) => this.model.findOne({ googleId });
+
+  async createFromGoogleProfile(profile: any) {
+    const email = profile.emails?.[0]?.value || `${profile.id}@google`;
+    const username = profile.displayName || email.split('@')[0];
+  
+    return this.model.create({
+      googleId: profile.id,
+      email,
+      username,
+      streak: 0,
+      lastQuizDate: new Date(0),
+      xp: 0,
+      friendRequests: [],
+      friends: [],
+      favoriteLessons: [],
+      settings: {},
+      refreshToken: []
+    });
+  }
+
+  findPublicUserById = (id: string) =>
+    this.findById(id, EXCLUDE_USER_AUTH_PROPERTIES_PROJECTION);
+
   findUserWithoutAuthById = async (id: string): Promise<User | null> =>
     await this.findById(id, EXCLUDE_USER_AUTH_PROPERTIES_PROJECTION).lean();
 

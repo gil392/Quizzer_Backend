@@ -11,7 +11,7 @@ import {
   AttemptRouterDependencies,
   createAttemptRouter,
 } from "../../attempt/router";
-import { injectUserToRequest } from "../../authentication/middlewares";
+import { configureGooglePassport, injectUserToRequest } from "../../authentication/middlewares";
 import {
   AuthRouterDependencies,
   createAuthRouter
@@ -28,6 +28,8 @@ import { Service } from "../service";
 import { ServerConfig } from "./config";
 import { createSwaggerSpecs } from "./swagger";
 import { requestErrorHandler } from "./utils";
+import session from "express-session";
+import passport from "passport";
 import { createNotificationRouter } from "../../notification/router";
 import { NotificationRouterDependencies } from "../../notification/router";
 
@@ -69,6 +71,24 @@ export class Server extends Service {
   private useRouters = () => {
     const { authConfig } = this.config;
     const authMiddleware = injectUserToRequest(authConfig.tokenSecret);
+    
+    this.app.use(
+      session({
+        secret: authConfig.tokenSecret, 
+        resave: false, 
+        saveUninitialized: false, 
+        cookie: {
+          httpOnly: true, 
+          secure: process.env.NODE_ENV === "production", 
+          sameSite: "strict", 
+        },
+      })
+    );
+    
+    configureGooglePassport(this.dependencies.usersDal, authConfig);
+
+    this.app.use(passport.initialize());
+    this.app.use(passport.session());
 
     this.app.use("/auth", createAuthRouter(authConfig, this.dependencies));
     this.app.use(

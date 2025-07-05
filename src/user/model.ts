@@ -156,6 +156,7 @@ export type User = LeanDocument<{
   lastQuizDate?: Date;
   xp: number;
   settings?: Partial<Settings>;
+  googleId?: string;
 }>;
 
 export type UserWithAuthentication = User & {
@@ -165,7 +166,7 @@ export type UserWithAuthentication = User & {
 
 const userSchema = new Schema<UserWithAuthentication>({
   email: { type: String, required: true, unique: true },
-  hashedPassword: { type: String, required: true },
+  hashedPassword: { type: String },
   username: { type: String, required: true },
   profileImage: String,
   refreshToken: { type: [String], default: [] },
@@ -177,6 +178,7 @@ const userSchema = new Schema<UserWithAuthentication>({
   lastQuizDate: { type: Date },
   xp: { type: Number, default: 0 },
   settings: { type: settingsSchema, required: false },
+  googleId: { type: String, unique: true, sparse: true },
 });
 userSchema.index({ username: "text", email: "text" });
 
