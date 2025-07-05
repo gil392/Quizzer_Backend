@@ -65,7 +65,7 @@ export const getAchievementImage = (
 
     const iconPath = achievement.reward.icon;
 
-    const baseDir = path.resolve(__dirname, "../../../Backend_Quizzer/src"); 
+    const baseDir = path.resolve(__dirname, "../../src"); 
     const fullPath = path.join(baseDir, iconPath);
     
     try {

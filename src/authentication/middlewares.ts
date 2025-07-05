@@ -42,7 +42,7 @@ export const injectUserToRequest =
         },
         async (accessToken, refreshToken, profile, done) => {
           try {
-            let user = await usersDal.findByGoogleId(profile.id); 
+            let user = await usersDal.findByGoogleId(profile.id);
             if (!user) {
               user = await usersDal.createFromGoogleProfile(profile); 
             }

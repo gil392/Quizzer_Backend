@@ -30,6 +30,8 @@ import { createSwaggerSpecs } from "./swagger";
 import { requestErrorHandler } from "./utils";
 import session from "express-session";
 import passport from "passport";
+import { createNotificationRouter } from "../../notification/router";
+import { NotificationRouterDependencies } from "../../notification/router";
 
 export const createBasicApp = (corsOrigin?: string): Express => {
   const app = express();
@@ -46,7 +48,8 @@ export type ServerDependencies = AchievementRouterDependencies &
   QuizRouterDependencies &
   LessonRouterDependencies &
   AuthRouterDependencies &
-  UsersRouterDependencies;
+  UsersRouterDependencies &
+  NotificationRouterDependencies;
 
 export class Server extends Service {
   app: Express;
@@ -101,6 +104,10 @@ export class Server extends Service {
     this.app.use(
       "/achievement",
       createAchievementsRouter(authMiddleware, this.dependencies)
+    );
+    this.app.use(
+      "/notifications",
+      createNotificationRouter(authMiddleware, this.dependencies)
     );
 
     const apiRouter = Router();

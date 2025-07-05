@@ -39,7 +39,6 @@ export const register = (usersDal: UsersDal) =>
         email,
         hashedPassword,
         streak: 0,
-        lastQuizDate: new Date(),
         xp: 0,
       });
       response.sendStatus(StatusCodes.CREATED);
