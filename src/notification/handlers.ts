@@ -83,9 +83,13 @@ export const shareLesson = (
       return;
     }
 
-    await lessonsDal.updateById(relatedEntityId, {
+    const updatedLesson = await lessonsDal.updateById(relatedEntityId, {
       sharedUsers: Array.from(new Set([...lesson.sharedUsers, ...toUserIds])),
     });
+
+    if (isNil(updatedLesson)) {
+      throw new NotFoundError(`Could not find lesson with id ${relatedEntityId}`);
+    }
 
     const message = `${sender.username} shared a lesson with you!`;
 
@@ -101,7 +105,7 @@ export const shareLesson = (
     }));
 
     await notificationsDal.insertMany(notification as any);
-    res.status(StatusCodes.CREATED).send({ message: "Notifications sent" });
+    res.status(StatusCodes.CREATED).json({ ...updatedLesson.toObject() });
   });
 
 export const markNotificationAsRead = (notificationsDal: NotificationsDal) =>
