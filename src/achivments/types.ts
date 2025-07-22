@@ -35,6 +35,7 @@ export type Achievement = LeanDocument<{
   description: string;
   reward: Reward;
   requirements: Requirement[];
+  sharedUsers: string[];
   achivmentLock?: string;
 }>;
 

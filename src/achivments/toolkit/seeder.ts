@@ -20,6 +20,7 @@ const achievementsTier0 = [
         },
       },
     ],
+    sharedUsers: [] as string[],
   },
   {
     _id: new Types.ObjectId(),
@@ -38,6 +39,7 @@ const achievementsTier0 = [
         },
       },
     ],
+    sharedUsers: [] as string[],
   },
   {
     _id: new Types.ObjectId(),
@@ -56,6 +58,7 @@ const achievementsTier0 = [
         },
       },
     ],
+    sharedUsers: [] as string[],
   },
   {
     _id: new Types.ObjectId(),
@@ -74,6 +77,7 @@ const achievementsTier0 = [
         },
       },
     ],
+    sharedUsers: [] as string[],
   },
 ];
 
@@ -96,6 +100,7 @@ const achievementsTier1 = [
         },
       },
     ],
+    sharedUsers: [] as string[],
     achivmentLock: achievementsTier0[0]._id, // Friendly Beginner
   },
   {
@@ -115,6 +120,7 @@ const achievementsTier1 = [
         },
       },
     ],
+    sharedUsers: [] as string[],
     achivmentLock: achievementsTier0[1]._id, // Quiz Master
   },
   {
@@ -134,6 +140,7 @@ const achievementsTier1 = [
         },
       },
     ],
+    sharedUsers: [] as string[],
     achivmentLock: achievementsTier0[2]._id, // Lesson Explorer
   },
   {
@@ -153,6 +160,7 @@ const achievementsTier1 = [
         },
       },
     ],
+    sharedUsers: [] as string[],
     achivmentLock: achievementsTier0[3]._id, // Daily Learner
   },
 ];

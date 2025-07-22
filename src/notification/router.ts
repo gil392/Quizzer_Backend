@@ -3,6 +3,7 @@ import * as handlers from "./handlers";
 import { NotificationsDal } from "./dal";
 import { UsersDal } from "../user/dal";
 import { LessonsDal } from "../lesson/dal";
+import { AchievementsDal } from "../achivments/dal";
 
 /**
  * @swagger
@@ -15,17 +16,23 @@ export type NotificationRouterDependencies = {
   notificationDal: NotificationsDal;
   usersDal: UsersDal;
   lessonsDal: LessonsDal;
+  achievementsDal: AchievementsDal;
 };
 
 const createNotificationController = ({
   notificationDal,
   usersDal,
   lessonsDal,
+  achievementsDal,
 }: NotificationRouterDependencies) => ({
   getNotificationsByUserId: handlers.getNotificationsByUserId(notificationDal),
   markNotificationAsRead: handlers.markNotificationAsRead(notificationDal),
   deleteNotification: handlers.deleteNotification(notificationDal),
-  shareAchievement: handlers.shareAchievement(notificationDal, usersDal),
+  shareAchievement: handlers.shareAchievement(
+    notificationDal,
+    usersDal,
+    achievementsDal
+  ),
   shareLesson: handlers.shareLesson(notificationDal, usersDal, lessonsDal),
   notifyFriendRequest: handlers.notifyFriendRequest(notificationDal, usersDal),
 });
@@ -101,7 +108,7 @@ export const createNotificationRouter = (
 
   /**
    * @swagger
-   * /notifications/notify-friends-achievement:
+   * /notifications/share-achievement:
    *   post:
    *     summary: Notify all friends about an achievement
    *     tags: [Notification]
@@ -126,54 +133,54 @@ export const createNotificationRouter = (
     controller.shareAchievement
   );
 
-/**
- * @swagger
- * /notifications/share-lesson:
- *   post:
- *     summary: Share a lesson with users
- *     tags: [Notification]
- *     security:
- *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - toUserIds
- *               - relatedEntityId
- *             properties:
- *               toUserIds:
- *                 type: array
- *                 items:
- *                   type: string
- *                 description: Array of recipient user IDs
- *               relatedEntityId:
- *                 type: string
- *                 description: ID of the lesson to be shared
- *     responses:
- *       201:
- *         description: Notifications sent successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: Notifications sent
- *       404:
- *         description: Sender or lesson not found
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: Lesson not found
- */
+  /**
+   * @swagger
+   * /notifications/share-lesson:
+   *   post:
+   *     summary: Share a lesson with users
+   *     tags: [Notification]
+   *     security:
+   *       - bearerAuth: []
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             required:
+   *               - toUserIds
+   *               - relatedEntityId
+   *             properties:
+   *               toUserIds:
+   *                 type: array
+   *                 items:
+   *                   type: string
+   *                 description: Array of recipient user IDs
+   *               relatedEntityId:
+   *                 type: string
+   *                 description: ID of the lesson to be shared
+   *     responses:
+   *       201:
+   *         description: Notifications sent successfully
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 message:
+   *                   type: string
+   *                   example: Notifications sent
+   *       404:
+   *         description: Sender or lesson not found
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 message:
+   *                   type: string
+   *                   example: Lesson not found
+   */
 
   router.post("/share-lesson", authMiddleware, controller.shareLesson);
 

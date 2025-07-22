@@ -31,6 +31,7 @@ const achievementSchema = new Schema({
   reward: rewardSchema,
   requirements: [requirementSchema],
   achivmentLock: { type: String },
+  sharedUsers: { type: [String], default: [] },
 });
 
 export type AchievementsModel = Model<Achievement>;

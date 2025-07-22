@@ -13,6 +13,7 @@ import { isNil } from "ramda";
 import { NotFoundError } from "../services/server/exceptions";
 import { Lesson } from "../lesson/model";
 import { LessonsDal } from "../lesson/dal";
+import { AchievementsDal } from "../achivments/dal";
 
 export const getNotificationsByUserId = (notificationsDal: NotificationsDal) =>
   getNotificationsValidatorByUserId(async (req, res) => {
@@ -33,7 +34,8 @@ export const getNotificationsByUserId = (notificationsDal: NotificationsDal) =>
 
 export const shareAchievement = (
   notificationsDal: NotificationsDal,
-  usersDal: UsersDal
+  usersDal: UsersDal,
+  achievementsDal: AchievementsDal
 ) =>
   shareAchievementValidator(async (req, res) => {
     const { id: fromUserId } = req.user;
@@ -43,6 +45,28 @@ export const shareAchievement = (
     if (!sender || !sender.username) {
       res.status(StatusCodes.NOT_FOUND).send({ message: "Sender not found" });
       return;
+    }
+
+    const achievement = await achievementsDal.findById(relatedEntityId);
+    if (!achievement) {
+      res
+        .status(StatusCodes.NOT_FOUND)
+        .send({ message: "Achievement not found" });
+      return;
+    }
+    const updatedAchievement = await achievementsDal.updateById(
+      relatedEntityId,
+      {
+        sharedUsers: Array.from(
+          new Set([...achievement.sharedUsers, ...toUserIds])
+        ),
+      }
+    );
+
+    if (isNil(updatedAchievement)) {
+      throw new NotFoundError(
+        `Could not find achievement with id ${relatedEntityId}`
+      );
     }
 
     const message = `${sender.username} shared an achievement with you!`;
@@ -88,7 +112,9 @@ export const shareLesson = (
     });
 
     if (isNil(updatedLesson)) {
-      throw new NotFoundError(`Could not find lesson with id ${relatedEntityId}`);
+      throw new NotFoundError(
+        `Could not find lesson with id ${relatedEntityId}`
+      );
     }
 
     const message = `${sender.username} shared a lesson with you!`;
