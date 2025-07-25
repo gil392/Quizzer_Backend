@@ -37,7 +37,6 @@ export const getAchievementProgress = (
         (achievement) =>
           !achievement.requirements.some(isRequirementNotCompleted)
       )
-      .map(({ _id }) => _id.toString());
     await usersDal.addCompletedAchievments(targetUserId, newCompletedAchievments);
 
     const userAchievements: Achievement[] = user.achievements
