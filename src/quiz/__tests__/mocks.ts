@@ -26,13 +26,13 @@ export const generatedQuestionsMock = [
     _id: new Types.ObjectId(),
     question: "question 1",
     correctAnswer: "answer 1",
-    incorrectAnswers: ["answer 2", "answer 3", "answer 4"],
+    answers: ["answer 1", "answer 2", "answer 3", "answer 4"],
   },
   {
     _id: new Types.ObjectId(),
     question: "question 2",
     correctAnswer: "answer 3",
-    incorrectAnswers: ["answer 1", "answer 2", "answer 4"],
+    answers: ["answer 1", "answer 2", "answer 3", "answer 4"],
   },
 ] satisfies Question[];
 
@@ -58,7 +58,7 @@ export const questionAnswerSubmittionsMock = [
   },
   {
     questionId: generatedQuestionsMock[1]._id!.toString(),
-    selectedAnswer: generatedQuestionsMock[1].incorrectAnswers[0],
+    selectedAnswer: generatedQuestionsMock[1].answers[3],
   },
 ] satisfies QuestionAnswerAttempt[];
 
