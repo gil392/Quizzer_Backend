@@ -3,8 +3,7 @@ import { isEmpty } from "ramda";
 import { BasicDal } from "../services/database/base.dal";
 import {
   EXCLUDE_USER_AUTH_PROPERTIES_PROJECTION,
-  SEARCH_USER_SELECT,
-  USER_FRIENDS_PROJECTION,
+  SEARCH_USER_SELECT
 } from "./consts";
 import { User, UserWithAuthentication } from "./model";
 
@@ -78,7 +77,7 @@ export class UsersDal extends BasicDal<UserWithAuthentication> {
       },
       {
         $project: {
-          friendUsers: USER_FRIENDS_PROJECTION,
+          friendUsers: EXCLUDE_USER_AUTH_PROPERTIES_PROJECTION,
         },
       },
     ]);
