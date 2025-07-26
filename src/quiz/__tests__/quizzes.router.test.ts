@@ -2,6 +2,7 @@ import { Express } from "express";
 import { StatusCodes } from "http-status-codes";
 import { Types } from "mongoose";
 import request from "supertest";
+import { AttemptDal } from "../../attempt/dal";
 import { QuestionsGenerator } from "../../externalApis/quizGenerator";
 import { LessonsDal } from "../../lesson/dal";
 import { QuizzesRatingDal } from "../../quizRating/dal";
@@ -16,11 +17,7 @@ import { createQuizResponseQuestion } from "../utils";
 import {
   generatedQuestionsMock,
   lessonMock,
-  questionAnswerSubmittionsMock,
-  questionAnswerSubmittionsMockResults,
-  questionAnswerSubmittionsMockScore,
-  quizMock,
-  quizSettings,
+  quizSettings
 } from "./mocks";
 
 describe("quizzes routes", () => {
@@ -30,7 +27,8 @@ describe("quizzes routes", () => {
   };
   const database = new Database(databaseConfig);
   const authMiddlewareMock = (req: any, res: any, next: any) => next();
-  const { quizModel, lessonModel } = database.getModels();
+  const { quizModel, lessonModel, quizAttemptModel } = database.getModels();
+  const attemptDal = new AttemptDal(quizAttemptModel);
   const quizzesDal = new QuizzesDal(quizModel);
   const lessonsDal = new LessonsDal(lessonModel);
   const quizzesRatingDal = new QuizzesRatingDal(quizRatingModel);
@@ -49,6 +47,7 @@ describe("quizzes routes", () => {
       lessonsDal,
       quizzesRatingDal,
       questionsGenerator,
+      attemptDal,
     })
   );
 

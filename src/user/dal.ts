@@ -1,10 +1,10 @@
 import { Types } from "mongoose";
-import { isEmpty } from "ramda";
+import { isEmpty, prop, sum } from "ramda";
+import { AchievementProgress } from "../achivments/types";
 import { BasicDal } from "../services/database/base.dal";
 import {
   EXCLUDE_USER_AUTH_PROPERTIES_PROJECTION,
   SEARCH_USER_SELECT,
-  USER_FRIENDS_PROJECTION,
 } from "./consts";
 import { User, UserWithAuthentication } from "./model";
 
@@ -15,8 +15,8 @@ export class UsersDal extends BasicDal<UserWithAuthentication> {
 
   async createFromGoogleProfile(profile: any) {
     const email = profile.emails?.[0]?.value || `${profile.id}@google`;
-    const username = profile.displayName || email.split('@')[0];
-  
+    const username = profile.displayName || email.split("@")[0];
+
     return this.model.create({
       googleId: profile.id,
       email,
@@ -28,7 +28,7 @@ export class UsersDal extends BasicDal<UserWithAuthentication> {
       friends: [],
       favoriteLessons: [],
       settings: {},
-      refreshToken: []
+      refreshToken: [],
     });
   }
 
@@ -78,7 +78,7 @@ export class UsersDal extends BasicDal<UserWithAuthentication> {
       },
       {
         $project: {
-          friendUsers: USER_FRIENDS_PROJECTION,
+          friendUsers: EXCLUDE_USER_AUTH_PROPERTIES_PROJECTION,
         },
       },
     ]);
@@ -122,11 +122,19 @@ export class UsersDal extends BasicDal<UserWithAuthentication> {
       },
     ]);
 
-  addCompletedAchievments = (userId: string, achievements: string[]) =>
+  addCompletedAchievments = (
+    userId: string,
+    achievements: AchievementProgress[]
+  ) => {
+    const ids = achievements.map(prop("_id"));
+    // TODO: add the icon rewards after icons will be added to user
+    const xp = sum(achievements.map(({ reward: { xp } }) => xp));
+
     this.model.updateOne(
       { _id: userId },
-      { $addToSet: { achievements: { $each: achievements } } }
+      { $addToSet: { achievements: { $each: ids } }, $inc: { xp } }
     );
+  };
 
   removeFriend = (userId: string, friendId: string) =>
     this.model.bulkWrite([

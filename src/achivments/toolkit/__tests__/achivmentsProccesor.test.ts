@@ -18,7 +18,7 @@ import {
   userPartialCompletedMultipleRequirementsAchievement,
 } from "../../__tests__/user.achievements.mock";
 import { AchievementsDal } from "../../dal";
-import { AchivementsProccesor } from "../achivmentsProccesor";
+import { AchivementsProccesor } from "../proccesor";
 
 describe("achivmentsProccesor", () => {
   const config = createTestEnv();

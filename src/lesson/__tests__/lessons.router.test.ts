@@ -1,18 +1,22 @@
-import { Express } from 'express';
-import { StatusCodes } from 'http-status-codes';
-import { Types } from 'mongoose';
-import { dissoc } from 'ramda';
-import request from 'supertest';
-import { VideoSummeraizer } from '../../externalApis/videoSummerizer';
-import * as youtubeGetVideoDetails from '../../externalApis/youtube/getVideoDetails';
-import { DatabaseConfig } from '../../services/database/config';
-import { Database } from '../../services/database/database';
-import { createBasicApp } from '../../services/server/server';
-import { asMockOf, createTestEnv } from '../../utils/tests/utils';
-import { LessonsDal } from '../dal';
-import { Lesson } from '../model';
-import { createLessonRouter } from '../router';
-import { CreateLessonRequst } from '../validators';
+import { Express } from "express";
+import { StatusCodes } from "http-status-codes";
+import { Types } from "mongoose";
+import { dissoc } from "ramda";
+import request from "supertest";
+import { VideoSummeraizer } from "../../externalApis/videoSummerizer";
+import * as youtubeGetVideoDetails from "../../externalApis/youtube/getVideoDetails";
+import { DatabaseConfig } from "../../services/database/config";
+import { Database } from "../../services/database/database";
+import { createBasicApp } from "../../services/server/server";
+import { asMockOf, createTestEnv } from "../../utils/tests/utils";
+import { LessonsDal } from "../dal";
+import { Lesson } from "../model";
+import { createLessonRouter } from "../router";
+import { CreateLessonRequst } from "../validators";
+import { AttemptDal } from "../../attempt/dal";
+import { QuizzesDal } from "../../quiz/dal";
+import { QuizzesRatingDal } from "../../quizRating/dal";
+import { UsersDal } from "../../user/dal";
 
 describe("lessons routes", () => {
   const config = createTestEnv();
@@ -20,7 +24,11 @@ describe("lessons routes", () => {
     connectionString: config.DB_CONNECTION_STRING,
   };
   const database = new Database(databaseConfig);
-  const { lessonModel } = database.getModels();
+  const { quizModel, lessonModel, quizAttemptModel, userModel } =
+    database.getModels();
+  const usersDal = new UsersDal(userModel);
+  const attemptDal = new AttemptDal(quizAttemptModel);
+  const quizzesDal = new QuizzesDal(quizModel);
   const lessonsDal = new LessonsDal(lessonModel);
   const authMiddlewareMock = (req: any, res: any, next: any) => {
     req.user = { id: "owner mock" };
@@ -59,6 +67,9 @@ describe("lessons routes", () => {
     createLessonRouter(authMiddlewareMock, {
       lessonsDal,
       videoSummeraizer: videoSummeraizerMock,
+      attemptDal,
+      quizzesDal,
+      usersDal,
     })
   );
 
@@ -115,7 +126,7 @@ describe("lessons routes", () => {
       });
 
       expect(response.status).toBe(StatusCodes.CREATED);
-      expect(response.body).not.toHaveProperty("relatedLessonGroupId");
+      expect(response.body).toHaveProperty("relatedLessonGroupId");
     });
 
     test("relatedLessonGroupId not a string should return BAD_REQUEST", async () => {
