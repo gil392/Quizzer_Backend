@@ -126,7 +126,7 @@ describe("lessons routes", () => {
       });
 
       expect(response.status).toBe(StatusCodes.CREATED);
-      expect(response.body).not.toHaveProperty("relatedLessonGroupId");
+      expect(response.body).toHaveProperty("relatedLessonGroupId");
     });
 
     test("relatedLessonGroupId not a string should return BAD_REQUEST", async () => {
