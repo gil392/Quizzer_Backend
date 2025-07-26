@@ -132,7 +132,7 @@ export class UsersDal extends BasicDal<UserWithAuthentication> {
 
     this.model.updateOne(
       { _id: userId },
-      { $addToSet: { achievements: { $each: ids } }, $inc: { xp: xp } }
+      { $addToSet: { achievements: { $each: ids } }, $inc: { xp } }
     );
   };
 
