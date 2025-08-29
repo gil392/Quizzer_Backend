@@ -11,10 +11,13 @@ import {
   AttemptRouterDependencies,
   createAttemptRouter,
 } from "../../attempt/router";
-import { configureGooglePassport, injectUserToRequest } from "../../authentication/middlewares";
+import {
+  configureGooglePassport,
+  injectUserToRequest,
+} from "../../authentication/middlewares";
 import {
   AuthRouterDependencies,
-  createAuthRouter
+  createAuthRouter,
 } from "../../authentication/router";
 import { createFileRouterConfig } from "../../files/config";
 import { createFilesRouter } from "../../files/router";
@@ -32,6 +35,10 @@ import session from "express-session";
 import passport from "passport";
 import { createNotificationRouter } from "../../notification/router";
 import { NotificationRouterDependencies } from "../../notification/router";
+import {
+  createSocialMediaRouter,
+  SocialMediaRouterDependencies,
+} from "../../socialMedia/router";
 
 export const createBasicApp = (corsOrigin?: string): Express => {
   const app = express();
@@ -49,7 +56,8 @@ export type ServerDependencies = AchievementRouterDependencies &
   LessonRouterDependencies &
   AuthRouterDependencies &
   UsersRouterDependencies &
-  NotificationRouterDependencies;
+  NotificationRouterDependencies &
+  SocialMediaRouterDependencies;
 
 export class Server extends Service {
   app: Express;
@@ -71,20 +79,20 @@ export class Server extends Service {
   private useRouters = () => {
     const { authConfig } = this.config;
     const authMiddleware = injectUserToRequest(authConfig.tokenSecret);
-    
+
     this.app.use(
       session({
-        secret: authConfig.tokenSecret, 
-        resave: false, 
-        saveUninitialized: false, 
+        secret: authConfig.tokenSecret,
+        resave: false,
+        saveUninitialized: false,
         cookie: {
-          httpOnly: true, 
-          secure: process.env.NODE_ENV === "production", 
-          sameSite: "strict", 
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "strict",
         },
       })
     );
-    
+
     configureGooglePassport(this.dependencies.usersDal, authConfig);
 
     this.app.use(passport.initialize());
@@ -108,6 +116,14 @@ export class Server extends Service {
     this.app.use(
       "/notifications",
       createNotificationRouter(authMiddleware, this.dependencies)
+    );
+    this.app.use(
+      "/social",
+      createSocialMediaRouter({
+        serverDomain: this.config.domain,
+        achievementsDal: this.dependencies.achievementsDal,
+        attemptDal: this.dependencies.attemptDal,
+      })
     );
 
     const apiRouter = Router();
