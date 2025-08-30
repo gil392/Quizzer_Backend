@@ -110,7 +110,7 @@ export const createUsersRouter = (
    *                     type: string
    *                     format: email
    *                     example: tomer@example.com
-   *                   picture:
+   *                   profileImage:
    *                     type: string
    *                     format: uri
    *                     nullable: true
