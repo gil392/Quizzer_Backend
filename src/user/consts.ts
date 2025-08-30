@@ -11,5 +11,6 @@ export const SEARCH_USER_SELECT_KEYS = [
   "username",
   "email",
   "_id",
+  "profileImage",
 ] satisfies (keyof UserWithAuthentication)[];
 export const SEARCH_USER_SELECT = SEARCH_USER_SELECT_KEYS.join(" ");
