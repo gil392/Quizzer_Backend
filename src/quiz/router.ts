@@ -142,7 +142,7 @@ export const createQuizRouter = (
    *           example:
    *             lessonId: "lesson123"
    *             settings:
-   *               feedbackType: auto
+   *               feedbackType: onSubmit
    *               questionsOrder: chronological
    *               maxQuestionCount: 5
    *               solvingTimeMs: 600000
@@ -164,8 +164,10 @@ export const createQuizRouter = (
    * @swagger
    * /quiz:
    *   get:
-   *     summary: Get all quizzes, optionally filtered by lesson ID
+   *     summary: Get all quizzes of authenticated user, optionally filtered by lesson ID
    *     tags: [Quiz]
+   *     security:
+   *       - bearerAuth: []
    *     parameters:
    *       - in: query
    *         name: lessonId
@@ -282,6 +284,16 @@ export const createQuizRouter = (
    *   post:
    *     summary: Rate a quiz
    *     tags: [Quiz]
+   *     security:
+   *       - bearerAuth: []
+   *     parameters:
+   *       - name: quizId
+   *         in: query
+   *         required: true
+   *         schema:
+   *           type: string
+   *         description: The ID of the quiz to rate
+   *         example: quiz123
    *     requestBody:
    *       required: true
    *       content:
@@ -289,20 +301,15 @@ export const createQuizRouter = (
    *           schema:
    *             type: object
    *             required:
-   *               - quizId
    *               - rating
    *             properties:
-   *               quizId:
-   *                 type: string
-   *                 description: The ID of the quiz to rate
    *               rating:
    *                 type: number
    *                 description: The rating for the quiz (1-5)
    *                 minimum: 1
    *                 maximum: 5
-   *           example:
-   *             quizId: "quiz123"
-   *             rating: 4
+   *             example:
+   *               rating: 4
    *     responses:
    *       201:
    *         description: Quiz rated successfully
