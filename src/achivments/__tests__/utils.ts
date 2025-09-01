@@ -16,6 +16,7 @@ export const createAchievementMock = (
         xp: 500,
       },
       title: "test achievement",
+      sharedUsers: [],
     } satisfies Achievement,
     achievement ?? {}
   );
