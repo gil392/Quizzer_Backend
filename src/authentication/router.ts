@@ -147,8 +147,7 @@ export const createAuthRouter = (
      *         schema:
      *           type: string
      *         required: true
-     *         description: user jwt refresh token
-     *         example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+     *         description: user jwt refresh token (must be sent as a cookie; Swagger UI cannot send cookies, use Postman or browser for testing)
      *     responses:
      *       200:
      *         description: Tokens refreshed successfully
@@ -186,8 +185,7 @@ export const createAuthRouter = (
      *         schema:
      *           type: string
      *         required: true
-     *         description: user jwt refresh token
-     *         example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+     *         description: user jwt refresh token (must be sent as a cookie; Swagger UI cannot send cookies, use Postman or browser for testing)
      *     responses:
      *       200:
      *         description: Successful logout
@@ -203,7 +201,7 @@ export const createAuthRouter = (
      * /auth/google:
      *   get:
      *     summary: Initiate Google login
-     *     description: Redirects the user to Google's OAuth 2.0 login page.
+     *     description: Redirects the user to Google's OAuth 2.0 login page.  (Cannot be tested via Swagger UI)
      *     tags:
      *       - Auth
      *     responses:
@@ -212,8 +210,8 @@ export const createAuthRouter = (
      */
     router.get(
         "/google",
-        passport.authenticate("google", { scope: ["profile", "email"] }) 
-      );
+        passport.authenticate("google", { scope: ["profile", "email"] })
+    );
 
     /**
      * @swagger
@@ -229,10 +227,10 @@ export const createAuthRouter = (
      *         schema:
      *           type: string
      *         required: true
-     *         description: Authorization code returned by Google.
+     *         description: Authorization code returned by Google. (Cannot be tested via Swagger UI)
      *     responses:
      *       302:
-     *         description: Redirects to the frontend with the access token.
+     *         description: Redirects to Google's OAuth 2.0 login page.
      *       401:
      *         description: Unauthorized if the user is not authenticated.
      *       500:
