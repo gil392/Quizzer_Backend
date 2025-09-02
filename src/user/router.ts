@@ -22,7 +22,6 @@ const buildRouteHandlers = (dependencies: UsersRouterDependencies) => ({
     dependencies.usersDal
   ),
   editUser: handlers.editUser(dependencies.usersDal),
-  getMessages: handlers.getMessages,
   deleteFriend: handlers.deleteFriend(dependencies.usersDal),
   fetchFriendById: handlers.fetchFriendById(dependencies.usersDal),
 });
@@ -62,30 +61,12 @@ export const createUsersRouter = (
 
   /**
    * @swagger
-   * /user/messages:
-   *   get:
-   *     summary: get logged user messages since timestamp
-   *     description: get logged user messages since timestamp
-   *     tags:
-   *       - User
-   *     security:
-   *       - bearerAuth: []
-   *     responses:
-   *       501:
-   *         description: Route Handler Not Implemented
-   */
-  router.get("/messages", authMiddleware, handlers.getMessages);
-
-  /**
-   * @swagger
    * /user/search:
    *   get:
    *     summary: Search for users by username or email
    *     description: Returns a list of users that match the search query using partial or fuzzy matching.
    *     tags:
    *       - User
-   *     security:
-   *       - bearerAuth: []
    *     parameters:
    *       - in: query
    *         name: searchTerm
@@ -142,7 +123,7 @@ export const createUsersRouter = (
    *             schema:
    *               type: array
    *               items:
-   *                 $ref: '#/components/schemas/PublicUser'
+   *                 $ref: '#/components/schemas/User'
    *       401:
    *         description: Unauthorized - missing or invalid token
    *       500:
@@ -156,7 +137,7 @@ export const createUsersRouter = (
 
   /**
    * @swagger
-   * /friend:
+   * /user/friend:
    *   get:
    *     summary: Get user's friends
    *     description: Retrieves a list of users who are friends with the authenticated user.
@@ -172,7 +153,7 @@ export const createUsersRouter = (
    *             schema:
    *               type: array
    *               items:
-   *                 $ref: '#/components/schemas/PublicUser'
+   *                 $ref: '#/components/schemas/User'
    *       401:
    *         description: Unauthorized - missing or invalid token
    *       500:
@@ -203,7 +184,7 @@ export const createUsersRouter = (
    *                 type: string
    *                 description: ID of the user to send a friend request to
    *             example:
-   *               user: "user123"
+   *               user: "689c5950729b4da4991b2e00"
    *     responses:
    *       201:
    *         description: Friend request created successfully
@@ -280,10 +261,6 @@ export const createUsersRouter = (
    *                 type: string
    *                 description: user new username
    *                 example: new user username
-   *               settings:
-   *                 type: Settings
-   *                 description: user settings in Quizzer
-   *                 example: Dark Mode
    *     responses:
    *       200:
    *         description: user updated successfully

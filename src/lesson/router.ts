@@ -183,7 +183,9 @@ export const createLessonRouter = (
    * @swagger
    * /lesson:
    *   get:
-   *     summary: Get all lessons
+   *     summary: Get all lessons of the authenticated user
+   *     security:
+   *       - bearerAuth: []
    *     tags: [Lesson]
    *     responses:
    *       200:
@@ -238,6 +240,8 @@ export const createLessonRouter = (
    *   put:
    *     summary: Update a lesson by its ID
    *     tags: [Lesson]
+   *     security:
+   *       - bearerAuth: []
    *     parameters:
    *       - in: path
    *         name: id

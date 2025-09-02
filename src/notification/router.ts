@@ -61,6 +61,24 @@ export const createNotificationRouter = (
    *               type: array
    *               items:
    *                 $ref: '#/components/schemas/Notification'
+   *             examples:
+   *               example:
+   *                 value:
+   *                   - _id: "64e7c2f9b6e7c2f9b6e7c2f9"
+   *                     toUserId: "64e7c2f9b6e7c2f9b6e7c2f8"
+   *                     fromUserId: "64e7c2f9b6e7c2f9b6e7c2f7"
+   *                     type: "share"
+   *                     relatedEntityId: "64e7c2f9b6e7c2f9b6e7c2f6"
+   *                     entityType: "lesson"
+   *                     message: "Alice shared a lesson with you!"
+   *                     read: false
+   *                     createdAt: "2025-09-01T12:00:00.000Z"
+   *       401:
+   *         description: Unauthorized - missing or invalid token
+   *       404:
+   *         description: Notifications not found
+   *       500:
+   *         description: Internal server error
    */
   router.get("/", authMiddleware, controller.getNotificationsByUserId);
 
@@ -82,6 +100,22 @@ export const createNotificationRouter = (
    *     responses:
    *       200:
    *         description: Notification marked as read
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 message:
+   *                   type: string
+   *                   example: Notification marked as read
+   *       400:
+   *         description: Invalid notification ID
+   *       401:
+   *         description: Unauthorized - missing or invalid token
+   *       404:
+   *         description: Notification not found
+   *       500:
+   *         description: Internal server error
    */
   router.put("/:id/read", authMiddleware, controller.markNotificationAsRead);
 
@@ -103,6 +137,22 @@ export const createNotificationRouter = (
    *     responses:
    *       200:
    *         description: Notification deleted
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 message:
+   *                   type: string
+   *                   example: Notification with id 64e7c2f9b6e7c2f9b6e7c2f9 deleted successfully
+   *       400:
+   *         description: Invalid notification ID
+   *       401:
+   *         description: Unauthorized - missing or invalid token
+   *       404:
+   *         description: Notification not found
+   *       500:
+   *         description: Internal server error
    */
   router.delete("/:id", authMiddleware, controller.deleteNotification);
 
@@ -121,11 +171,39 @@ export const createNotificationRouter = (
    *           schema:
    *             type: object
    *             required:
+   *               - toUserIds
    *               - relatedEntityId
-   *             properties: {}
+   *             properties:
+   *               toUserIds:
+   *                 type: array
+   *                 items:
+   *                   type: string
+   *                 description: Array of recipient user IDs
+   *               relatedEntityId:
+   *                 type: string
+   *                 description: ID of the achievement to be shared
+   *           example:
+   *             toUserIds: ["64e7c2f9b6e7c2f9b6e7c2f8", "64e7c2f9b6e7c2f9b6e7c2f7"]
+   *             relatedEntityId: "64e7c2f9b6e7c2f9b6e7c2f6"
    *     responses:
    *       201:
    *         description: Friends notified
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 message:
+   *                   type: string
+   *                   example: Friends notified
+   *       400:
+   *         description: Invalid request body
+   *       401:
+   *         description: Unauthorized - missing or invalid token
+   *       404:
+   *         description: Sender or achievement not found
+   *       500:
+   *         description: Internal server error
    */
   router.post(
     "/share-achievement",
@@ -159,6 +237,9 @@ export const createNotificationRouter = (
    *               relatedEntityId:
    *                 type: string
    *                 description: ID of the lesson to be shared
+   *           example:
+   *             toUserIds: ["64e7c2f9b6e7c2f9b6e7c2f8", "64e7c2f9b6e7c2f9b6e7c2f7"]
+   *             relatedEntityId: "64e7c2f9b6e7c2f9b6e7c2f6"
    *     responses:
    *       201:
    *         description: Notifications sent successfully
@@ -170,16 +251,14 @@ export const createNotificationRouter = (
    *                 message:
    *                   type: string
    *                   example: Notifications sent
+   *       400:
+   *         description: Invalid request body
+   *       401:
+   *         description: Unauthorized - missing or invalid token
    *       404:
    *         description: Sender or lesson not found
-   *         content:
-   *           application/json:
-   *             schema:
-   *               type: object
-   *               properties:
-   *                 message:
-   *                   type: string
-   *                   example: Lesson not found
+   *       500:
+   *         description: Internal server error
    */
 
   router.post("/share-lesson", authMiddleware, controller.shareLesson);
@@ -204,9 +283,27 @@ export const createNotificationRouter = (
    *               toUserId:
    *                 type: string
    *                 description: The user to notify
+   *           example:
+   *             toUserId: "64e7c2f9b6e7c2f9b6e7c2f8"
    *     responses:
    *       201:
    *         description: Friend request notification sent
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 message:
+   *                   type: string
+   *                   example: Friend request notification sent
+   *       400:
+   *         description: Invalid request body
+   *       401:
+   *         description: Unauthorized - missing or invalid token
+   *       404:
+   *         description: Sender not found
+   *       500:
+   *         description: Internal server error
    */
   router.post(
     "/friend-request",

@@ -98,10 +98,6 @@ export const editUser = (usersDal: UsersDal) =>
     response.json(updatedUser);
   });
 
-export const getMessages: RequestHandler = (_req, res) => {
-  res.sendStatus(StatusCodes.NOT_IMPLEMENTED);
-};
-
 const getSettings = async (
   usersDal: UsersDal,
   userId: string,
