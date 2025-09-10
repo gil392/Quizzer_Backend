@@ -41,7 +41,7 @@ export class QuestionsGenerator {
   ): Promise<Question[]> => {
     try {
       const response = await this.openAI.chat.completions.create({
-        model: "gpt-3.5-turbo",
+        model: "gpt-4o-mini",
         messages: [
           {
             role: "system",
