@@ -18,4 +18,8 @@ const createMulterStorage = (destinationPath: string) =>
 
 export const createMulterUpload = (
   ...storageParams: Parameters<typeof createMulterStorage>
-) => multer({ storage: createMulterStorage(...storageParams) });
+) => multer(
+  {
+    storage: createMulterStorage(...storageParams),
+    limits: { fileSize: 10 * 1024 * 1024 },
+  });
